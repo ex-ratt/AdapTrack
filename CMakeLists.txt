@@ -1,4 +1,4 @@
-set(PROJECT_NAME FeatureDetection)
+set(PROJECT_NAME AdapTrack)
 project(${PROJECT_NAME})
 cmake_minimum_required(VERSION 2.8)
 

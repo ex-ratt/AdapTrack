@@ -1,4 +1,5 @@
-FeatureDetection
-================
+AdapTrack
+=========
 
-A library (and demo applications) for face- and facial feature detection and real-time tracking in 2d-images
+This project provides SVM training, detection, and (adaptive) tracking via libraries and small demo applications.
+
