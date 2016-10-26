@@ -22,19 +22,12 @@ MESSAGE(STATUS "OpenCV lib dir found at ${OpenCV_LIB_DIR}")
 SET(HEADERS
 	include/detection/AggregatedFeaturesDetector.hpp
 	include/detection/ClassifiedPatch.hpp
-	include/detection/Detector.hpp
-	include/detection/FiveStageSlidingWindowDetector.hpp
 	include/detection/NonMaximumSuppression.hpp
-	include/detection/OverlapElimination.hpp
 	include/detection/SimpleDetector.hpp
-	include/detection/SlidingWindowDetector.hpp
 )
 SET(SOURCE
 	src/detection/AggregatedFeaturesDetector.cpp
-	src/detection/FiveStageSlidingWindowDetector.cpp
 	src/detection/NonMaximumSuppression.cpp
-	src/detection/OverlapElimination.cpp
-	src/detection/SlidingWindowDetector.cpp
 )
 
 include_directories("include")
