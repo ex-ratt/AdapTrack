@@ -9,7 +9,7 @@
 #define AGGREGATEDFEATURESDETECTOR_HPP_
 
 #include "classification/SvmClassifier.hpp"
-#include "detection/SimpleDetector.hpp"
+#include "detection/Detector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
 #include "imageprocessing/ImageFilter.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
@@ -22,7 +22,7 @@ namespace detection {
 /**
  * Detector that is based upon aggregated features.
  */
-class AggregatedFeaturesDetector : public SimpleDetector {
+class AggregatedFeaturesDetector : public Detector {
 public:
 
 	/**
@@ -74,11 +74,11 @@ public:
 			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
 			float widthScale = 1.0f, float heightScale = 1.0f);
 
-	using SimpleDetector::detect;
+	using Detector::detect;
 
 	std::vector<cv::Rect> detect(std::shared_ptr<imageprocessing::VersionedImage> image) override;
 
-	using SimpleDetector::detectWithScores;
+	using Detector::detectWithScores;
 
 	std::vector<std::pair<cv::Rect, float>> detectWithScores(std::shared_ptr<imageprocessing::VersionedImage> image) override;
 

@@ -12,7 +12,7 @@
 
 using cv::Mat;
 using cv::Rect;
-using detection::SimpleDetector;
+using detection::Detector;
 using imageio::RectLandmark;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -30,12 +30,12 @@ DetectorTester::DetectorTester(cv::Size minWindowSize, double overlapThreshold) 
 		throw invalid_argument("the overlap threshold must be between zero (exclusive) and one (inclusive)");
 }
 
-void DetectorTester::evaluate(SimpleDetector& detector, const vector<LabeledImage>& images) {
+void DetectorTester::evaluate(Detector& detector, const vector<LabeledImage>& images) {
 	for (const LabeledImage& image : images)
 		evaluate(detector, image.image, image.landmarks);
 }
 
-void DetectorTester::evaluate(SimpleDetector& detector, const Mat& image, const vector<RectLandmark>& landmarks) {
+void DetectorTester::evaluate(Detector& detector, const Mat& image, const vector<RectLandmark>& landmarks) {
 	Annotations annotations(landmarks, minWindowSize);
 	steady_clock::time_point start = steady_clock::now();
 	vector<pair<Rect, float>> detections = detector.detectWithScores(image);
@@ -96,7 +96,7 @@ void DetectorTester::mergeInto(vector<pair<float, bool>>& scores, const vector<p
 	scores.swap(mergedScores);
 }
 
-DetectionResult DetectorTester::detect(SimpleDetector& detector, const Mat& image, const vector<RectLandmark>& landmarks) const {
+DetectionResult DetectorTester::detect(Detector& detector, const Mat& image, const vector<RectLandmark>& landmarks) const {
 	vector<Rect> detections = detector.detect(image);
 	Annotations annotations(landmarks, minWindowSize);
 	Status status = compareWithGroundTruth(detections, annotations);

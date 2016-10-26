@@ -23,7 +23,7 @@ SET(HEADERS
 	include/detection/AggregatedFeaturesDetector.hpp
 	include/detection/ClassifiedPatch.hpp
 	include/detection/NonMaximumSuppression.hpp
-	include/detection/SimpleDetector.hpp
+	include/detection/Detector.hpp
 )
 SET(SOURCE
 	src/detection/AggregatedFeaturesDetector.cpp
@@ -36,10 +36,9 @@ include_directories("include")
 include_directories(${Classification_SOURCE_DIR}/include)
 include_directories(${ImageProcessing_SOURCE_DIR}/include)
 include_directories(${Logging_SOURCE_DIR}/include)
-include_directories(${ImageLogging_SOURCE_DIR}/include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 
 # make library
 add_library(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
-target_link_libraries(${SUBPROJECT_NAME} Logging ImageLogging ImageProcessing ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(${SUBPROJECT_NAME} Logging ImageProcessing ${Boost_LIBRARIES} ${OpenCV_LIBS})

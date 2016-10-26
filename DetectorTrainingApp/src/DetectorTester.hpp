@@ -10,7 +10,7 @@
 
 #include "Annotations.hpp"
 #include "LabeledImage.hpp"
-#include "detection/SimpleDetector.hpp"
+#include "detection/Detector.hpp"
 #include "imageio/RectLandmark.hpp"
 #include "opencv2/core/core.hpp"
 #include <chrono>
@@ -81,8 +81,7 @@ public:
 	 * @param[in] landmarks Labeled bounding boxes that are either positive or should be ignored (neither positive, nor negative).
 	 * @return Result containing correct, wrong, ignored and missed detections.
 	 */
-	DetectionResult detect(detection::SimpleDetector& detector,
-						   const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks) const;
+	DetectionResult detect(detection::Detector& detector, const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks) const;
 
 	/**
 	 * Evaluates a detector on several images.
@@ -90,7 +89,7 @@ public:
 	 * @param[in] detector Detector that should be evaluated.
 	 * @param[in] images Images with labeled bounding boxes.
 	 */
-	void evaluate(detection::SimpleDetector& detector, const std::vector<LabeledImage>& images);
+	void evaluate(detection::Detector& detector, const std::vector<LabeledImage>& images);
 
 	/**
 	 * Evaluates a detector on a single image.
@@ -99,7 +98,7 @@ public:
 	 * @param[in] image Image to detect targets in.
 	 * @param[in] landmarks Labeled bounding boxes that are either positive or should be ignored (neither positive, nor negative).
 	 */
-	void evaluate(detection::SimpleDetector& detector, const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks);
+	void evaluate(detection::Detector& detector, const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks);
 
 	/**
 	 * @return Summary of the evaluation.

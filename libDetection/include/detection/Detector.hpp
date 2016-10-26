@@ -16,12 +16,12 @@
 namespace detection {
 
 /**
- * Detector that finds instances of a common type inside images and returns bounding boxes around those.
+ * Detector that finds instances of an object class inside images and returns bounding boxes around those.
  */
-class SimpleDetector {
+class Detector {
 public:
 
-	virtual ~SimpleDetector() {}
+	virtual ~Detector() {}
 
 	/**
 	 * Detects objects inside the given image.
