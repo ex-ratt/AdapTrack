@@ -15,7 +15,6 @@
 #include "imageio/EmptyLandmarkSource.hpp"
 #include "imageio/CameraImageSource.hpp"
 #include "imageio/VideoImageSource.hpp"
-#include "imageio/KinectImageSource.hpp"
 #include "imageio/DirectoryImageSource.hpp"
 #include "imageio/OrderedLabeledImageSource.hpp"
 #include "imageio/RepeatingFileImageSource.hpp"
@@ -61,9 +60,6 @@
 #include "classification/UnlimitedExampleManagement.hpp"
 #include "classification/FixedTrainableProbabilisticSvmClassifier.hpp"
 #include "libsvm/LibSvmClassifier.hpp"
-#ifdef WITH_LIBLINEAR_CLASSIFIER
-	#include "liblinear/LibLinearClassifier.hpp"
-#endif
 #include "condensation/ResamplingSampler.hpp"
 #include "condensation/GridSampler.hpp"
 #include "condensation/LowVarianceSampling.hpp"
@@ -339,36 +335,10 @@ shared_ptr<TrainableSvmClassifier> TrackingBenchmark::createLibSvmClassifier(ptr
 	}
 }
 
-shared_ptr<TrainableSvmClassifier> TrackingBenchmark::createLibLinearClassifier(ptree& config) {
-#ifdef WITH_LIBLINEAR_CLASSIFIER
-	shared_ptr<liblinear::LibLinearClassifier> trainableSvm = make_shared<liblinear::LibLinearClassifier>(
-			config.get<double>("C"), config.get<bool>("bias"));
-	trainableSvm->setPositiveExampleManagement(
-			unique_ptr<ExampleManagement>(createExampleManagement(config.get_child("positiveExamples"), trainableSvm, true)));
-	trainableSvm->setNegativeExampleManagement(
-			unique_ptr<ExampleManagement>(createExampleManagement(config.get_child("negativeExamples"), trainableSvm, false)));
-	optional<ptree&> negativesConfig = config.get_child_optional("staticNegativeExamples");
-	if (negativesConfig && negativesConfig->get_value<bool>()) {
-		trainableSvm->loadStaticNegatives(negativesConfig->get<string>("filename"),
-				negativesConfig->get<int>("amount"), negativesConfig->get<double>("scale"));
-	}
-	return trainableSvm;
-#else
-	throw std::runtime_error("Cannot load a LibLinear classifier. Run CMake with WITH_LIBLINEAR_CLASSIFIER set to ON to enable.");
-#endif // WITH_LIBLINEAR_CLASSIFIER
-}
-
 shared_ptr<TrainableProbabilisticClassifier> TrackingBenchmark::createTrainableProbabilisticClassifier(ptree& config) {
 	if (config.get_value<string>() == "libSvm") {
 		shared_ptr<Kernel> kernel = createKernel(config.get_child("kernel"));
 		shared_ptr<TrainableSvmClassifier> trainableSvm = createLibSvmClassifier(config.get_child("training"), kernel);
-		shared_ptr<SvmClassifier> svm = trainableSvm->getSvm();
-		optional<ptree&> thresholdConfig = config.get_child_optional("threshold");
-		if (thresholdConfig)
-			svm->setThreshold(thresholdConfig->get_value<float>());
-		return createTrainableProbabilisticSvm(trainableSvm, config.get_child("probabilistic"));
-	} else if (config.get_value<string>() == "libLinear") {
-		shared_ptr<TrainableSvmClassifier> trainableSvm = createLibLinearClassifier(config.get_child("training"));
 		shared_ptr<SvmClassifier> svm = trainableSvm->getSvm();
 		optional<ptree&> thresholdConfig = config.get_child_optional("threshold");
 		if (thresholdConfig)

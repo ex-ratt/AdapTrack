@@ -15,7 +15,6 @@
 #include "imageio/EmptyLandmarkSource.hpp"
 #include "imageio/CameraImageSource.hpp"
 #include "imageio/VideoImageSource.hpp"
-#include "imageio/KinectImageSource.hpp"
 #include "imageio/DirectoryImageSource.hpp"
 #include "imageio/OrderedLabeledImageSource.hpp"
 #include "imageio/RepeatingFileImageSource.hpp"
@@ -59,9 +58,6 @@
 #include "classification/UnlimitedExampleManagement.hpp"
 #include "classification/FixedTrainableProbabilisticSvmClassifier.hpp"
 #include "libsvm/LibSvmClassifier.hpp"
-#ifdef WITH_LIBLINEAR_CLASSIFIER
-	#include "liblinear/LibLinearClassifier.hpp"
-#endif
 #include "condensation/ResamplingSampler.hpp"
 #include "condensation/GridSampler.hpp"
 #include "condensation/LowVarianceSampling.hpp"
@@ -365,35 +361,10 @@ shared_ptr<TrainableSvmClassifier> HeadTracking::createLibSvmClassifier(ptree& c
 	}
 }
 
-shared_ptr<TrainableSvmClassifier> HeadTracking::createLibLinearClassifier(ptree& config) {
-#ifdef WITH_LIBLINEAR_CLASSIFIER
-	shared_ptr<liblinear::LibLinearClassifier> trainableSvm = make_shared<liblinear::LibLinearClassifier>(config.get<double>("C"), config.get<bool>("bias"));
-	trainableSvm->setPositiveExampleManagement(
-			unique_ptr<ExampleManagement>(createExampleManagement(config.get_child("positiveExamples"), trainableSvm, true)));
-	trainableSvm->setNegativeExampleManagement(
-			unique_ptr<ExampleManagement>(createExampleManagement(config.get_child("negativeExamples"), trainableSvm, false)));
-	optional<ptree&> negativesConfig = config.get_child_optional("staticNegativeExamples");
-	if (negativesConfig && negativesConfig->get_value<bool>()) {
-		trainableSvm->loadStaticNegatives(negativesConfig->get<string>("filename"),
-				negativesConfig->get<int>("amount"), negativesConfig->get<double>("scale"));
-	}
-	return trainableSvm;
-#else
-	throw std::runtime_error("Cannot load a LibLinear classifier. Run CMake with WITH_LIBLINEAR_CLASSIFIER set to ON to enable.");
-#endif // WITH_LIBLINEAR_CLASSIFIER
-}
-
 shared_ptr<TrainableProbabilisticClassifier> HeadTracking::createTrainableProbabilisticClassifier(ptree& config) {
 	if (config.get_value<string>() == "libSvm") {
 		shared_ptr<Kernel> kernel = createKernel(config.get_child("kernel"));
 		shared_ptr<TrainableSvmClassifier> trainableSvm = createLibSvmClassifier(config.get_child("training"), kernel);
-		shared_ptr<SvmClassifier> svm = trainableSvm->getSvm();
-		optional<ptree&> thresholdConfig = config.get_child_optional("threshold");
-		if (thresholdConfig)
-			svm->setThreshold(thresholdConfig->get_value<float>());
-		return createTrainableProbabilisticSvm(trainableSvm, config.get_child("probabilistic"));
-	} else if (config.get_value<string>() == "libLinear") {
-		shared_ptr<TrainableSvmClassifier> trainableSvm = createLibLinearClassifier(config.get_child("training"));
 		shared_ptr<SvmClassifier> svm = trainableSvm->getSvm();
 		optional<ptree&> thresholdConfig = config.get_child_optional("threshold");
 		if (thresholdConfig)
@@ -978,9 +949,9 @@ void HeadTracking::stop() {
 int main(int argc, char *argv[]) {
 	int verboseLevelText;
 	int verboseLevelImages;
-	int deviceId, kinectId;
+	int deviceId;
 	string filename, directory, groundTruthFilename;
-	bool useCamera = false, useKinect = false, useFile = false, useDirectory = false, useGroundTruth = false, bobot = false;
+	bool useCamera = false, useFile = false, useDirectory = false, useGroundTruth = false, bobot = false;
 	string configFile;
 	string outputFile;
 	int outputFps = -1;
@@ -994,7 +965,6 @@ int main(int argc, char *argv[]) {
 			("filename,f", po::value< string >(&filename), "A filename of a video to run the tracking")
 			("directory,i", po::value< string >(&directory), "Use a directory as input")
 			("device,d", po::value<int>(&deviceId)->implicit_value(0), "A camera device ID for use with the OpenCV camera driver")
-			("kinect,k", po::value<int>(&kinectId)->implicit_value(0), "Windows only: Use a Kinect as camera. Optionally specify a device ID.")
 			("ground-truth,g", po::value<string>(&groundTruthFilename), "Name of a file containing ground truth information in BoBoT format")
 			("bobot,b", "Flag for indicating BoBoT format on the ground truth file")
 			("config,c", po::value< string >(&configFile)->default_value("default.cfg","default.cfg"), "The filename to the config file.")
@@ -1017,8 +987,6 @@ int main(int argc, char *argv[]) {
 			useDirectory = true;
 		if (vm.count("device"))
 			useCamera = true;
-		if (vm.count("kinect"))
-			useKinect = true;
 		if (vm.count("ground-truth"))
 			useGroundTruth = true;
 		if (vm.count("bobot"))
@@ -1032,14 +1000,12 @@ int main(int argc, char *argv[]) {
 	int inputsSpecified = 0;
 	if (useCamera)
 		inputsSpecified++;
-	if (useKinect)
-		inputsSpecified++;
 	if (useFile)
 		inputsSpecified++;
 	if (useDirectory)
 		inputsSpecified++;
 	if (inputsSpecified != 1) {
-		std::cout << "Usage: Please specify a camera, Kinect, file or directory (and only one of them) to run the program. Use -h for help." << std::endl;
+		std::cout << "Usage: Please specify a camera, file, or directory (and only one of them) to run the program. Use -h for help." << std::endl;
 		return -1;
 	}
 
@@ -1048,8 +1014,6 @@ int main(int argc, char *argv[]) {
 	shared_ptr<ImageSource> imageSource;
 	if (useCamera)
 		imageSource.reset(new CameraImageSource(deviceId));
-	else if (useKinect)
-		imageSource.reset(new KinectImageSource(kinectId));
 	else if (useFile)
 		imageSource.reset(new VideoImageSource(filename));
 	else if (useDirectory)

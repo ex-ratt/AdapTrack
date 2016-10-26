@@ -11,21 +11,6 @@ FIND_PACKAGE(Boost 1.48.0 COMPONENTS system filesystem REQUIRED)
 
 FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core)
 
-if(WITH_MATLAB_CLASSIFIER)
-	set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-	find_package(MATLAB REQUIRED)
-	if(MATLAB_FOUND)
-		message(STATUS "Matlab found at ${MATLAB_INCLUDE_DIR}")
-	else(MATLAB_FOUND)
-		message(FATAL_ERROR "Matlab not found")
-	endif(MATLAB_FOUND)
-	include_directories(${MATLAB_INCLUDE_DIR})
-	set(MATLAB_LIBNAME ${MATLAB_MX_LIBRARY} ${MATLAB_MAT_LIBRARY})
-	add_definitions(-DWITH_MATLAB_CLASSIFIER)
-else()
-	set(MATLAB_LIBNAME "")
-endif()
-
 # source and header files
 SET(HEADERS
 	include/classification/AgeBasedExampleManagement.hpp
@@ -88,4 +73,4 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 # make library
 add_library(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
-target_link_libraries(${SUBPROJECT_NAME} Logging ${Boost_LIBRARIES} ${OpenCV_LIBS} ${MATLAB_LIBNAME})
+target_link_libraries(${SUBPROJECT_NAME} Logging ${Boost_LIBRARIES} ${OpenCV_LIBS})

@@ -11,17 +11,6 @@ find_package(Boost 1.48.0 COMPONENTS system filesystem REQUIRED)
 
 find_package(OpenCV 2.4.3 REQUIRED core highgui)
 
-if(WITH_MSKINECT_SDK)
-	# Include Microsoft Kinect SDK (Windows)
-	set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-	find_package(KinectSDK REQUIRED)
-	include_directories(${KinectSDK_INCLUDE_DIR})
-	set(KINECT_LIBNAME ${KinectSDK_LIBRARIES})
-	add_definitions(-DWITH_MSKINECT_SDK)
-else()
-	set(KINECT_LIBNAME "")
-endif()
-
 # source and header files
 set(HEADERS
 	VideoPlayer.hpp
@@ -38,4 +27,4 @@ include_directories(${ImageIO_SOURCE_DIR}/include)
 
 # make executable
 add_executable(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
-target_link_libraries(${SUBPROJECT_NAME} ImageIO ${KINECT_LIBNAME} Logging ${OpenCV_LIBS} ${Boost_LIBRARIES})
+target_link_libraries(${SUBPROJECT_NAME} ImageIO Logging ${OpenCV_LIBS} ${Boost_LIBRARIES})
