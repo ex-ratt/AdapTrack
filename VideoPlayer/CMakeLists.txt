@@ -1,4 +1,4 @@
-set(SUBPROJECT_NAME VideoPlayerApp)
+set(SUBPROJECT_NAME VideoPlayer)
 project(${SUBPROJECT_NAME})
 cmake_minimum_required(VERSION 2.8)
 set(${SUBPROJECT_NAME}_VERSION_MAJOR 0)

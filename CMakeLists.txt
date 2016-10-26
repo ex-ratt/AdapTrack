@@ -12,23 +12,23 @@ if (HAS_CXX11_FLAG)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
-# Core libraries:
-add_subdirectory(libLogging)			# Text logging
-add_subdirectory(libImageLogging)		# Image logging
-add_subdirectory(libImageIO)			# Input-library for cameras, Kinect and hard-drive images.
-add_subdirectory(libImageProcessing)	# Image pyramids, patch extraction, feature transformation
-add_subdirectory(libClassification)		# Classification and regression library
-add_subdirectory(libSvm)				# libSVM (support vector classification and regression)
-add_subdirectory(libDetection)			# Sliding-window detection, Skin detection (Note: Do we use it anymore? Yes, Condensation depends on it)
-add_subdirectory(libCondensation)		# Condensation tracking (particle filter)
+# Libraries
+add_subdirectory(libLogging)            # text logging to terminal or files
+add_subdirectory(libImageLogging)       # image logging
+add_subdirectory(libImageIO)            # reading and writing of images, videos, and annotations
+add_subdirectory(libImageProcessing)    # image pyramids, filters, feature extraction
+add_subdirectory(libClassification)     # binary and probabilistic classification
+add_subdirectory(libSvm)                # wrapper around libSVM
+add_subdirectory(libDetection)          # detection
+add_subdirectory(libCondensation)       # particle filter based tracking
 
-# Tracking apps:
-add_subdirectory(benchmarkApp)			# Benchmark app for feature extractors and classifiers in a tracking-like online learning scenario.
-add_subdirectory(trackingBenchmarkApp)	# Benchmark app for adaptive condensation tracking.
-add_subdirectory(adaptiveTrackingApp)	# Adaptive tracking app.
-add_subdirectory(headTrackingApp)		# Adaptive head tracking app.
-add_subdirectory(VideoPlayerApp)		# App for playing videos, showing landmarks and storing videos.
+# Applications
+add_subdirectory(DetectorTrainer)       # trains detectors based on aggregated channel features and support vector machines
+add_subdirectory(VideoPlayer)           # plays videos, shows bounding boxes, and stores resulting videos with bounding boxes
 
-# Detector training apps:
-add_subdirectory(DetectorTrainingApp)	# Training app for cell-based detectors (aggregated channel features).
+# Old applications (that will be replaced)
+add_subdirectory(benchmarkApp)          # Benchmark app for feature extractors and classifiers in a tracking-like online learning scenario.
+add_subdirectory(trackingBenchmarkApp)  # Benchmark app for adaptive condensation tracking.
+add_subdirectory(adaptiveTrackingApp)   # Adaptive tracking app.
+add_subdirectory(headTrackingApp)       # Adaptive head tracking app.
 
