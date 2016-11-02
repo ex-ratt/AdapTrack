@@ -92,6 +92,22 @@ public:
 	 */
 	void setScoreThreshold(float threshold);
 
+	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> getFeatureExtractor() {
+		return featureExtractor;
+	}
+
+	const std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> getFeatureExtractor() const {
+		return featureExtractor;
+	}
+
+	std::shared_ptr<imageprocessing::ImagePyramid> getScorePyramid() {
+		return scorePyramid;
+	}
+
+	const std::shared_ptr<imageprocessing::ImagePyramid> getScorePyramid() const {
+		return scorePyramid;
+	}
+
 private:
 
 	/**

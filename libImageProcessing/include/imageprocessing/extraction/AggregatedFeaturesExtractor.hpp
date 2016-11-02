@@ -81,6 +81,14 @@ public:
 	 */
 	cv::Rect computeBoundsInImagePixels(cv::Rect boundsInLayerCells, const ImagePyramidLayer& layer) const;
 
+	cv::Size getPatchSizeInCells() const {
+		return patchSizeInCells;
+	}
+
+	int getCellSizeInPixels() const {
+		return cellSizeInPixels;
+	}
+
 private:
 
 	/**
