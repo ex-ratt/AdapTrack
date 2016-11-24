@@ -9,12 +9,11 @@
 #define FEATUREEXTRACTOR_HPP_
 
 #include "opencv2/core/core.hpp"
+#include "imageprocessing/Patch.hpp"
 #include "imageprocessing/VersionedImage.hpp"
 #include <memory>
 
 namespace imageprocessing {
-
-class Patch;
 
 /**
  * Feature extractor that constructs a feature vector given an image and a rectangular size specifying a patch.
@@ -51,6 +50,17 @@ public:
 	 * @return A pointer to the patch (with its feature vector) that might be empty if the patch could not be created.
 	 */
 	virtual std::shared_ptr<Patch> extract(int x, int y, int width, int height) const = 0;
+
+	/**
+	 * Extracts the feature vector of a certain location (patch) of the current image.
+	 *
+	 * @param[in] bounds The bounds of the patch.
+	 * @return A pointer to the patch (with its feature vector) that might be empty if the patch could not be created.
+	 */
+	virtual std::shared_ptr<Patch> extract(cv::Rect bounds) const {
+		cv::Point center = Patch::computeCenter(bounds);
+		return extract(center.x, center.y, bounds.width, bounds.height);
+	}
 };
 
 } /* namespace imageprocessing */

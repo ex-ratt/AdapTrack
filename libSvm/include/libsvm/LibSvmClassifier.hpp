@@ -8,14 +8,11 @@
 #ifndef LIBSVMCLASSIFIER_HPP_
 #define LIBSVMCLASSIFIER_HPP_
 
+#include "classification/ExampleManagement.hpp"
 #include "classification/ProbabilisticSvmClassifier.hpp"
 #include "classification/TrainableSvmClassifier.hpp"
 #include "libsvm/LibSvmUtils.hpp"
 #include <string>
-
-namespace classification {
-class ExampleManagement;
-}; /* namespace classification */
 
 namespace libsvm {
 

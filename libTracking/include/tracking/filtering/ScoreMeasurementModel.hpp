@@ -10,9 +10,7 @@
 
 #include "imageprocessing/FeatureExtractor.hpp"
 #include "imageprocessing/Patch.hpp"
-#include "imageprocessing/VersionedImage.hpp"
 #include "tracking/filtering/MeasurementModel.hpp"
-#include "tracking/filtering/Particle.hpp"
 #include <functional>
 
 namespace tracking {
@@ -20,7 +18,7 @@ namespace tracking {
 namespace filtering {
 
 /**
- * Measurement model that extracts a score from the sample position and transforms it into a likelihood.
+ * Measurement model that extracts a score from the target position and transforms it into a likelihood.
  */
 class ScoreMeasurementModel : public MeasurementModel {
 public:
@@ -41,16 +39,10 @@ public:
 		scoreExtractor->update(image);
 	}
 
-	void evaluate(Particle& particle) const {
+	double getLikelihood(const TargetState& state) const {
 		std::shared_ptr<imageprocessing::Patch> scorePatch = scoreExtractor->extract(
-				particle.getX(), particle.getY(), particle.getWidth(), particle.getHeight());
-		if (!scorePatch) {
-			particle.setWeight(0);
-		} else {
-			double score = scorePatch->getData().at<float>(0, 0);
-			double likelihood = likelihoodFunction(score);
-			particle.setWeight(particle.getWeight() * likelihood);
-		}
+				state.x, state.y, state.width(), state.height());
+		return scorePatch ? likelihoodFunction(scorePatch->getData().at<float>(0, 0)) : 0;
 	}
 
 private:

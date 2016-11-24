@@ -14,6 +14,7 @@ include_directories("include")
 
 # add dependencies
 include_directories(${Detection_SOURCE_DIR}/include)
+include_directories(${SVM_SOURCE_DIR}/include)
 include_directories(${Classification_SOURCE_DIR}/include)
 include_directories(${ImageProcessing_SOURCE_DIR}/include)
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -22,11 +23,12 @@ include_directories(${Boost_INCLUDE_DIRS})
 # make library
 add_library(${SUBPROJECT_NAME}
 	src/tracking/Tracker.cpp
-	src/tracking/filtering/Particle.cpp
 	src/tracking/filtering/ParticleFilter.cpp
+	src/tracking/filtering/TargetState.cpp
 )
 target_link_libraries(${SUBPROJECT_NAME}
 	Detection
+	SVM
 	Classification
 	ImageProcessing
 	${OpenCV_LIBS}

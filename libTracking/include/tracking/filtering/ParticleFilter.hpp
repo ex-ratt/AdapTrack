@@ -13,17 +13,17 @@
 #include "tracking/filtering/MeasurementModel.hpp"
 #include "tracking/filtering/MotionModel.hpp"
 #include "tracking/filtering/Particle.hpp"
+#include "tracking/filtering/TargetState.hpp"
 #include <memory>
 #include <random>
 #include <vector>
 
 namespace tracking {
-
 namespace filtering {
 
 /**
- * Particle filter that estimates the three-dimensional position (bounding box with fixed aspect ratio)
- * and velocity of a single target in image sequences.
+ * Bootstrap filter (simple variation of a particle filter) that estimates the three-dimensional position
+ * (bounding box with fixed aspect ratio) and velocity of a single target in image sequences.
  */
 class ParticleFilter {
 public:
@@ -41,7 +41,7 @@ public:
 			int count);
 
 	/**
-	 * Initializes this tracker at the given position.
+	 * Initializes this filter at the given position.
 	 *
 	 * @param[in] image Current image.
 	 * @param[in] position Inital target position.
@@ -52,15 +52,15 @@ public:
 			double positionDeviation = 0.1, double velocityDeviation = 0.1);
 
 	/**
-	 * Updates the particles and determines the target position within the image.
+	 * Determines the most probable target state within the current image.
 	 *
 	 * @param[in] image Current image.
-	 * @return Bounding box around the target.
+	 * @return Most probable target state.
 	 */
-	cv::Rect update(const std::shared_ptr<imageprocessing::VersionedImage> image);
+	TargetState update(const std::shared_ptr<imageprocessing::VersionedImage> image);
 
 	/**
-	 * @return Particles.
+	 * @return Weighted particles.
 	 */
 	const std::vector<Particle>& getParticles() const {
 		return particles;
@@ -76,18 +76,17 @@ private:
 
 	void normalizeParticleWeights();
 
-	cv::Rect computeAverageBounds();
+	TargetState computeAverageState();
 
 	std::default_random_engine generator; ///< Random number generator.
 	std::uniform_real_distribution<> standardUniform; ///< Uniform distribution of values in [0, 1).
 	mutable std::normal_distribution<> standardGaussian; ///< Normal distribution with zero mean and unit variance.
 	std::shared_ptr<MotionModel> motionModel; ///< Motion model.
 	std::shared_ptr<MeasurementModel> measurementModel; ///< Measurement model.
-	std::vector<Particle> particles; ///< Particles.
+	std::vector<Particle> particles; ///< Weighted particles.
 };
 
 } // namespace filtering
-
 } // namespace tracking
 
 #endif /* TRACKING_FILTERING_PARTICLEFILTER_HPP_ */

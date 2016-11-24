@@ -1,18 +1,16 @@
 /*
- * Particle.cpp
+ * TargetState.cpp
  *
- *  Created on: 01.11.2016
+ *  Created on: 03.11.2016
  *      Author: poschmann
  */
 
-#include "tracking/filtering/Particle.hpp"
+#include "tracking/filtering/TargetState.hpp"
 
 namespace tracking {
-
 namespace filtering {
 
-double Particle::aspectRatio = 1;
+double TargetState::aspectRatio = 1;
 
 } // namespace filtering
-
 } // namespace tracking

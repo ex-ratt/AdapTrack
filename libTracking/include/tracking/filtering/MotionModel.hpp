@@ -8,14 +8,13 @@
 #ifndef TRACKING_FILTERING_MOTIONMODEL_HPP_
 #define TRACKING_FILTERING_MOTIONMODEL_HPP_
 
-#include "tracking/filtering/Particle.hpp"
+#include "tracking/filtering/TargetState.hpp"
 
 namespace tracking {
-
 namespace filtering {
 
 /**
- * Motion model used by particle filters.
+ * Motion model of a particle filter that samples new target states from previous states.
  */
 class MotionModel {
 public:
@@ -23,15 +22,15 @@ public:
 	virtual ~MotionModel() {}
 
 	/**
-	 * Sample a new state for a particle.
+	 * Samples a new target state.
 	 *
-	 * @param[in,out] particle The particle.
+	 * @param[in] state Target state in the previous frame.
+	 * @return Sampled target state in the current frame.
 	 */
-	virtual void sample(Particle& particle) const = 0;
+	virtual TargetState sample(const TargetState& state) const = 0;
 };
 
 } // namespace filtering
-
 } // namespace tracking
 
 #endif /* TRACKING_FILTERING_MOTIONMODEL_HPP_ */

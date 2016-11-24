@@ -12,7 +12,6 @@
 #include <random>
 
 namespace tracking {
-
 namespace filtering {
 
 /**
@@ -34,13 +33,14 @@ public:
 			standardGaussian(0, 1),
 			deviation(deviation) {}
 
-	void sample(Particle& particle) const {
-		particle.setVelX(particle.getVelX() + deviation * standardGaussian(generator));
-		particle.setVelY(particle.getVelY() + deviation * standardGaussian(generator));
-		particle.setVelSize(particle.getVelSize() + deviation * standardGaussian(generator));
-		particle.setX(static_cast<int>(std::round(particle.getX() + particle.getVelX() * particle.getSize())));
-		particle.setY(static_cast<int>(std::round(particle.getY() + particle.getVelY() * particle.getSize())));
-		particle.setSize(static_cast<int>(std::round(particle.getSize() * (1 + particle.getVelSize()))));
+	TargetState sample(const TargetState& state) const override {
+		double velX = state.velX + deviation * standardGaussian(generator);
+		double velY = state.velY + deviation * standardGaussian(generator);
+		double velSize = state.velSize + deviation * standardGaussian(generator);
+		int x = static_cast<int>(std::round(state.x + velX * state.size));
+		int y = static_cast<int>(std::round(state.y + velY * state.size));
+		int size = static_cast<int>(std::round(state.size + velSize * state.size));
+		return TargetState(x, y, size, velX, velY, velSize);
 	}
 
 private:
@@ -51,7 +51,6 @@ private:
 };
 
 } // namespace filtering
-
 } // namespace tracking
 
 #endif /* TRACKING_FILTERING_CONSTANTVELOCITYMODEL_HPP_ */

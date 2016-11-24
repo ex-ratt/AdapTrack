@@ -68,7 +68,7 @@ public:
 
 	std::shared_ptr<Patch> extract(int centerX, int centerY, int width, int height) const override;
 
-	std::shared_ptr<Patch> extract(cv::Rect bounds) const;
+	std::shared_ptr<Patch> extract(cv::Rect bounds) const override;
 
 	std::shared_ptr<ImagePyramid> getFeaturePyramid();
 

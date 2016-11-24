@@ -9,16 +9,14 @@
 #define TRACKING_FILTERING_MEASUREMENTMODEL_HPP_
 
 #include "imageprocessing/VersionedImage.hpp"
-#include "tracking/filtering/Particle.hpp"
-#include <vector>
+#include "tracking/filtering/TargetState.hpp"
 #include <memory>
 
 namespace tracking {
-
 namespace filtering {
 
 /**
- * Measurement model used by particle filters.
+ * Measurement model of a particle filter that computes the likelihood of target states.
  */
 class MeasurementModel {
 public:
@@ -26,22 +24,22 @@ public:
 	virtual ~MeasurementModel() {}
 
 	/**
-	 * Updates this model so all subsequent calls to evaluate use the data of the new image.
+	 * Updates this model with new image data that is used to compute the state likelihoods.
 	 *
-	 * @param[in] image The new image.
+	 * @param[in] image New image.
 	 */
 	virtual void update(std::shared_ptr<imageprocessing::VersionedImage> image) = 0;
 
 	/**
-	 * Changes the weight of the particle according to the likelihood of an object existing at its position in the image.
+	 * Computes the likelihood of a target state.
 	 *
-	 * @param[in] particle The particle whose weight will be changed according to the likelihood.
+	 * @param[in] state Target state.
+	 * @return Likelihood of the target state.
 	 */
-	virtual void evaluate(Particle& particle) const = 0;
+	virtual double getLikelihood(const TargetState& state) const = 0;
 };
 
 } // namespace filtering
-
 } // namespace tracking
 
 #endif /* TRACKING_FILTERING_MEASUREMENTMODEL_HPP_ */

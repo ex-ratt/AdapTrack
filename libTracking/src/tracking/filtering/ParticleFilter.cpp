@@ -14,7 +14,6 @@ using std::shared_ptr;
 using std::vector;
 
 namespace tracking {
-
 namespace filtering {
 
 ParticleFilter::ParticleFilter(shared_ptr<MotionModel> motionModel,
@@ -26,14 +25,14 @@ ParticleFilter::ParticleFilter(shared_ptr<MotionModel> motionModel,
 				measurementModel(measurementModel),
 				particles() {
 	if (count < 1)
-		throw std::invalid_argument("the number of particles must be greater than zero");
+		throw std::invalid_argument("ParticleFilter: the number of particles must be greater than zero");
 	particles.reserve(count);
 }
 
 void ParticleFilter::initialize(const shared_ptr<VersionedImage> image, const Rect& position,
 		double positionDeviation, double velocityDeviation) {
 	particles.clear();
-	Particle::setAspectRatio(position.width, position.height);
+	TargetState::setAspectRatio(position.width, position.height);
 	int initialX = position.x + position.width / 2;
 	int initialY = position.y + position.height / 2;
 	int initialSize = position.width;
@@ -45,15 +44,15 @@ void ParticleFilter::initialize(const shared_ptr<VersionedImage> image, const Re
 		double velX = velocityDeviation * standardGaussian(generator);
 		double velY = velocityDeviation * standardGaussian(generator);
 		double velSize = velocityDeviation * standardGaussian(generator);
-		particles.emplace_back(x, y, size, velX, velY, velSize, weight);
+		particles.emplace_back(TargetState(x, y, size, velX, velY, velSize), weight);
 	}
 }
 
-Rect ParticleFilter::update(const shared_ptr<VersionedImage> image) {
+TargetState ParticleFilter::update(const shared_ptr<VersionedImage> image) {
 	resampleParticles();
 	moveParticles();
 	weightParticles(image);
-	return computeAverageBounds();
+	return computeAverageState();
 }
 
 void ParticleFilter::resampleParticles() {
@@ -64,7 +63,7 @@ void ParticleFilter::resampleParticles() {
 	double weightPointer = weightStep * standardUniform(generator);
 	double weightSum = 0;
 	for (const Particle& particle : particles) {
-		weightSum += particle.getWeight();
+		weightSum += particle.weight;
 		while (weightSum > weightPointer) {
 			newParticles.push_back(particle);
 			weightPointer += weightStep;
@@ -75,45 +74,50 @@ void ParticleFilter::resampleParticles() {
 
 void ParticleFilter::moveParticles() {
 	for (Particle& particle : particles)
-		motionModel->sample(particle);
+		particle.state = motionModel->sample(particle.state);
 }
 
 void ParticleFilter::weightParticles(const shared_ptr<VersionedImage> image) {
 	measurementModel->update(image);
 	for (Particle& particle : particles)
-		measurementModel->evaluate(particle);
+		particle.weight *= measurementModel->getLikelihood(particle.state);
 	normalizeParticleWeights();
 }
 
 void ParticleFilter::normalizeParticleWeights() {
 	double weightSum = 0;
 	for (const Particle& particle : particles)
-		weightSum += particle.getWeight();
+		weightSum += particle.weight;
 	if (!std::isfinite(weightSum))
-		throw std::runtime_error("sum of particle weights is not finite: " + std::to_string(weightSum));
+		throw std::runtime_error("ParticleFilter: sum of particle weights is not finite: " + std::to_string(weightSum));
 	if (weightSum > 0) {
 		double normalizer = 1.0 / weightSum;
 		for (Particle& particle : particles)
-			particle.setWeight(normalizer * particle.getWeight());
+			particle.weight *= normalizer;
 	} else { // weightSum == 0
 		double weight = 1.0 / particles.size();
 		for (Particle& particle : particles)
-			particle.setWeight(weight);
+			particle.weight = weight;
 	}
 }
 
-Rect ParticleFilter::computeAverageBounds() {
+TargetState ParticleFilter::computeAverageState() {
 	double x = 0;
 	double y = 0;
 	double s = 0;
+	double velX = 0;
+	double velY = 0;
+	double velS = 0;
 	for (const Particle& particle : particles) {
-		x += particle.getWeight() * particle.getX();
-		y += particle.getWeight() * particle.getY();
-		s += particle.getWeight() * particle.getSize();
+		x += particle.weight * particle.state.x;
+		y += particle.weight * particle.state.y;
+		s += particle.weight * particle.state.size;
+		velX += particle.weight * particle.state.velX;
+		velY += particle.weight * particle.state.velY;
+		velS += particle.weight * particle.state.velSize;
 	}
-	return Particle(x, y, s).getBounds();
+	return TargetState(x, y, s, velX, velY, velS);
 }
 
 } // namespace filtering
-
 } // namespace tracking
