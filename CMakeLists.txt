@@ -1,6 +1,9 @@
-set(PROJECT_NAME AdapTrack)
-project(${PROJECT_NAME})
-cmake_minimum_required(VERSION 2.8)
+project(AdapTrack)
+cmake_minimum_required(VERSION 3.1)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Libraries
 add_subdirectory(libLogging)            # text logging to terminal or files
