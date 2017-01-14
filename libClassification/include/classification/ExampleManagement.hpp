@@ -72,6 +72,11 @@ public:
 	 * @return Iterator for iterating over the training examples.
 	 */
 	virtual std::unique_ptr<ExampleIterator> iterator() const = 0;
+
+	/**
+	 * @return All training examples.
+	 */
+	virtual const std::vector<cv::Mat>& getAll() const = 0;
 };
 
 } /* namespace classification */

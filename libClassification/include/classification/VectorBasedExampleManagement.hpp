@@ -36,6 +36,8 @@ public:
 
 	std::unique_ptr<ExampleManagement::ExampleIterator> iterator() const;
 
+	const std::vector<cv::Mat>& getAll() const;
+
 protected:
 
 	std::vector<cv::Mat> examples; ///< Stored training examples.

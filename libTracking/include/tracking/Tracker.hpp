@@ -8,8 +8,8 @@
 #ifndef TRACKING_TRACKER_HPP_
 #define TRACKING_TRACKER_HPP_
 
-#include "classification/SvmClassifier.hpp"
-#include "classification/TrainableProbabilisticSvmClassifier.hpp"
+#include "classification/ProbabilisticSvmClassifier.hpp"
+#include "classification/IncrementalClassifierTrainer.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
 #include "imageprocessing/VersionedImage.hpp"
@@ -31,7 +31,8 @@ namespace tracking {
  */
 struct Track {
 	int id; ///< Unique identifier.
-	std::unique_ptr<classification::TrainableProbabilisticSvmClassifier> trainableProbabilisticSvm; ///< SVM that adapts to the target.
+	std::shared_ptr<classification::ProbabilisticSvmClassifier> svm; ///< SVM that is adapted to the target.
+	std::shared_ptr<classification::IncrementalClassifierTrainer<classification::ProbabilisticSvmClassifier>> svmTrainer; ///< SVM trainer.
 	std::shared_ptr<filtering::RepellingMeasurementModel> repellingMeasurementModel; ///< Measurement model that penalizes close targets.
 	std::unique_ptr<filtering::ParticleFilter> filter; ///< Particle filter.
 	filtering::TargetState state; ///< Current state of the target.
@@ -222,7 +223,7 @@ private:
 	 * @param[in] svm Current target-specific classifier.
 	 * @return New negative training examples.
 	 */
-	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target, classification::SvmClassifier& svm) const;
+	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target, const classification::SvmClassifier& svm) const;
 
 	/**
 	 * Computes the overlap ratio (intersection over union) of two bounding boxes.

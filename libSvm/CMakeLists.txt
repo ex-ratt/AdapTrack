@@ -14,11 +14,13 @@ SET(HEADERS
 	include/svm.h
 	include/libsvm/LibSvmClassifier.hpp
 	include/libsvm/LibSvmKernelParamSetter.hpp
+	include/libsvm/LibSvmTrainer.hpp
 	include/libsvm/LibSvmUtils.hpp
 )
 SET(SOURCE
 	src/svm.cpp
 	src/libsvm/LibSvmClassifier.cpp
+	src/libsvm/LibSvmTrainer.cpp
 	src/libsvm/LibSvmUtils.cpp
 )
 

@@ -15,13 +15,15 @@ FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core)
 SET(HEADERS
 	include/classification/AgeBasedExampleManagement.hpp
 	include/classification/BinaryClassifier.hpp
+	include/classification/ClassifierTrainer.hpp
 	include/classification/ConfidenceBasedExampleManagement.hpp
 	include/classification/EmptyExampleManagement.hpp
 	include/classification/ExampleManagement.hpp
 	include/classification/FixedTrainableProbabilisticSvmClassifier.hpp
-	include/classification/FrameBasedExampleManagement.hpp
 	include/classification/HistogramIntersectionKernel.hpp
 	include/classification/IImg.hpp
+	include/classification/IncrementalClassifierTrainer.hpp
+	include/classification/IncrementalLinearSvmTrainer.hpp
 	include/classification/Kernel.hpp
 	include/classification/KernelVisitor.hpp
 	include/classification/LinearKernel.hpp
@@ -31,6 +33,8 @@ SET(HEADERS
 	include/classification/ProbabilisticSvmClassifier.hpp
 	include/classification/ProbabilisticTwoStageClassifier.hpp
 	include/classification/ProbabilisticWvmClassifier.hpp
+	include/classification/PseudoIncrementalClassifierTrainer.hpp
+	include/classification/PseudoProbabilisticSvmTrainer.hpp
 	include/classification/RbfKernel.hpp
 	include/classification/RvmClassifier.hpp
 	include/classification/SvmClassifier.hpp
@@ -48,7 +52,6 @@ SET(HEADERS
 SET(SOURCE
 	src/classification/AgeBasedExampleManagement.cpp
 	src/classification/ConfidenceBasedExampleManagement.cpp
-	src/classification/FrameBasedExampleManagement.cpp
 	src/classification/IImg.cpp
 	src/classification/ProbabilisticRvmClassifier.cpp
 	src/classification/ProbabilisticSvmClassifier.cpp

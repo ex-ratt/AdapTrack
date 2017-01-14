@@ -36,6 +36,10 @@ unique_ptr<ExampleManagement::ExampleIterator> VectorBasedExampleManagement::ite
 	return unique_ptr<VectorIterator>(new VectorIterator(examples));
 }
 
+const vector<Mat>& VectorBasedExampleManagement::getAll() const {
+	return examples;
+}
+
 VectorBasedExampleManagement::VectorIterator::VectorIterator(const vector<Mat>& examples) : current(examples.cbegin()), end(examples.cend()) {}
 
 bool VectorBasedExampleManagement::VectorIterator::hasNext() const {

@@ -124,7 +124,7 @@ public:
 	 * @param[in] model The libSVM model.
 	 * @return The support vectors.
 	 */
-	std::vector<cv::Mat> extractSupportVectors(struct svm_model *model) const;
+	std::vector<cv::Mat> extractSupportVectors(const struct svm_model *model) const;
 
 	/**
 	 * Extracts the coefficients from a libSVM model.
@@ -132,7 +132,7 @@ public:
 	 * @param[in] model The libSVM model.
 	 * @return The coefficients.
 	 */
-	std::vector<float> extractCoefficients(struct svm_model *model) const;
+	std::vector<float> extractCoefficients(const struct svm_model *model) const;
 
 	/**
 	 * Extracts the bias from a libSVM model.
@@ -140,7 +140,7 @@ public:
 	 * @param[in] model The libSVM model.
 	 * @return The bias.
 	 */
-	double extractBias(struct svm_model *model) const;
+	double extractBias(const struct svm_model *model) const;
 
 	/**
 	 * Extracts parameter a from the logistic function that computes the probability
@@ -149,7 +149,7 @@ public:
 	 * @param[in] model The libSVM model.
 	 * @return The param a of the logistic function.
 	 */
-	double extractLogisticParamA(struct svm_model *model) const;
+	double extractLogisticParamA(const struct svm_model *model) const;
 
 	/**
 	 * Extracts parameter b from the logistic function that computes the probability
@@ -158,7 +158,7 @@ public:
 	 * @param[in] model The libSVM model.
 	 * @return The param b of the logistic function.
 	 */
-	double extractLogisticParamB(struct svm_model *model) const;
+	double extractLogisticParamB(const struct svm_model *model) const;
 
 private:
 

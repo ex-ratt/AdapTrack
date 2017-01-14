@@ -102,7 +102,7 @@ double LibSvmUtils::computeSvmOutput(struct svm_model *model, const struct svm_n
 	return svmOutput;
 }
 
-vector<Mat> LibSvmUtils::extractSupportVectors(struct svm_model *model) const {
+vector<Mat> LibSvmUtils::extractSupportVectors(const struct svm_model *model) const {
 	if (model->param.kernel_type == LINEAR && (matDepth == CV_32F || matDepth == CV_64F)) {
 		vector<Mat> supportVectors(1);
 		supportVectors[0] = Mat::zeros(matRows, matCols, matType);
@@ -136,12 +136,9 @@ vector<Mat> LibSvmUtils::extractSupportVectors(struct svm_model *model) const {
 	return supportVectors;
 }
 
-vector<float> LibSvmUtils::extractCoefficients(struct svm_model *model) const {
-	if (model->param.kernel_type == LINEAR && (matDepth == CV_32F || matDepth == CV_64F)) {
-		vector<float> coefficients(1);
-		coefficients[0] = 1;
-		return coefficients;
-	}
+vector<float> LibSvmUtils::extractCoefficients(const struct svm_model *model) const {
+	if (model->param.kernel_type == LINEAR && (matDepth == CV_32F || matDepth == CV_64F))
+		return vector<float>{1};
 	vector<float> coefficients;
 	coefficients.reserve(model->l);
 	for (int i = 0; i < model->l; ++i)
@@ -149,15 +146,15 @@ vector<float> LibSvmUtils::extractCoefficients(struct svm_model *model) const {
 	return coefficients;
 }
 
-double LibSvmUtils::extractBias(struct svm_model *model) const {
+double LibSvmUtils::extractBias(const struct svm_model *model) const {
 	return model->rho[0];
 }
 
-double LibSvmUtils::extractLogisticParamA(struct svm_model *model) const {
+double LibSvmUtils::extractLogisticParamA(const struct svm_model *model) const {
 	return model->probA[0];
 }
 
-double LibSvmUtils::extractLogisticParamB(struct svm_model *model) const {
+double LibSvmUtils::extractLogisticParamB(const struct svm_model *model) const {
 	return model->probB[0];
 }
 

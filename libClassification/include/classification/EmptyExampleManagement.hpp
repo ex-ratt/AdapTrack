@@ -23,7 +23,7 @@ public:
 	/**
 	 * Constructs a new empty example management.
 	 */
-	EmptyExampleManagement() {}
+	EmptyExampleManagement() : empty(0) {}
 
 	void add(const std::vector<cv::Mat>& newExamples) {}
 
@@ -41,7 +41,13 @@ public:
 		return std::unique_ptr<ExampleIterator>(new EmptyIterator());
 	}
 
+	const std::vector<cv::Mat>& getAll() const {
+		return empty;
+	}
+
 private:
+
+	std::vector<cv::Mat> empty;
 
 	/**
 	 * Example iterator that does iterate over zero elements.
