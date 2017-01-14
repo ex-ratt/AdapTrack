@@ -44,9 +44,11 @@ void drawParticles(Mat& output, vector<pair<Rect, double>> particles);
 int main(int argc, char **argv) {
 	// TODO use program arguments or config files
 //	shared_ptr<ImageSource> images = make_shared<CameraImageSource>(0);
-//	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/poschmann/Videos/coglog/filesAb3/");
-//	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/poschmann/Videos/a318/A4/");
-	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/poschmann/Videos/a318/group/");
+//	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/ex-ratt/Videos/filesAb3/");
+//	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/ex-ratt/Videos/a318/A4/");
+	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/ex-ratt/Videos/a318/group/");
+//	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/ex-ratt/Videos/lobby/");
+//	shared_ptr<ImageSource> images = make_shared<DirectoryImageSource>("/home/ex-ratt/Documents/thesis-stuff/log-tdot-03-2013/2013_03_23_10-40-31
 
 	// FHOG9 4x10
 //	shared_ptr<ProbabilisticSvmClassifier> svm = loadSvm("svm-fhog9-4x10", -0.0730626f);
@@ -72,13 +74,14 @@ int main(int argc, char **argv) {
 	unique_ptr<Tracker> headTracker = make_unique<Tracker>(detector, svm, motionModel);
 	headTracker->particleCount = 500;
 	headTracker->adaptive = true;
+	headTracker->associationThreshold = 0.3;
 	headTracker->commonVisibilityThreshold = -1.0;
 	headTracker->targetVisibilityThreshold = -0.5;
 	headTracker->commonAdaptationThreshold = 0.0;
-	headTracker->targetAdaptationThreshold = 0.0;
+	headTracker->targetAdaptationThreshold = -0.5;
 	headTracker->targetSvmC = 10;
-	headTracker->positiveExampleCount = 1;
-	headTracker->negativeExampleCount = 20;
+	headTracker->negativeExampleCount = 10;
+	headTracker->learnRate = 0.1;
 	run(*headTracker, *images);
 
 	return EXIT_SUCCESS;
@@ -150,7 +153,7 @@ void run(Tracker& tracker, ImageSource& images) {
 		}
 		cv::imshow("Detections", output);
 		milliseconds iterationTime = iterationTimer.stop();
-		char c = (char)cv::waitKey(pause ? 0 : 5);
+		char c = (char)cv::waitKey(pause ? 0 : 2);
 		if (c == 'q')
 			run = false;
 		else if (c == 'p')

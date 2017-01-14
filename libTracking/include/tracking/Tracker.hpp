@@ -212,18 +212,17 @@ private:
 	 * Retrieves a single positive training example from the target position.
 	 *
 	 * @param[in] target Bounding box indicating the target position.
-	 * @return One new positive training examples.
+	 * @return Positive training example.
 	 */
 	std::vector<cv::Mat> getPositiveTrainingExamples(cv::Rect target) const;
 
 	/**
-	 * Retrieves hard negative training examples from the surroundings of a target (having a score above -1).
+	 * Retrieves random negative training examples from the surroundings of a target.
 	 *
 	 * @param[in] target Bounding box indicating the target position.
-	 * @param[in] svm Current target-specific classifier.
-	 * @return New negative training examples.
+	 * @return Negative training examples.
 	 */
-	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target, const classification::SvmClassifier& svm) const;
+	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target) const;
 
 	/**
 	 * Computes the overlap ratio (intersection over union) of two bounding boxes.
@@ -265,8 +264,8 @@ public:
 	double targetAdaptationThreshold; ///< Score that must be exceeded to allow target adaptation according to the specific classifier.
 	double targetSvmC; ///< Penalty multiplier C used for training the target specific SVMs.
 	double negativeOverlapThreshold; ///< Maximum allowed bounding box overlap ratio between negative training examples and target position.
-	int positiveExampleCount; ///< Maximum number of positive training examples.
-	int negativeExampleCount; ///< Maximum number of negative training examples.
+	int negativeExampleCount; ///< Number of negative training examples per classifier update.
+	double learnRate; ///< Learn rate of the incremental classifier update.
 
 private:
 

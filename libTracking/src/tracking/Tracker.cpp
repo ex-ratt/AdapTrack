@@ -5,9 +5,8 @@
  *      Author: poschmann
  */
 
-#include "classification/AgeBasedExampleManagement.hpp"
+#include "classification/IncrementalLinearSvmTrainer.hpp"
 #include "classification/LinearKernel.hpp"
-#include "classification/PseudoIncrementalClassifierTrainer.hpp"
 #include "classification/PseudoProbabilisticSvmTrainer.hpp"
 #include "libsvm/LibSvmTrainer.hpp"
 #include "tracking/Tracker.hpp"
@@ -17,10 +16,9 @@
 #include "imageprocessing/Patch.hpp"
 
 using boost::optional;
-using classification::AgeBasedExampleManagement;
+using classification::IncrementalLinearSvmTrainer;
 using classification::LinearKernel;
 using classification::ProbabilisticSvmClassifier;
-using classification::PseudoIncrementalClassifierTrainer;
 using classification::PseudoProbabilisticSvmTrainer;
 using classification::SvmClassifier;
 using cv::Mat;
@@ -62,15 +60,15 @@ Tracker::Tracker(shared_ptr<AggregatedFeaturesDetector> detector,
 				motionModel(motionModel),
 				particleCount(500),
 				adaptive(true),
-				associationThreshold(0.5),
+				associationThreshold(0.333),
 				commonVisibilityThreshold(-1),
 				targetVisibilityThreshold(-1),
 				commonAdaptationThreshold(0.0),
 				targetAdaptationThreshold(0.0),
 				targetSvmC(10),
 				negativeOverlapThreshold(0.5),
-				positiveExampleCount(1),
-				negativeExampleCount(20),
+				negativeExampleCount(10),
+				learnRate(0.1),
 				versionedImage(make_shared<VersionedImage>()),
 				tracks(),
 				nextTrackId(0) {
@@ -188,9 +186,7 @@ void Tracker::addNewTracks(const vector<Rect>& unmatchedDetections) {
 Track Tracker::createTrack(Rect target) {
 	auto probabilisticSvm = make_shared<ProbabilisticSvmClassifier>(make_shared<LinearKernel>());
 	auto libSvmTrainer = make_shared<LibSvmTrainer>(targetSvmC, true);
-	auto incrementalSvmTrainer = make_shared<PseudoIncrementalClassifierTrainer<SvmClassifier>>(libSvmTrainer);
-	incrementalSvmTrainer->setPositiveExampleManagement(make_unique<AgeBasedExampleManagement>(positiveExampleCount));
-	incrementalSvmTrainer->setNegativeExampleManagement(make_unique<AgeBasedExampleManagement>(negativeExampleCount));
+	auto incrementalSvmTrainer = make_shared<IncrementalLinearSvmTrainer>(libSvmTrainer, learnRate);
 	auto probabilisticSvmTrainer = make_shared<PseudoProbabilisticSvmTrainer>(incrementalSvmTrainer, 0.95, 0.05, 1.0, -1.0);
 	shared_ptr<MeasurementModel> targetMeasurementModel = make_shared<ClassifierMeasurementModel>(
 			featureExtractor, probabilisticSvm);
@@ -241,38 +237,32 @@ double Tracker::getTargetScore(const Track& track) const {
 
 void Tracker::adapt(Track& track) {
 	Rect targetBounds = track.state.bounds();
-	const SvmClassifier& svm = *track.svm->getSvm();
-	if (svm.getSupportVectors().empty())
-		track.svmTrainer->train(*track.svm,
-				getPositiveTrainingExamples(targetBounds),
-				getNegativeTrainingExamples(targetBounds, svm));
+	if (track.svm->getSvm()->getSupportVectors().empty())
+		track.svmTrainer->train(*track.svm, getPositiveTrainingExamples(targetBounds), getNegativeTrainingExamples(targetBounds));
 	else
-		track.svmTrainer->retrain(*track.svm,
-				getPositiveTrainingExamples(targetBounds),
-				getNegativeTrainingExamples(targetBounds, svm));
+		track.svmTrainer->retrain(*track.svm, getPositiveTrainingExamples(targetBounds), getNegativeTrainingExamples(targetBounds));
 }
 
 vector<Mat> Tracker::getPositiveTrainingExamples(Rect target) const {
 	return vector<Mat>{ featureExtractor->extract(target)->getData() };
 }
 
-vector<Mat> Tracker::getNegativeTrainingExamples(Rect target, const SvmClassifier& svm) const {
-	vector<Mat> trainingExamples;
+vector<Mat> Tracker::getNegativeTrainingExamples(Rect target) const {
 	int lowerX = target.x - target.width;
 	int upperX = target.x + target.width;
 	int lowerY = target.y - target.height;
 	int upperY = target.y + target.height;
 	int lowerH = target.height / 2;
 	int upperH = target.height * 2;
-	for (int i = 0; i < 20; ++i) {
+	vector<Mat> trainingExamples;
+	trainingExamples.reserve(negativeExampleCount);
+	while (trainingExamples.size() < trainingExamples.capacity()) {
 		int x = std::uniform_int_distribution<int>{lowerX, upperX}(generator);
 		int y = std::uniform_int_distribution<int>{lowerY, upperY}(generator);
 		int height = std::uniform_int_distribution<int>{lowerH, upperH}(generator);
 		int width = height * target.width / target.height;
 		shared_ptr<Patch> patch = featureExtractor->extract(Rect(x, y, width, height));
-		if (patch
-				&& computeOverlap(target, patch->getBounds()) <= negativeOverlapThreshold
-				&& svm.computeHyperplaneDistance(patch->getData()) > -1)
+		if (patch && computeOverlap(target, patch->getBounds()) <= negativeOverlapThreshold)
 			trainingExamples.push_back(patch->getData());
 	}
 	return trainingExamples;
