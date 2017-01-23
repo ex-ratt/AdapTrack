@@ -7,7 +7,6 @@
 
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "classification/LinearKernel.hpp"
-#include "imageprocessing/ConvolutionFilter.hpp"
 #include "imageprocessing/GrayscaleFilter.hpp"
 #include "imageprocessing/ImagePyramidLayer.hpp"
 #include "imageprocessing/Patch.hpp"
@@ -52,14 +51,15 @@ AggregatedFeaturesDetector::AggregatedFeaturesDetector(shared_ptr<AggregatedFeat
 				nonMaximumSuppression(nms),
 				kernelSize(svm->getSupportVectors()[0].size()),
 				scoreThreshold(svm->getThreshold()),
+				bias(-svm->getBias()),
 				widthScale(widthScale),
 				heightScale(heightScale) {
 	if (!dynamic_cast<LinearKernel*>(svm->getKernel().get()))
 		throw std::invalid_argument("AggregatedFeaturesDetector: the SVM must use a LinearKernel");
-	shared_ptr<ConvolutionFilter> convolutionFilter = make_shared<ConvolutionFilter>(CV_32F);
+	convolutionFilter = make_shared<ConvolutionFilter>(CV_32F);
 	convolutionFilter->setKernel(svm->getSupportVectors()[0]);
 	convolutionFilter->setAnchor(Point(0, 0));
-	convolutionFilter->setDelta(-svm->getBias());
+	convolutionFilter->setDelta(bias - scoreThreshold);
 	scorePyramid = make_shared<ImagePyramid>(featureExtractor->getFeaturePyramid());
 	scorePyramid->addLayerFilter(convolutionFilter);
 }
@@ -100,7 +100,7 @@ vector<Detection> AggregatedFeaturesDetector::getPositiveWindows() {
 		for (int y = 0; y < validHeight; ++y) {
 			for (int x = 0; x < validWidth; ++x) {
 				float score = scoreMap.at<float>(y, x);
-				if (score > scoreThreshold) {
+				if (score > 0) {
 					Rect boundsInLayer = Rect(Point(x, y), kernelSize);
 					Rect boundsInImage = featureExtractor->computeBoundsInImagePixels(boundsInLayer, *layer);
 					Rect scaledBoundsInImage = rescaleWindow(boundsInImage);
@@ -130,7 +130,7 @@ vector<pair<Rect, float>> AggregatedFeaturesDetector::extractBoundingBoxesWithSc
 	vector<pair<Rect, float>> detectionsWithScores;
 	detectionsWithScores.reserve(detections.size());
 	for (Detection detection : detections)
-		detectionsWithScores.push_back(std::make_pair(detection.bounds, detection.score));
+		detectionsWithScores.push_back(std::make_pair(detection.bounds, detection.score + scoreThreshold));
 	return detectionsWithScores;
 }
 
@@ -140,6 +140,23 @@ float AggregatedFeaturesDetector::getScoreThreshold() const {
 
 void AggregatedFeaturesDetector::setScoreThreshold(float threshold) {
 	scoreThreshold = threshold;
+	convolutionFilter->setDelta(bias - scoreThreshold);
+}
+
+shared_ptr<AggregatedFeaturesExtractor> AggregatedFeaturesDetector::getFeatureExtractor() {
+	return featureExtractor;
+}
+
+const shared_ptr<AggregatedFeaturesExtractor> AggregatedFeaturesDetector::getFeatureExtractor() const {
+	return featureExtractor;
+}
+
+shared_ptr<ImagePyramid> AggregatedFeaturesDetector::getScorePyramid() {
+	return scorePyramid;
+}
+
+const shared_ptr<ImagePyramid> AggregatedFeaturesDetector::getScorePyramid() const {
+	return scorePyramid;
 }
 
 } /* namespace detection */

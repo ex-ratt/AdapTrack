@@ -11,6 +11,7 @@
 #include "classification/SvmClassifier.hpp"
 #include "detection/Detector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
+#include "imageprocessing/ConvolutionFilter.hpp"
 #include "imageprocessing/ImageFilter.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
@@ -92,21 +93,13 @@ public:
 	 */
 	void setScoreThreshold(float threshold);
 
-	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> getFeatureExtractor() {
-		return featureExtractor;
-	}
+	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> getFeatureExtractor();
 
-	const std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> getFeatureExtractor() const {
-		return featureExtractor;
-	}
+	const std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> getFeatureExtractor() const;
 
-	std::shared_ptr<imageprocessing::ImagePyramid> getScorePyramid() {
-		return scorePyramid;
-	}
+	std::shared_ptr<imageprocessing::ImagePyramid> getScorePyramid();
 
-	const std::shared_ptr<imageprocessing::ImagePyramid> getScorePyramid() const {
-		return scorePyramid;
-	}
+	const std::shared_ptr<imageprocessing::ImagePyramid> getScorePyramid() const;
 
 private:
 
@@ -163,10 +156,12 @@ private:
 	std::vector<std::pair<cv::Rect, float>> extractBoundingBoxesWithScores(std::vector<Detection> detections);
 
 	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor;
+	std::shared_ptr<imageprocessing::ConvolutionFilter> convolutionFilter;
 	std::shared_ptr<imageprocessing::ImagePyramid> scorePyramid; ///< Classification score pyramid.
 	std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression;
 	cv::Size kernelSize;
 	float scoreThreshold; ///< SVM score threshold that must be overcome for windows to be considered positive.
+	float bias; ///< Negative SVM bias.
 	float widthScale; ///< Scaling factor to compute the actual bounding box width from positively classified windows.
 	float heightScale; ///< Scaling factor to compute the actual bounding box height from positively classified windows.
 };
