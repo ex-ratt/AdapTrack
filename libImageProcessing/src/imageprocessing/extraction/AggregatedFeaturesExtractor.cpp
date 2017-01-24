@@ -20,28 +20,39 @@ using std::shared_ptr;
 namespace imageprocessing {
 namespace extraction {
 
-AggregatedFeaturesExtractor::AggregatedFeaturesExtractor(shared_ptr<ImagePyramid> featurePyramid,
-		Size patchSizeInCells, int cellSizeInPixels, bool adjustMinScaleFactor, int minPatchWidthInPixels) :
+AggregatedFeaturesExtractor::AggregatedFeaturesExtractor(shared_ptr<ImagePyramid> featurePyramid, Size patchSizeInCells,
+		int cellSizeInPixels, bool adjustMinScaleFactor, int minPatchWidthInPixels, int maxPatchWidthInPixels) :
 				featurePyramid(featurePyramid),
 				patchSizeInCells(patchSizeInCells),
 				patchSizeInPixels(patchSizeInCells * cellSizeInPixels),
 				cellSizeInPixels(cellSizeInPixels),
-				adjustMinScaleFactor(adjustMinScaleFactor) {
+				adjustMinScaleFactor(adjustMinScaleFactor),
+				minScaleFactor(maxPatchWidthInPixels > 0 ? getMinScaleFactor(maxPatchWidthInPixels) : 0) {
 	if (minPatchWidthInPixels > patchSizeInPixels.width)
 		featurePyramid->setMaxScaleFactor(getMaxScaleFactor(minPatchWidthInPixels));
+	if (maxPatchWidthInPixels > 0)
+		featurePyramid->setMinScaleFactor(minScaleFactor);
 }
 
-AggregatedFeaturesExtractor::AggregatedFeaturesExtractor(shared_ptr<ImageFilter> layerFilter,
-		Size patchSizeInCells, int cellSizeInPixels, int octaveLayerCount, int minPatchWidthInPixels) :
+AggregatedFeaturesExtractor::AggregatedFeaturesExtractor(shared_ptr<ImageFilter> layerFilter, Size patchSizeInCells,
+		int cellSizeInPixels, int octaveLayerCount, int minPatchWidthInPixels, int maxPatchWidthInPixels) :
 				AggregatedFeaturesExtractor(make_shared<ImagePyramid>(static_cast<size_t>(octaveLayerCount), 0.5, 1),
-						patchSizeInCells, cellSizeInPixels, true, minPatchWidthInPixels) {
+						patchSizeInCells, cellSizeInPixels, true, minPatchWidthInPixels, maxPatchWidthInPixels) {
 	featurePyramid->addLayerFilter(layerFilter);
 }
 
 AggregatedFeaturesExtractor::AggregatedFeaturesExtractor(shared_ptr<ImageFilter> imageFilter, shared_ptr<ImageFilter> layerFilter,
-		Size patchSizeInCells, int cellSizeInPixels, int octaveLayerCount, int minPatchWidthInPixels) :
-				AggregatedFeaturesExtractor(layerFilter, patchSizeInCells, cellSizeInPixels, octaveLayerCount, minPatchWidthInPixels) {
+		Size patchSizeInCells, int cellSizeInPixels, int octaveLayerCount, int minPatchWidthInPixels, int maxPatchWidthInPixels) :
+				AggregatedFeaturesExtractor(layerFilter, patchSizeInCells, cellSizeInPixels, octaveLayerCount,
+						minPatchWidthInPixels, maxPatchWidthInPixels) {
 	featurePyramid->addImageFilter(imageFilter);
+}
+
+double AggregatedFeaturesExtractor::getMinScaleFactor(int maxPatchWidthInPixels) const {
+	assert(maxPatchWidthInPixels > 0);
+	double minScaleFactor = static_cast<double>(patchSizeInPixels.width) / maxPatchWidthInPixels;
+	int maxLayerIndex = static_cast<int>(std::floor(std::log(minScaleFactor) / std::log(featurePyramid->getIncrementalScaleFactor())));
+	return std::pow(featurePyramid->getIncrementalScaleFactor(), maxLayerIndex);
 }
 
 double AggregatedFeaturesExtractor::getMaxScaleFactor(int minPatchWidthInPixels) const {
@@ -57,7 +68,7 @@ shared_ptr<ImagePyramid> AggregatedFeaturesExtractor::getFeaturePyramid() {
 
 void AggregatedFeaturesExtractor::update(shared_ptr<VersionedImage> image) {
 	if (adjustMinScaleFactor)
-		featurePyramid->setMinScaleFactor(getMinScaleFactor(image->getData()));
+		featurePyramid->setMinScaleFactor(std::max(minScaleFactor, getMinScaleFactor(image->getData())));
 	featurePyramid->update(image);
 }
 

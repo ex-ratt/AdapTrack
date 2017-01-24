@@ -39,11 +39,12 @@ public:
 	 * @param[in] widthScale Scaling factor to compute the actual bounding box width from positively classified windows.
 	 * @param[in] heightScale Scaling factor to compute the actual bounding box height from positively classified windows.
 	 * @param[in] minWindowWidth Width of the smallest detectable window in pixels (cannot be smaller than actual window width in pixels).
+	 * @param[in] maxWindowWidth Width of the largest detectable window in pixels.
 	 */
 	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::ImageFilter> imageFilter,
 			std::shared_ptr<imageprocessing::ImageFilter> layerFilter, int cellSize, cv::Size windowSize, int octaveLayerCount,
 			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
-			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0);
+			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0, int maxWindowWidth = 0);
 
 	/**
 	 * Constructs a new aggregated features detector.
@@ -57,10 +58,11 @@ public:
 	 * @param[in] widthScale Scaling factor to compute the actual bounding box width from positively classified windows.
 	 * @param[in] heightScale Scaling factor to compute the actual bounding box height from positively classified windows.
 	 * @param[in] minWindowWidth Width of the smallest detectable window in pixels (cannot be smaller than actual window width in pixels).
+	 * @param[in] maxWindowWidth Width of the largest detectable window in pixels.
 	 */
 	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::ImageFilter> filter, int cellSize, cv::Size windowSize, int octaveLayerCount,
 			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
-			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0);
+			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0, int maxWindowWidth = 0);
 
 	/**
 	 * Constructs a new aggregated features detector.
