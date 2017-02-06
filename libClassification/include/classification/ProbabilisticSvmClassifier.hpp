@@ -67,6 +67,20 @@ public:
 	void setLogisticParameters(double logisticA, double logisticB);
 
 	/**
+	 * Changes logistic parameter a.
+	 *
+	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	 */
+	void setLogisticA(double logisticA);
+
+	/**
+	 * Changes logistic parameter b.
+	 *
+	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	 */
+	void setLogisticB(double logisticB);
+
+	/**
 	 * Creates a new probabilistic WVM classifier from the parameters given in some Matlab file. Loads the logistic function's
 	 * parameters from the matlab file, then passes the loading to the underlying WVM which loads the vectors and thresholds
 	 * from the matlab file. TODO update doc

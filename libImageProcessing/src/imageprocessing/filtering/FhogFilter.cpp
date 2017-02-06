@@ -128,5 +128,9 @@ cv::Mat FhogFilter::visualizeUnsignedHistograms(const cv::Mat& descriptors, int 
 	return FhogAggregationFilter::visualizeUnsignedHistograms(descriptors, cellSize);
 }
 
+int FhogFilter::getCellSize() const {
+	return cellSize;
+}
+
 } /* namespace filtering */
 } /* namespace imageprocessing */

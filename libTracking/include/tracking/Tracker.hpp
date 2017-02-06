@@ -11,13 +11,12 @@
 #include "classification/ProbabilisticSvmClassifier.hpp"
 #include "classification/IncrementalClassifierTrainer.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
-#include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
+#include "imageprocessing/FeatureExtractor.hpp"
 #include "imageprocessing/VersionedImage.hpp"
 #include "opencv2/core/core.hpp"
 #include "tracking/filtering/MeasurementModel.hpp"
 #include "tracking/filtering/MotionModel.hpp"
 #include "tracking/filtering/ParticleFilter.hpp"
-#include "tracking/filtering/RepellingMeasurementModel.hpp"
 #include "tracking/filtering/TargetState.hpp"
 #include <memory>
 #include <random>
@@ -33,12 +32,11 @@ struct Track {
 	int id; ///< Unique identifier.
 	std::shared_ptr<classification::ProbabilisticSvmClassifier> svm; ///< SVM that is adapted to the target.
 	std::shared_ptr<classification::IncrementalClassifierTrainer<classification::ProbabilisticSvmClassifier>> svmTrainer; ///< SVM trainer.
-	std::shared_ptr<filtering::RepellingMeasurementModel> repellingMeasurementModel; ///< Measurement model that penalizes close targets.
 	std::unique_ptr<filtering::ParticleFilter> filter; ///< Particle filter.
 	filtering::TargetState state; ///< Current state of the target.
-	bool established; ///< Flag that indicates whether the track is established.
-	bool visible; ///< Flag that indicates whether the target is visible.
-	bool adapted; ///< Flag that indicates whether the track adapted to the target in the current frame.
+	bool confirmed; ///< Flag that indicates whether the track was confirmed by a second detection.
+	cv::Mat features; ///< Current features.
+	double score; ///< SVM score of current features.
 	std::vector<std::pair<cv::Rect, double>> particles() const {
 		std::vector<std::pair<cv::Rect, double>> particles;
 		for (const filtering::Particle& particle : filter->getParticles())
@@ -65,12 +63,14 @@ public:
 	/**
 	 * Constructs a new tracker.
 	 *
-	 * @param[in] detector Detector used to initialize the tracking.
-	 * @param[in] probabilisticSvm SVM used to compute the likelihood of the particles.
-	 * @param[in] motionModel Motion model used to sample new particles.
+	 * @param[in] exactFeatureExtractor Feature extractor that provides patches exactly as requested.
+	 * @param[in] detector Detector that finds new targets to track.
+	 * @param[in] svm SVM that computes the likelihood of the particles.
+	 * @param[in] motionModel Motion model that samples new particles.
 	 */
-	Tracker(std::shared_ptr<detection::AggregatedFeaturesDetector> detector,
-			std::shared_ptr<classification::ProbabilisticSvmClassifier> probabilisticSvm,
+	Tracker(std::shared_ptr<imageprocessing::FeatureExtractor> exactFeatureExtractor,
+			std::shared_ptr<detection::AggregatedFeaturesDetector> detector,
+			std::shared_ptr<classification::ProbabilisticSvmClassifier> svm,
 			std::shared_ptr<filtering::MotionModel> motionModel);
 
 	/**
@@ -94,7 +94,7 @@ public:
 private:
 
 	/**
-	 * Updates the image data and feature pyramid.
+	 * Updates the image data and feature extractors.
 	 *
 	 * @param[in] image New image data.
 	 */
@@ -115,19 +115,10 @@ private:
 	Associations pickAssociations(std::vector<Track>& tracks, std::vector<cv::Rect>& detections) const;
 
 	/**
-	 * Determines the similarity in position between a track and a detection by computing the overlap of the bounding boxes.
+	 * Determines the best match between unmatched tracks and unmatched detections based on the given overlap ratios.
 	 *
-	 * @param[in] track Tracked target.
-	 * @param[in] detection Detected target.
-	 * @return Positional similarity between track and detection.
-	 */
-	double computeSimilarity(const Track& track, cv::Rect detection) const;
-
-	/**
-	 * Determines the best match between unmatched tracks and unmatched detections based on the given similarities.
-	 *
-	 * @param[in] similarities Matrix of similarities between tracks (rows) and detections (columns).
-	 * @param[in] threshold Threshold which must be exceeded by the similarity to indicate valid matches.
+	 * @param[in] overlaps Matrix of overlap ratios between tracks (rows) and detections (columns).
+	 * @param[in] threshold Threshold which must be exceeded by the overlap ratio to indicate a valid match.
 	 * @param[in] unmatchedTrackIndices Indices of tracks that have not been matched with a detection yet.
 	 * @param[in] unmatchedDetectionIndices Indices of detections that have not been matched with a track yet.
 	 * @return Indices of the best match (y is track index, x is detection index) or (-1, -1) if there is no valid match.
@@ -150,7 +141,7 @@ private:
 	void removeObsoleteTracks(std::vector<std::reference_wrapper<Track>>& unmatchedTracks);
 
 	/**
-	 * Determines whether a track is visible according to common and target specific classifier.
+	 * Determines whether a track is visible according to the classifier score.
 	 *
 	 * @param[in] track Track whose visibility is determined.
 	 * @return True if the track is considered visible, false otherwise.
@@ -165,7 +156,7 @@ private:
 	void addNewTracks(const std::vector<cv::Rect>& unmatchedDetections);
 
 	/**
-	 * Creates a new track around the given target position.
+	 * Creates a new track at the given target position.
 	 *
 	 * @param[in] target Bounding box indicating the target position.
 	 * @return Newly created track.
@@ -178,30 +169,6 @@ private:
 	void updateTargetModels();
 
 	/**
-	 * Determines whether adapting a track to the current target appearance is reasonable.
-	 *
-	 * @param[in] track Track that may be adapted to the current target appearance.
-	 * @return True if the adaptation is reasonable, false otherwise.
-	 */
-	bool isAdaptingReasonable(const Track& track) const;
-
-	/**
-	 * Retrieves the common SVM score of a tracked target.
-	 *
-	 * @param[in] state State of the target.
-	 * @return Common SVM score or -1000 if (partially) outside the image.
-	 */
-	double getCommonScore(const filtering::TargetState& state) const;
-
-	/**
-	 * Retrieves the target-specific SVM score of a tracked target.
-	 *
-	 * @param[in] track Tracked target.
-	 * @return Target-specific SVM score or -1000 if (partially) outside the image.
-	 */
-	double getTargetScore(const Track& track) const;
-
-	/**
 	 * Adapts the target-specific classifier to the current appearance of the target and its surroundings.
 	 *
 	 * @param[in] track Tracked target which classifier is adapted.
@@ -209,15 +176,7 @@ private:
 	void adapt(Track& track);
 
 	/**
-	 * Retrieves a single positive training example from the target position.
-	 *
-	 * @param[in] target Bounding box indicating the target position.
-	 * @return Positive training example.
-	 */
-	std::vector<cv::Mat> getPositiveTrainingExamples(cv::Rect target) const;
-
-	/**
-	 * Retrieves random negative training examples from the surroundings of a target.
+	 * Retrieves random negative training examples from the surroundings of the target.
 	 *
 	 * @param[in] target Bounding box indicating the target position.
 	 * @return Negative training examples.
@@ -225,18 +184,22 @@ private:
 	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target) const;
 
 	/**
+	 * Retrieves hard negative training examples from the surroundings of the target.
+	 *
+	 * @param[in] target Bounding box indicating the target position.
+	 * @param[in] svm Current support vector machine.
+	 * @return Negative training examples.
+	 */
+	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target, const classification::SvmClassifier& svm) const;
+
+	/**
 	 * Computes the overlap ratio (intersection over union) of two bounding boxes.
 	 *
-	 * @param[in] a A bounding box.
-	 * @param[in] b Another bounding box.
+	 * @param[in] a First bounding box.
+	 * @param[in] b Second bounding box.
 	 * @return Overlap ratio of the bounding boxes.
 	 */
 	double computeOverlap(cv::Rect a, cv::Rect b) const;
-
-	/**
-	 * Updates the measurement models that penalize close targets with the current target positions.
-	 */
-	void updateRepellingModels();
 
 	/**
 	 * Extracts the IDs and bounding boxes of the tracks.
@@ -246,11 +209,14 @@ private:
 	std::vector<std::pair<int, cv::Rect>> extractTargets() const;
 
 	mutable std::default_random_engine generator; ///< Random number generator.
-	std::shared_ptr<detection::AggregatedFeaturesDetector> detector; ///< Detector.
-	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor; ///< Feature extractor.
-	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> scoreExtractor; ///< Extractor of the SVM score common to all targets.
-	std::function<double(double)> likelihoodFunction; ///< Function that computes likelihoods from scores.
-	std::shared_ptr<filtering::MeasurementModel> commonMeasurementModel; ///< Measurement model common to all targets.
+	std::shared_ptr<imageprocessing::VersionedImage> versionedImage; ///< Current image and version number.
+	std::vector<Track> tracks; ///< Tracked targets.
+	int nextTrackId; ///< Identifier that is associated to the next new target.
+	std::shared_ptr<detection::AggregatedFeaturesDetector> detector; ///< Detector that finds new targets to track.
+	std::shared_ptr<imageprocessing::FeatureExtractor> pyramidFeatureExtractor; ///< Feature extractor that re-uses the feature pyramid of the detector.
+	std::shared_ptr<imageprocessing::FeatureExtractor> exactFeatureExtractor; ///< Feature extractor that provides patches exactly as requested.
+	std::shared_ptr<classification::ProbabilisticSvmClassifier> svm; ///< SVM that is common to all targets.
+	std::shared_ptr<filtering::MeasurementModel> commonMeasurementModel; ///< Measurement model that is common to all targets.
 	std::shared_ptr<filtering::MotionModel> motionModel; ///< Motion model of the targets.
 
 public:
@@ -258,20 +224,11 @@ public:
 	int particleCount; ///< Number of particles per target.
 	bool adaptive; ///< Flag that indicates whether the tracker is adapting to the targets.
 	double associationThreshold; ///< Bounding box overlap ratio that must be exceeded to match a track to a detection.
-	double commonVisibilityThreshold; ///< Score that must be exceeded to consider a target visible according to the common classifier.
-	double targetVisibilityThreshold; ///< Score that must be exceeded to consider a target visible according to its specific classifier.
-	double commonAdaptationThreshold; ///< Score that must be exceeded to allow target adaptation according to the common classifier.
-	double targetAdaptationThreshold; ///< Score that must be exceeded to allow target adaptation according to the specific classifier.
-	double targetSvmC; ///< Penalty multiplier C used for training the target specific SVMs.
-	double negativeOverlapThreshold; ///< Maximum allowed bounding box overlap ratio between negative training examples and target position.
+	double visibilityThreshold; ///< Score that must be exceeded to consider a target visible.
 	int negativeExampleCount; ///< Number of negative training examples per classifier update.
+	double negativeOverlapThreshold; ///< Maximum allowed bounding box overlap ratio between negative training examples and target position.
+	double targetSvmC; ///< Penalty multiplier C used for training the target specific SVMs.
 	double learnRate; ///< Learn rate of the incremental classifier update.
-
-private:
-
-	std::shared_ptr<imageprocessing::VersionedImage> versionedImage; ///< Current image and version number.
-	std::vector<Track> tracks; ///< Tracked targets.
-	int nextTrackId; ///< Identifier that is not used by any track.
 };
 
 } // namespace tracking

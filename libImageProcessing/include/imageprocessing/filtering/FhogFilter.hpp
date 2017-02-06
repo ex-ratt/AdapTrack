@@ -70,6 +70,11 @@ public:
 	 */
 	static cv::Mat visualizeUnsignedHistograms(const cv::Mat& descriptors, int cellSize);
 
+	/**
+	 * @return Size (width and height) of the square cells in pixels.
+	 */
+	int getCellSize() const;
+
 private:
 
 	struct Coefficients {

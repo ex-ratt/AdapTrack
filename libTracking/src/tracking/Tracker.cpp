@@ -12,10 +12,8 @@
 #include "tracking/Tracker.hpp"
 #include "tracking/filtering/ClassifierMeasurementModel.hpp"
 #include "tracking/filtering/CombinedMeasurementModel.hpp"
-#include "tracking/filtering/ScoreMeasurementModel.hpp"
 #include "imageprocessing/Patch.hpp"
 
-using boost::optional;
 using classification::IncrementalLinearSvmTrainer;
 using classification::LinearKernel;
 using classification::ProbabilisticSvmClassifier;
@@ -30,14 +28,11 @@ using tracking::filtering::ClassifierMeasurementModel;
 using tracking::filtering::CombinedMeasurementModel;
 using tracking::filtering::MeasurementModel;
 using tracking::filtering::MotionModel;
-using tracking::filtering::Particle;
 using tracking::filtering::ParticleFilter;
-using tracking::filtering::RepellingMeasurementModel;
-using tracking::filtering::ScoreMeasurementModel;
 using tracking::filtering::TargetState;
+using imageprocessing::FeatureExtractor;
 using imageprocessing::Patch;
 using imageprocessing::VersionedImage;
-using imageprocessing::extraction::AggregatedFeaturesExtractor;
 using std::make_shared;
 using std::make_unique;
 using std::pair;
@@ -48,41 +43,35 @@ using std::vector;
 
 namespace tracking {
 
-Tracker::Tracker(shared_ptr<AggregatedFeaturesDetector> detector,
-		shared_ptr<ProbabilisticSvmClassifier> probabilisticSvm,
+Tracker::Tracker(shared_ptr<FeatureExtractor> exactFeatureExtractor,
+		shared_ptr<AggregatedFeaturesDetector> detector,
+		shared_ptr<ProbabilisticSvmClassifier> svm,
 		shared_ptr<MotionModel> motionModel) :
 				generator(std::random_device()()),
+				versionedImage(make_shared<VersionedImage>()),
+				tracks(),
+				nextTrackId(0),
 				detector(detector),
-				featureExtractor(detector->getFeatureExtractor()),
-				scoreExtractor(),
-				likelihoodFunction([=](double score) { return probabilisticSvm->getProbability(score).second; }),
-				commonMeasurementModel(),
+				pyramidFeatureExtractor(detector->getFeatureExtractor()),
+				exactFeatureExtractor(exactFeatureExtractor),
+				svm(svm),
+				commonMeasurementModel(make_shared<ClassifierMeasurementModel>(pyramidFeatureExtractor, svm)),
 				motionModel(motionModel),
 				particleCount(500),
 				adaptive(true),
 				associationThreshold(0.333),
-				commonVisibilityThreshold(-1),
-				targetVisibilityThreshold(-1),
-				commonAdaptationThreshold(0.0),
-				targetAdaptationThreshold(0.0),
-				targetSvmC(10),
-				negativeOverlapThreshold(0.5),
+				visibilityThreshold(0.0),
 				negativeExampleCount(10),
-				learnRate(0.1),
-				versionedImage(make_shared<VersionedImage>()),
-				tracks(),
-				nextTrackId(0) {
-	scoreExtractor = make_shared<AggregatedFeaturesExtractor>(detector->getScorePyramid(),
-			featureExtractor->getPatchSizeInCells(), featureExtractor->getCellSizeInPixels(), false);
-	commonMeasurementModel = make_shared<ScoreMeasurementModel>(scoreExtractor, likelihoodFunction);
+				negativeOverlapThreshold(0.5),
+				targetSvmC(10),
+				learnRate(0.5) {}
+
+const vector<Track>& Tracker::getTracks() const {
+	return tracks;
 }
 
 void Tracker::reset() {
 	tracks.clear();
-}
-
-const vector<Track>& Tracker::getTracks() const {
-	return tracks;
 }
 
 vector<pair<int, Rect>> Tracker::update(const Mat& image) {
@@ -95,58 +84,65 @@ vector<pair<int, Rect>> Tracker::update(const Mat& image) {
 	addNewTracks(associations.unmatchedDetections);
 	if (adaptive)
 		updateTargetModels();
-	updateRepellingModels();
 	return extractTargets();
 }
 
 void Tracker::updateImage(const Mat& image) {
 	versionedImage->setData(image);
-	featureExtractor->update(versionedImage);
+	pyramidFeatureExtractor->update(versionedImage);
+	exactFeatureExtractor->update(versionedImage);
 }
 
 void Tracker::updateFilters() {
-	for (Track& track : tracks)
+	for (Track& track : tracks) {
 		track.state = track.filter->update(versionedImage);
+		shared_ptr<Patch> patch = exactFeatureExtractor->extract(
+				track.state.x, track.state.y, track.state.width(), track.state.height());
+		if (patch) {
+			track.features = patch->getData();
+			classification::SvmClassifier& svm = adaptive ? *track.svm->getSvm() : *this->svm->getSvm();
+			track.score = svm.computeHyperplaneDistance(track.features);
+		} else {
+			track.features = Mat();
+			track.score = -100.0;
+		}
+	}
 }
 
 Associations Tracker::pickAssociations(vector<Track>& tracks, vector<Rect>& detections) const {
 	Associations associations;
-	Mat similarities(tracks.size(), detections.size(), CV_32FC1);
+	Mat overlaps(tracks.size(), detections.size(), CV_32FC1);
 	for (int i = 0; i < tracks.size(); ++i) {
-		for (int k = 0; k < detections.size(); ++k) {
-			similarities.at<float>(i, k) = computeSimilarity(tracks[i], detections[k]);
+		for (int j = 0; j < detections.size(); ++j) {
+			overlaps.at<float>(i, j) = computeOverlap(tracks[i].state.bounds(), detections[j]);
 		}
 	}
 	vector<int> unmatchedTrackIndices(tracks.size());
 	vector<int> unmatchedDetectionIndices(detections.size());
 	std::iota(unmatchedTrackIndices.begin(), unmatchedTrackIndices.end(), 0);
 	std::iota(unmatchedDetectionIndices.begin(), unmatchedDetectionIndices.end(), 0);
-	cv::Point nextMatch = getBestMatch(similarities, associationThreshold, unmatchedTrackIndices, unmatchedDetectionIndices);
+	cv::Point nextMatch = getBestMatch(overlaps, associationThreshold, unmatchedTrackIndices, unmatchedDetectionIndices);
 	while (nextMatch.x >= 0) {
 		associations.matchedTracks.push_back(std::ref(tracks[nextMatch.y]));
 		unmatchedTrackIndices.erase(std::find(unmatchedTrackIndices.begin(), unmatchedTrackIndices.end(), nextMatch.y));
 		unmatchedDetectionIndices.erase(std::find(unmatchedDetectionIndices.begin(), unmatchedDetectionIndices.end(), nextMatch.x));
-		nextMatch = getBestMatch(similarities, associationThreshold, unmatchedTrackIndices, unmatchedDetectionIndices);
+		nextMatch = getBestMatch(overlaps, associationThreshold, unmatchedTrackIndices, unmatchedDetectionIndices);
 	}
 	for (int i : unmatchedTrackIndices)
 		associations.unmatchedTracks.push_back(std::ref(tracks[i]));
-	for (int k : unmatchedDetectionIndices)
-		associations.unmatchedDetections.push_back(detections[k]);
+	for (int j : unmatchedDetectionIndices)
+		associations.unmatchedDetections.push_back(detections[j]);
 	return associations;
 }
 
-double Tracker::computeSimilarity(const Track& track, Rect detection) const {
-	return computeOverlap(track.state.bounds(), detection);
-}
-
-Point Tracker::getBestMatch(const Mat& similarities, float threshold,
+Point Tracker::getBestMatch(const Mat& overlaps, float threshold,
 		const vector<int>& unmatchedTrackIndices, const vector<int>& unmatchedDetectionIndices) const {
 	Point maxElement(-1, -1);
-	float maxSimilarity = threshold;
+	float maxOverlap = threshold;
 	for (int trackIndex : unmatchedTrackIndices) {
 		for (int detectionIndex : unmatchedDetectionIndices) {
-			if (similarities.at<float>(trackIndex, detectionIndex) > maxSimilarity) {
-				maxSimilarity = similarities.at<float>(trackIndex, detectionIndex);
+			if (overlaps.at<float>(trackIndex, detectionIndex) > maxOverlap) {
+				maxOverlap = overlaps.at<float>(trackIndex, detectionIndex);
 				maxElement.y = trackIndex;
 				maxElement.x = detectionIndex;
 			}
@@ -157,16 +153,16 @@ Point Tracker::getBestMatch(const Mat& similarities, float threshold,
 
 void Tracker::confirmMatchedTracks(vector<reference_wrapper<Track>>& matchedTracks) {
 	for (Track& track : matchedTracks) {
-		track.established = true;
-		track.visible = true;
+		if (!track.confirmed) {
+			track.confirmed = true;
+			track.id = nextTrackId++;
+		}
 	}
 }
 
 void Tracker::removeObsoleteTracks(vector<reference_wrapper<Track>>& unmatchedTracks) {
-	for (Track& track : unmatchedTracks)
-		track.visible = track.established && isVisible(track);
 	for (auto track = tracks.begin(); track != tracks.end();) {
-		if (track->visible)
+		if (track->confirmed && isVisible(*track))
 			++track;
 		else
 			track = tracks.erase(track);
@@ -174,8 +170,8 @@ void Tracker::removeObsoleteTracks(vector<reference_wrapper<Track>>& unmatchedTr
 }
 
 bool Tracker::isVisible(const Track& track) const {
-	return getCommonScore(track.state) > commonVisibilityThreshold
-			|| (adaptive && getTargetScore(track) > targetVisibilityThreshold);
+	bool isTargetInsideFeaturePyramid = !!pyramidFeatureExtractor->extract(track.state.bounds());
+	return track.score > visibilityThreshold && isTargetInsideFeaturePyramid;
 }
 
 void Tracker::addNewTracks(const vector<Rect>& unmatchedDetections) {
@@ -189,62 +185,39 @@ Track Tracker::createTrack(Rect target) {
 	auto incrementalSvmTrainer = make_shared<IncrementalLinearSvmTrainer>(libSvmTrainer, learnRate);
 	auto probabilisticSvmTrainer = make_shared<PseudoProbabilisticSvmTrainer>(incrementalSvmTrainer, 0.95, 0.05, 1.0, -1.0);
 	shared_ptr<MeasurementModel> targetMeasurementModel = make_shared<ClassifierMeasurementModel>(
-			featureExtractor, probabilisticSvm);
-	shared_ptr<RepellingMeasurementModel> repellingMeasurementModel = make_shared<RepellingMeasurementModel>();
-	shared_ptr<MeasurementModel> measurementModel = make_shared<CombinedMeasurementModel>(
-			commonMeasurementModel, targetMeasurementModel, repellingMeasurementModel);
+			pyramidFeatureExtractor, probabilisticSvm);
+	shared_ptr<MeasurementModel> measurementModel = adaptive
+			? make_shared<CombinedMeasurementModel>(commonMeasurementModel, targetMeasurementModel)
+					: commonMeasurementModel;
 	unique_ptr<ParticleFilter> filter = make_unique<ParticleFilter>(motionModel, measurementModel, particleCount);
 	filter->initialize(versionedImage, target);
 	return {
-		nextTrackId++,
+		0,
 		probabilisticSvm,
 		probabilisticSvmTrainer,
-		repellingMeasurementModel,
 		std::move(filter),
 		TargetState(target),
 		false,
-		false,
-		false
+		Mat(),
+		0.0
 	};
 }
 
 void Tracker::updateTargetModels() {
 	for (Track& track : tracks) {
-		if (track.visible && isAdaptingReasonable(track)) {
+		if (track.confirmed)
 			adapt(track);
-			track.adapted = true;
-		} else {
-			track.adapted = false;
-		}
 	}
-}
-
-bool Tracker::isAdaptingReasonable(const Track& track) const {
-	return getCommonScore(track.state) > commonAdaptationThreshold
-			|| getTargetScore(track) > targetAdaptationThreshold;
-}
-
-double Tracker::getCommonScore(const TargetState& state) const {
-	shared_ptr<Patch> scorePatch = scoreExtractor->extract(state.x, state.y, state.width(), state.height());
-	return scorePatch ? scorePatch->getData().at<float>(0, 0) : -1000;
-}
-
-double Tracker::getTargetScore(const Track& track) const {
-	shared_ptr<Patch> featurePatch = featureExtractor->extract(track.state.x, track.state.y, track.state.width(), track.state.height());
-	const classification::SvmClassifier& svm = *track.svm->getSvm();
-	return featurePatch ? svm.computeHyperplaneDistance(featurePatch->getData()) : -1000;
 }
 
 void Tracker::adapt(Track& track) {
 	Rect targetBounds = track.state.bounds();
 	if (track.svm->getSvm()->getSupportVectors().empty())
-		track.svmTrainer->train(*track.svm, getPositiveTrainingExamples(targetBounds), getNegativeTrainingExamples(targetBounds));
+		track.svmTrainer->train(*track.svm,
+				vector<Mat>{track.features}, getNegativeTrainingExamples(targetBounds));
 	else
-		track.svmTrainer->retrain(*track.svm, getPositiveTrainingExamples(targetBounds), getNegativeTrainingExamples(targetBounds));
-}
-
-vector<Mat> Tracker::getPositiveTrainingExamples(Rect target) const {
-	return vector<Mat>{ featureExtractor->extract(target)->getData() };
+		track.svmTrainer->retrain(*track.svm,
+				vector<Mat>{track.features}, getNegativeTrainingExamples(targetBounds, *track.svm->getSvm()));
 }
 
 vector<Mat> Tracker::getNegativeTrainingExamples(Rect target) const {
@@ -261,10 +234,39 @@ vector<Mat> Tracker::getNegativeTrainingExamples(Rect target) const {
 		int y = std::uniform_int_distribution<int>{lowerY, upperY}(generator);
 		int height = std::uniform_int_distribution<int>{lowerH, upperH}(generator);
 		int width = height * target.width / target.height;
-		shared_ptr<Patch> patch = featureExtractor->extract(Rect(x, y, width, height));
+		shared_ptr<Patch> patch = pyramidFeatureExtractor->extract(Rect(x, y, width, height));
 		if (patch && computeOverlap(target, patch->getBounds()) <= negativeOverlapThreshold)
 			trainingExamples.push_back(patch->getData());
 	}
+	return trainingExamples;
+}
+
+vector<Mat> Tracker::getNegativeTrainingExamples(Rect target, const SvmClassifier& svm) const {
+	int lowerX = target.x - target.width;
+	int upperX = target.x + target.width;
+	int lowerY = target.y - target.height;
+	int upperY = target.y + target.height;
+	int lowerH = target.height / 2;
+	int upperH = target.height * 2;
+	vector<pair<double, Mat>> trainingCandidates;
+	trainingCandidates.reserve(3 * negativeExampleCount);
+	while (trainingCandidates.size() < trainingCandidates.capacity()) {
+		int x = std::uniform_int_distribution<int>{lowerX, upperX}(generator);
+		int y = std::uniform_int_distribution<int>{lowerY, upperY}(generator);
+		int height = std::uniform_int_distribution<int>{lowerH, upperH}(generator);
+		int width = height * target.width / target.height;
+		shared_ptr<Patch> patch = pyramidFeatureExtractor->extract(Rect(x, y, width, height));
+		if (patch && computeOverlap(target, patch->getBounds()) <= negativeOverlapThreshold) {
+			double score = svm.computeHyperplaneDistance(patch->getData());
+			trainingCandidates.emplace_back(score, patch->getData());
+		}
+	}
+	std::partial_sort(trainingCandidates.begin(), trainingCandidates.begin() + negativeExampleCount, trainingCandidates.end(),
+			[](const auto& a, const auto& b) { return a.first > b.first; });
+	vector<Mat> trainingExamples;
+	trainingExamples.reserve(negativeExampleCount);
+	for (int i = 0; i < trainingExamples.capacity(); ++i)
+		trainingExamples.push_back(trainingCandidates[i].second);
 	return trainingExamples;
 }
 
@@ -274,20 +276,10 @@ double Tracker::computeOverlap(Rect a, Rect b) const {
 	return intersectionArea / unionArea;
 }
 
-void Tracker::updateRepellingModels() {
-	for (int i = 0; i < tracks.size(); ++i) {
-		vector<TargetState> otherTargets;
-		for (int k = 0; k < tracks.size(); ++k)
-			if (k != i)
-				otherTargets.push_back(tracks[k].state);
-		tracks[i].repellingMeasurementModel->setOtherTargets(otherTargets);
-	}
-}
-
 vector<pair<int, Rect>> Tracker::extractTargets() const {
 	vector<pair<int, Rect>> idsAndBounds;
 	for (const Track& track : tracks)
-		if (track.visible)
+		if (track.confirmed)
 			idsAndBounds.emplace_back(track.id, track.state.bounds());
 	return idsAndBounds;
 }

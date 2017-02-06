@@ -62,6 +62,14 @@ void ProbabilisticSvmClassifier::setLogisticParameters(double logisticA, double 
 	this->logisticB = logisticB;
 }
 
+void ProbabilisticSvmClassifier::setLogisticA(double logisticA) {
+	this->logisticA = logisticA;
+}
+
+void ProbabilisticSvmClassifier::setLogisticB(double logisticB) {
+	this->logisticB = logisticB;
+}
+
 void ProbabilisticSvmClassifier::store(std::ofstream& file) {
 	svm->store(file);
 	file << "Logistic " << logisticA << ' ' << logisticB << '\n';

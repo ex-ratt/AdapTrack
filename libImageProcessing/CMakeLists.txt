@@ -70,6 +70,7 @@ SET(HEADERS
 	include/imageprocessing/WhiteningFilter.hpp
 	include/imageprocessing/ZeroMeanUnitVarianceFilter.hpp
 	include/imageprocessing/extraction/AggregatedFeaturesExtractor.hpp
+	include/imageprocessing/extraction/ExactFhogExtractor.hpp
 	include/imageprocessing/filtering/AggregationFilter.hpp
 	include/imageprocessing/filtering/BgrToLuvConverter.hpp
 	include/imageprocessing/filtering/BoxConvolutionFilter.hpp
@@ -130,6 +131,7 @@ SET(SOURCE
 	src/imageprocessing/WhiteningFilter.cpp
 	src/imageprocessing/ZeroMeanUnitVarianceFilter.cpp
 	src/imageprocessing/extraction/AggregatedFeaturesExtractor.cpp
+	src/imageprocessing/extraction/ExactFhogExtractor.cpp
 	src/imageprocessing/filtering/AggregationFilter.cpp
 	src/imageprocessing/filtering/BgrToLuvConverter.cpp
 	src/imageprocessing/filtering/BoxConvolutionFilter.cpp
