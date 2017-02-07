@@ -81,6 +81,7 @@ vector<pair<int, Rect>> Tracker::update(const Mat& image) {
 	Associations associations = pickAssociations(tracks, detections);
 	confirmMatchedTracks(associations.matchedTracks);
 	removeObsoleteTracks(associations.unmatchedTracks);
+	removeOverlappingTracks();
 	addNewTracks(associations.unmatchedDetections);
 	if (adaptive)
 		updateTargetModels();
@@ -172,6 +173,24 @@ void Tracker::removeObsoleteTracks(vector<reference_wrapper<Track>>& unmatchedTr
 bool Tracker::isVisible(const Track& track) const {
 	bool isTargetInsideFeaturePyramid = !!pyramidFeatureExtractor->extract(track.state.bounds());
 	return track.score > visibilityThreshold && isTargetInsideFeaturePyramid;
+}
+
+void Tracker::removeOverlappingTracks() {
+	for (auto track1 = tracks.begin(); track1 != tracks.end();) {
+		for (auto track2 = track1 + 1; track2 != tracks.end();) {
+			if (computeOverlap(track1->state.bounds(), track2->state.bounds()) > associationThreshold) {
+				if (track1->score > track2->score) {
+					track2 = tracks.erase(track2);
+				} else {
+					track1 = tracks.erase(track1) - 1;
+					break;
+				}
+			} else { // tracks do not overlap (by much)
+				++track2;
+			}
+		}
+		++track1;
+	}
 }
 
 void Tracker::addNewTracks(const vector<Rect>& unmatchedDetections) {

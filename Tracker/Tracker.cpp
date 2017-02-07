@@ -61,7 +61,7 @@ shared_ptr<FhogFilter> createFhogFilter(int binCount, int cellSize);
 shared_ptr<AggregatedFeaturesDetector> createDetector(
 		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SvmClassifier> svm, int cellSize, int minSize, int maxSize);
 void run(Tracker& tracker, ImageSource& images);
-void drawParticles(Mat& output, vector<pair<Rect, double>> particles);
+void drawParticles(Mat& output, vector<tracking::filtering::Particle> particles);
 void evaluate(Tracker& tracker, LabeledImageSource& images, int count);
 TrackingEvaluation evaluate(Tracker& tracker, LabeledImageSource& images);
 double computeOverlap(Rect a, Rect b);
@@ -192,7 +192,7 @@ void run(Tracker& tracker, ImageSource& images) {
 				output = 0.75 * output + 0.25 * intermediate;
 			}
 			for (const Track& track : tracker.getTracks())
-				drawParticles(output, track.particles());
+				drawParticles(output, track.filter->getParticles());
 		}
 		for (const pair<int, cv::Rect>& target : targets)
 			rectangle(output, target.second, colors[target.first % colors.size()], thickness);
@@ -214,20 +214,18 @@ void run(Tracker& tracker, ImageSource& images) {
 	}
 }
 
-void drawParticles(Mat& output, vector<pair<Rect, double>> particles) {
+void drawParticles(Mat& output, vector<tracking::filtering::Particle> particles) {
 	if (particles.empty())
 		return;
 	Mat intermediate = output.clone();
 	sort(particles.begin(), particles.end(), [](const auto& a, const auto& b) {
-		return a.second < b.second;
+		return a.weight < b.weight;
 	});
-	double maxWeight = particles.back().second;
+	double maxWeight = particles.back().weight;
 	double scale = 1.0 / maxWeight;
 	for (const auto& particle : particles) {
-		int x = particle.first.x + particle.first.width / 2;
-		int y = particle.first.y + particle.first.height / 2;
-		double weight = scale * particle.second;
-		circle(intermediate, Point(x, y), 3, Scalar(weight * 255, weight * 255, weight * 255), 1);
+		double weight = scale * particle.weight;
+		circle(intermediate, Point(particle.state.x, particle.state.y), 3, Scalar(weight * 255, weight * 255, weight * 255), 1);
 	}
 	output = 0.5 * output + 0.5 * intermediate;
 }

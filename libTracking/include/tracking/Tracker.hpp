@@ -37,12 +37,6 @@ struct Track {
 	bool confirmed; ///< Flag that indicates whether the track was confirmed by a second detection.
 	cv::Mat features; ///< Current features.
 	double score; ///< SVM score of current features.
-	std::vector<std::pair<cv::Rect, double>> particles() const {
-		std::vector<std::pair<cv::Rect, double>> particles;
-		for (const filtering::Particle& particle : filter->getParticles())
-			particles.emplace_back(particle.state.bounds(), particle.weight);
-		return particles;
-	}
 };
 
 /**
@@ -147,6 +141,12 @@ private:
 	 * @return True if the track is considered visible, false otherwise.
 	 */
 	bool isVisible(const Track& track) const;
+
+	/**
+	 * Removes tracks that overlap with other tracks and have a lower score, thereby preventing one target to be
+	 * tracked twice or more.
+	 */
+	void removeOverlappingTracks();
 
 	/**
 	 * Adds new tracks at detections without an associated track.
