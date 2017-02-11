@@ -5,6 +5,8 @@
  *      Author: poschmann
  */
 
+#include "Annotations.hpp"
+#include "LabeledImage.hpp"
 #include "stacktrace.hpp"
 #include "StopWatch.hpp"
 #include "classification/ProbabilisticSvmClassifier.hpp"
@@ -62,8 +64,8 @@ shared_ptr<AggregatedFeaturesDetector> createDetector(
 		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SvmClassifier> svm, int cellSize, int minSize, int maxSize);
 void run(Tracker& tracker, ImageSource& images);
 void drawParticles(Mat& output, vector<tracking::filtering::Particle> particles);
-void evaluate(Tracker& tracker, LabeledImageSource& images, int count);
-TrackingEvaluation evaluate(Tracker& tracker, LabeledImageSource& images);
+void evaluate(Tracker& tracker, LabeledImageSource& images, double aspectRatio, int count);
+TrackingEvaluation evaluate(Tracker& tracker, const vector<LabeledImage>& images);
 double computeOverlap(Rect a, Rect b);
 
 int main(int argc, char **argv) {
@@ -125,7 +127,7 @@ int main(int argc, char **argv) {
 //			<< " learnRate=" << headTracker->learnRate
 //			<< " visibility=" << headTracker->visibilityThreshold
 //			<< endl;
-//	evaluate(*headTracker, *images, 15);
+//	evaluate(*headTracker, *images, static_cast<double>(windowWidth) / windowHeight, 15);
 
 	return EXIT_SUCCESS;
 }
@@ -230,11 +232,15 @@ void drawParticles(Mat& output, vector<tracking::filtering::Particle> particles)
 	output = 0.5 * output + 0.5 * intermediate;
 }
 
-void evaluate(Tracker& tracker, LabeledImageSource& images, int count) {
+void evaluate(Tracker& tracker, LabeledImageSource& source, double aspectRatio, int count) {
+	vector<LabeledImage> images;
+	while (source.next())
+		images.emplace_back(source.getImage(), source.getLandmarks().getLandmarks());
+	for (LabeledImage& image : images)
+		image.adjustSizes(aspectRatio);
 	TrackingEvaluation result;
 	vector<TrackingEvaluation> results(count);
 	for (int i = 0; i < count; ++i) {
-		images.reset();
 		tracker.reset();
 		results[i] = evaluate(tracker, images);
 		result.fppi += results[i].fppi;
@@ -282,7 +288,7 @@ void evaluate(Tracker& tracker, LabeledImageSource& images, int count) {
 	cout << ")" << endl;
 }
 
-TrackingEvaluation evaluate(Tracker& tracker, LabeledImageSource& images) {
+TrackingEvaluation evaluate(Tracker& tracker, const vector<LabeledImage>& images) {
 	GrayscaleFilter grayscaleFilter;
 	int frames = 0;
 	int truePositives = 0;
@@ -290,29 +296,32 @@ TrackingEvaluation evaluate(Tracker& tracker, LabeledImageSource& images) {
 	int falseNegatives = 0;
 	double overlapSum = 0;
 	duration<double> iterationTimeSum(0);
-	while (images.next()) {
+	for (const LabeledImage& image : images) {
 		++frames;
-		Mat image = images.getImage();
-		LandmarkCollection collection = images.getLandmarks();
+		Mat frame = image.image;
+		Annotations annotations(image.landmarks);
 		StopWatch iterationTimer = StopWatch::start();
-		vector<pair<int, Rect>> targets = tracker.update(grayscaleFilter.applyTo(image));
+		vector<pair<int, Rect>> targets = tracker.update(grayscaleFilter.applyTo(frame));
 		milliseconds iterationTime = iterationTimer.stop();
 		iterationTimeSum += iterationTime;
-		for (const shared_ptr<Landmark> landmark : collection.getLandmarks()) {
-			if (landmark->isVisible()) {
-				bool ignore = landmark->getName().compare(0, 6, "ignore") == 0;
-				if (!ignore)
-					++falseNegatives;
-				for (auto target = targets.begin(); target != targets.end(); ++target) {
-					if (computeOverlap(landmark->getRect(), target->second) >= 0.5) {
-						if (!ignore) {
-							--falseNegatives;
-							++truePositives;
-						}
-						overlapSum += computeOverlap(landmark->getRect(), target->second);
-						targets.erase(target);
-						break;
-					}
+		for (Rect annotation : annotations.positives) {
+			++falseNegatives;
+			for (auto target = targets.begin(); target != targets.end(); ++target) {
+				if (computeOverlap(annotation, target->second) >= 0.5) {
+					--falseNegatives;
+					++truePositives;
+					overlapSum += computeOverlap(annotation, target->second);
+					targets.erase(target);
+					break;
+				}
+			}
+		}
+		for (Rect annotation : annotations.fuzzies) {
+			for (auto target = targets.begin(); target != targets.end(); ++target) {
+				if (computeOverlap(annotation, target->second) >= 0.5) {
+					overlapSum += computeOverlap(annotation, target->second);
+					targets.erase(target);
+					break;
 				}
 			}
 		}
