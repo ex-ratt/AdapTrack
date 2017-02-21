@@ -162,11 +162,12 @@ void Tracker::confirmMatchedTracks(vector<reference_wrapper<Track>>& matchedTrac
 }
 
 void Tracker::removeObsoleteTracks(vector<reference_wrapper<Track>>& unmatchedTracks) {
-	for (auto track = tracks.begin(); track != tracks.end();) {
-		if (track->confirmed && isVisible(*track))
-			++track;
-		else
-			track = tracks.erase(track);
+	for (const Track& unmatchedTrack : unmatchedTracks) {
+		if (!unmatchedTrack.confirmed || !isVisible(unmatchedTrack)) {
+			tracks.erase(std::find_if(tracks.begin(), tracks.end(), [&](const Track& track) {
+				return &track == &unmatchedTrack;
+			}));
+		}
 	}
 }
 
