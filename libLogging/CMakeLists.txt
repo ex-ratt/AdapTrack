@@ -30,3 +30,9 @@ include_directories("include")
 
 # make library
 add_library(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
+
+install(TARGETS ${SUBPROJECT_NAME}
+	LIBRARY DESTINATION lib
+)
+install(DIRECTORY include/ DESTINATION include)
+

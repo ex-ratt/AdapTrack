@@ -33,3 +33,9 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 # make library
 add_library(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
 target_link_libraries(${SUBPROJECT_NAME} Classification ${OpenCV_LIBS})
+
+install(TARGETS ${SUBPROJECT_NAME}
+	LIBRARY DESTINATION lib
+)
+install(DIRECTORY include/ DESTINATION include)
+

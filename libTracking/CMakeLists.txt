@@ -34,3 +34,9 @@ target_link_libraries(${SUBPROJECT_NAME}
 	${OpenCV_LIBS}
 	${Boost_LIBRARIES}
 )
+
+install(TARGETS ${SUBPROJECT_NAME}
+	LIBRARY DESTINATION lib
+)
+install(DIRECTORY include/ DESTINATION include)
+

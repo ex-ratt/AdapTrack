@@ -42,3 +42,9 @@ include_directories(${Boost_INCLUDE_DIRS})
 # make library
 add_library(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
 target_link_libraries(${SUBPROJECT_NAME} Logging ImageProcessing ${Boost_LIBRARIES} ${OpenCV_LIBS})
+
+install(TARGETS ${SUBPROJECT_NAME}
+	LIBRARY DESTINATION lib
+)
+install(DIRECTORY include/ DESTINATION include)
+

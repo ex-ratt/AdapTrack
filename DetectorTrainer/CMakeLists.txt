@@ -37,3 +37,7 @@ target_link_libraries(${SUBPROJECT_NAME}
 	${OpenCV_LIBS}
 )
 
+install(TARGETS ${SUBPROJECT_NAME}
+	RUNTIME DESTINATION bin
+)
+

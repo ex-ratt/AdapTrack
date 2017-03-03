@@ -38,3 +38,7 @@ target_link_libraries(${SUBPROJECT_NAME}
 	${Boost_LIBRARIES}
 )
 
+install(TARGETS ${SUBPROJECT_NAME}
+	RUNTIME DESTINATION bin
+)
+

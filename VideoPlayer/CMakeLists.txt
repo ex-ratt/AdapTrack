@@ -28,3 +28,8 @@ include_directories(${ImageIO_SOURCE_DIR}/include)
 # make executable
 add_executable(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
 target_link_libraries(${SUBPROJECT_NAME} ImageIO Logging ${OpenCV_LIBS} ${Boost_LIBRARIES})
+
+install(TARGETS ${SUBPROJECT_NAME}
+	RUNTIME DESTINATION bin
+)
+
