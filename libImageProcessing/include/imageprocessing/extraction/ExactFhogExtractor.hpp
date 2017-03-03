@@ -37,6 +37,8 @@ public:
 
 	void update(std::shared_ptr<VersionedImage> image) override;
 
+	using FeatureExtractor::extract;
+
 	std::shared_ptr<Patch> extract(int centerX, int centerY, int width, int height) const override;
 
 private:

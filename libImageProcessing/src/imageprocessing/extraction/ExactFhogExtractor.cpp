@@ -34,10 +34,12 @@ shared_ptr<Patch> ExactFhogExtractor::extract(int centerX, int centerY, int widt
 	Rect bounds = Patch::computeBounds(Point(centerX, centerY), Size(width, height));
 	if (bounds.x < 0 || bounds.x + bounds.width > image.cols
 			|| bounds.y < 0 || bounds.y + bounds.height > image.rows)
-		return shared_ptr<Patch>(); // TODO extract anything? partially outside allowed or not? only important for single tracking stuff (non-existent atm)
+		return shared_ptr<Patch>();
 	int paddedWidth = static_cast<int>(std::round(widthFactor * width));
 	int paddedHeight = static_cast<int>(std::round(heightFactor * height));
 	Rect paddedBounds = Patch::computeBounds(Point(centerX, centerY), Size(paddedWidth, paddedHeight));
+	if (paddedBounds.width < fixedSize.width || paddedBounds.height < fixedSize.height)
+		return shared_ptr<Patch>();
 	Mat fhogWindow = fhogFilter->applyTo(toFixedSize(getWindow(paddedBounds)));
 	Mat fhogData = Mat(fhogWindow, Rect(1, 1, fhogWindow.cols - 2, fhogWindow.rows - 2)).clone();
 	return std::make_shared<Patch>(centerX, centerY, width, height, fhogData);
