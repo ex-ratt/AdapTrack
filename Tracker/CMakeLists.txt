@@ -20,7 +20,6 @@ include_directories(${ImageProcessing_SOURCE_DIR}/include)
 include_directories(${Classification_SOURCE_DIR}/include)
 include_directories(${SVM_SOURCE_DIR}/include)
 include_directories(${Detection_SOURCE_DIR}/include)
-include_directories(${Condensation_SOURCE_DIR}/include)
 include_directories(${Tracking_SOURCE_DIR}/include)
 
 # make executable
@@ -29,7 +28,6 @@ add_executable(${SUBPROJECT_NAME}
 )
 target_link_libraries(${SUBPROJECT_NAME}
 	Tracking
-	Condensation
 	Detection
 	SVM
 	Classification
@@ -39,3 +37,4 @@ target_link_libraries(${SUBPROJECT_NAME}
 	${OpenCV_LIBS}
 	${Boost_LIBRARIES}
 )
+
