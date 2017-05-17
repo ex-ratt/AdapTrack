@@ -11,7 +11,7 @@
 #include "libsvm/LibSvmTrainer.hpp"
 #include "tracking/Tracker.hpp"
 #include "tracking/filtering/ClassifierMeasurementModel.hpp"
-#include "tracking/filtering/CombinedMeasurementModel.hpp"
+#include "tracking/filtering/CorrelatedCombinationModel.hpp"
 #include "imageprocessing/Patch.hpp"
 
 using classification::IncrementalLinearSvmTrainer;
@@ -25,7 +25,7 @@ using cv::Rect;
 using detection::AggregatedFeaturesDetector;
 using libsvm::LibSvmTrainer;
 using tracking::filtering::ClassifierMeasurementModel;
-using tracking::filtering::CombinedMeasurementModel;
+using tracking::filtering::CorrelatedCombinationModel;
 using tracking::filtering::MeasurementModel;
 using tracking::filtering::MotionModel;
 using tracking::filtering::ParticleFilter;
@@ -207,7 +207,7 @@ Track Tracker::createTrack(Rect target) {
 	shared_ptr<MeasurementModel> targetMeasurementModel = make_shared<ClassifierMeasurementModel>(
 			pyramidFeatureExtractor, probabilisticSvm);
 	shared_ptr<MeasurementModel> measurementModel = adaptive
-			? make_shared<CombinedMeasurementModel>(commonMeasurementModel, targetMeasurementModel)
+			? make_shared<CorrelatedCombinationModel>(commonMeasurementModel, targetMeasurementModel)
 					: commonMeasurementModel;
 	unique_ptr<ParticleFilter> filter = make_unique<ParticleFilter>(motionModel, measurementModel, particleCount);
 	filter->initialize(versionedImage, target);
