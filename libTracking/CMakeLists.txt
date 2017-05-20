@@ -21,6 +21,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 # make library
 add_library(${SUBPROJECT_NAME}
 	src/tracking/MultiTracker.cpp
+	src/tracking/SingleTracker.cpp
 	src/tracking/filtering/ParticleFilter.cpp
 	src/tracking/filtering/TargetState.cpp
 )
