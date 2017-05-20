@@ -30,7 +30,10 @@ public:
 	 * @param[in] learnRate Weight of the new SVM parameters (between zero and one).
 	 */
 	IncrementalLinearSvmTrainer(std::shared_ptr<ClassifierTrainer<SvmClassifier>> batchTrainer, double learnRate) :
-			batchTrainer(batchTrainer), batchSvm(std::make_shared<LinearKernel>()), learnRate(learnRate) {}
+			batchTrainer(batchTrainer), batchSvm(std::make_shared<LinearKernel>()), learnRate(learnRate) {
+		if (learnRate < 0 || learnRate > 1)
+			throw std::invalid_argument("IncrementalLinearSvmTrainer: the learn rate must be between zero (inclusive) and one (inclusive)");
+	}
 
 	void train(SvmClassifier& svm, const std::vector<cv::Mat>& positives, const std::vector<cv::Mat>& negatives) const override {
 		if (!dynamic_cast<LinearKernel*>(svm.getKernel().get()))
