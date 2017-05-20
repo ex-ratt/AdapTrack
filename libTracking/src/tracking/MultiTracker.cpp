@@ -9,7 +9,7 @@
 #include "classification/LinearKernel.hpp"
 #include "classification/PseudoProbabilisticSvmTrainer.hpp"
 #include "libsvm/LibSvmTrainer.hpp"
-#include "tracking/Tracker.hpp"
+#include "tracking/MultiTracker.hpp"
 #include "tracking/filtering/ClassifierMeasurementModel.hpp"
 #include "tracking/filtering/CorrelatedCombinationModel.hpp"
 #include "imageprocessing/Patch.hpp"
@@ -43,7 +43,7 @@ using std::vector;
 
 namespace tracking {
 
-Tracker::Tracker(shared_ptr<FeatureExtractor> exactFeatureExtractor,
+MultiTracker::MultiTracker(shared_ptr<FeatureExtractor> exactFeatureExtractor,
 		shared_ptr<AggregatedFeaturesDetector> detector,
 		shared_ptr<ProbabilisticSvmClassifier> svm,
 		shared_ptr<MotionModel> motionModel) :
@@ -66,15 +66,15 @@ Tracker::Tracker(shared_ptr<FeatureExtractor> exactFeatureExtractor,
 				targetSvmC(10),
 				learnRate(0.5) {}
 
-const vector<Track>& Tracker::getTracks() const {
+const vector<Track>& MultiTracker::getTracks() const {
 	return tracks;
 }
 
-void Tracker::reset() {
+void MultiTracker::reset() {
 	tracks.clear();
 }
 
-vector<pair<int, Rect>> Tracker::update(const Mat& image) {
+vector<pair<int, Rect>> MultiTracker::update(const Mat& image) {
 	updateImage(image);
 	updateFilters();
 	vector<Rect> detections = detector->detect(versionedImage);
@@ -88,13 +88,13 @@ vector<pair<int, Rect>> Tracker::update(const Mat& image) {
 	return extractTargets();
 }
 
-void Tracker::updateImage(const Mat& image) {
+void MultiTracker::updateImage(const Mat& image) {
 	versionedImage->setData(image);
 	pyramidFeatureExtractor->update(versionedImage);
 	exactFeatureExtractor->update(versionedImage);
 }
 
-void Tracker::updateFilters() {
+void MultiTracker::updateFilters() {
 	for (Track& track : tracks) {
 		track.state = track.filter->update(versionedImage);
 		shared_ptr<Patch> patch = exactFeatureExtractor->extract(
@@ -110,7 +110,7 @@ void Tracker::updateFilters() {
 	}
 }
 
-Associations Tracker::pickAssociations(vector<Track>& tracks, vector<Rect>& detections) const {
+Associations MultiTracker::pickAssociations(vector<Track>& tracks, vector<Rect>& detections) const {
 	Associations associations;
 	Mat overlaps(tracks.size(), detections.size(), CV_32FC1);
 	for (int i = 0; i < tracks.size(); ++i) {
@@ -136,7 +136,7 @@ Associations Tracker::pickAssociations(vector<Track>& tracks, vector<Rect>& dete
 	return associations;
 }
 
-Point Tracker::getBestMatch(const Mat& overlaps, float threshold,
+Point MultiTracker::getBestMatch(const Mat& overlaps, float threshold,
 		const vector<int>& unmatchedTrackIndices, const vector<int>& unmatchedDetectionIndices) const {
 	Point maxElement(-1, -1);
 	float maxOverlap = threshold;
@@ -152,7 +152,7 @@ Point Tracker::getBestMatch(const Mat& overlaps, float threshold,
 	return maxElement;
 }
 
-void Tracker::confirmMatchedTracks(vector<reference_wrapper<Track>>& matchedTracks) {
+void MultiTracker::confirmMatchedTracks(vector<reference_wrapper<Track>>& matchedTracks) {
 	for (Track& track : matchedTracks) {
 		if (!track.confirmed) {
 			track.confirmed = true;
@@ -161,7 +161,7 @@ void Tracker::confirmMatchedTracks(vector<reference_wrapper<Track>>& matchedTrac
 	}
 }
 
-void Tracker::removeObsoleteTracks(vector<reference_wrapper<Track>>& unmatchedTracks) {
+void MultiTracker::removeObsoleteTracks(vector<reference_wrapper<Track>>& unmatchedTracks) {
 	for (const Track& unmatchedTrack : unmatchedTracks) {
 		if (!unmatchedTrack.confirmed || !isVisible(unmatchedTrack)) {
 			tracks.erase(std::find_if(tracks.begin(), tracks.end(), [&](const Track& track) {
@@ -171,12 +171,12 @@ void Tracker::removeObsoleteTracks(vector<reference_wrapper<Track>>& unmatchedTr
 	}
 }
 
-bool Tracker::isVisible(const Track& track) const {
+bool MultiTracker::isVisible(const Track& track) const {
 	bool isTargetInsideFeaturePyramid = !!pyramidFeatureExtractor->extract(track.state.bounds());
 	return track.score > visibilityThreshold && isTargetInsideFeaturePyramid;
 }
 
-void Tracker::removeOverlappingTracks() {
+void MultiTracker::removeOverlappingTracks() {
 	for (auto track1 = tracks.begin(); track1 != tracks.end();) {
 		for (auto track2 = track1 + 1; track2 != tracks.end();) {
 			if (computeOverlap(track1->state.bounds(), track2->state.bounds()) > associationThreshold) {
@@ -194,12 +194,12 @@ void Tracker::removeOverlappingTracks() {
 	}
 }
 
-void Tracker::addNewTracks(const vector<Rect>& unmatchedDetections) {
+void MultiTracker::addNewTracks(const vector<Rect>& unmatchedDetections) {
 	for (Rect detection : unmatchedDetections)
 		tracks.push_back(createTrack(detection));
 }
 
-Track Tracker::createTrack(Rect target) {
+Track MultiTracker::createTrack(Rect target) {
 	auto probabilisticSvm = make_shared<ProbabilisticSvmClassifier>(make_shared<LinearKernel>());
 	auto libSvmTrainer = make_shared<LibSvmTrainer>(targetSvmC, true);
 	auto incrementalSvmTrainer = make_shared<IncrementalLinearSvmTrainer>(libSvmTrainer, learnRate);
@@ -223,14 +223,14 @@ Track Tracker::createTrack(Rect target) {
 	};
 }
 
-void Tracker::updateTargetModels() {
+void MultiTracker::updateTargetModels() {
 	for (Track& track : tracks) {
 		if (track.confirmed)
 			adapt(track);
 	}
 }
 
-void Tracker::adapt(Track& track) {
+void MultiTracker::adapt(Track& track) {
 	Rect targetBounds = track.state.bounds();
 	if (track.svm->getSvm()->getSupportVectors().empty())
 		track.svmTrainer->train(*track.svm,
@@ -240,7 +240,7 @@ void Tracker::adapt(Track& track) {
 				vector<Mat>{track.features}, getNegativeTrainingExamples(targetBounds, *track.svm->getSvm()));
 }
 
-vector<Mat> Tracker::getNegativeTrainingExamples(Rect target) const {
+vector<Mat> MultiTracker::getNegativeTrainingExamples(Rect target) const {
 	int lowerX = target.x - target.width;
 	int upperX = target.x + target.width;
 	int lowerY = target.y - target.height;
@@ -261,7 +261,7 @@ vector<Mat> Tracker::getNegativeTrainingExamples(Rect target) const {
 	return trainingExamples;
 }
 
-vector<Mat> Tracker::getNegativeTrainingExamples(Rect target, const SvmClassifier& svm) const {
+vector<Mat> MultiTracker::getNegativeTrainingExamples(Rect target, const SvmClassifier& svm) const {
 	int lowerX = target.x - target.width;
 	int upperX = target.x + target.width;
 	int lowerY = target.y - target.height;
@@ -290,13 +290,13 @@ vector<Mat> Tracker::getNegativeTrainingExamples(Rect target, const SvmClassifie
 	return trainingExamples;
 }
 
-double Tracker::computeOverlap(Rect a, Rect b) const {
+double MultiTracker::computeOverlap(Rect a, Rect b) const {
 	double intersectionArea = (a & b).area();
 	double unionArea = a.area() + b.area() - intersectionArea;
 	return intersectionArea / unionArea;
 }
 
-vector<pair<int, Rect>> Tracker::extractTargets() const {
+vector<pair<int, Rect>> MultiTracker::extractTargets() const {
 	vector<pair<int, Rect>> idsAndBounds;
 	for (const Track& track : tracks)
 		if (track.confirmed)

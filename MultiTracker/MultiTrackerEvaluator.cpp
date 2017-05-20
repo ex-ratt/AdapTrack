@@ -1,13 +1,13 @@
 /*
- * Evaluator.cpp
+ * MultiTrackerEvaluator.cpp
  *
  *  Created on: 26.10.2016
  *      Author: poschmann
  */
 
-#include "stacktrace.hpp"
 #include "Annotations.hpp"
 #include "LabeledImage.hpp"
+#include "stacktrace.hpp"
 #include "StopWatch.hpp"
 #include "classification/ProbabilisticSvmClassifier.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
@@ -16,7 +16,7 @@
 #include "imageprocessing/GrayscaleFilter.hpp"
 #include "imageprocessing/extraction/ExactFhogExtractor.hpp"
 #include "imageprocessing/filtering/FhogFilter.hpp"
-#include "tracking/Tracker.hpp"
+#include "tracking/MultiTracker.hpp"
 #include "tracking/filtering/RandomWalkModel.hpp"
 #include <chrono>
 #include <fstream>
@@ -47,8 +47,8 @@ shared_ptr<ProbabilisticSvmClassifier> loadSvm(const string& filename, float thr
 shared_ptr<FhogFilter> createFhogFilter(int binCount, int cellSize);
 shared_ptr<AggregatedFeaturesDetector> createDetector(
 		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SvmClassifier> svm, int cellSize, int minWidth, int maxWidth);
-void evaluate(Tracker& tracker, LabeledImageSource& images, double aspectRatio, int count);
-TrackingEvaluation evaluate(Tracker& tracker, const vector<LabeledImage>& images);
+void evaluate(MultiTracker& tracker, LabeledImageSource& images, double aspectRatio, int count);
+TrackingEvaluation evaluate(MultiTracker& tracker, const vector<LabeledImage>& images);
 double computeOverlap(Rect a, Rect b);
 
 int main(int argc, char **argv) {
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 	shared_ptr<ExactFhogExtractor> exactFhogExtractor = make_shared<ExactFhogExtractor>(fhogFilter, windowWidth, windowHeight);
 	shared_ptr<AggregatedFeaturesDetector> detector = createDetector(fhogFilter, svm->getSvm(), cellSize, minWidth, maxWidth);
 	shared_ptr<MotionModel> motionModel = make_shared<RandomWalkModel>(0.2, 0.05);
-	unique_ptr<Tracker> tracker = make_unique<Tracker>(exactFhogExtractor, detector, svm, motionModel);
+	unique_ptr<MultiTracker> tracker = make_unique<MultiTracker>(exactFhogExtractor, detector, svm, motionModel);
 	tracker->particleCount = 500;
 	tracker->adaptive = true;
 	tracker->associationThreshold = 0.3;
@@ -130,7 +130,7 @@ shared_ptr<AggregatedFeaturesDetector> createDetector(
 			fhogFilter, cellSize, Size(windowWidth, windowHeight), 5, svm, nms, 1.0, 1.0, minWidth, maxWidth);
 }
 
-void evaluate(Tracker& tracker, LabeledImageSource& source, double aspectRatio, int count) {
+void evaluate(MultiTracker& tracker, LabeledImageSource& source, double aspectRatio, int count) {
 	vector<LabeledImage> images;
 	while (source.next())
 		images.emplace_back(source.getImage(), source.getLandmarks().getLandmarks());
@@ -201,7 +201,7 @@ void evaluate(Tracker& tracker, LabeledImageSource& source, double aspectRatio, 
 	cout << ")" << endl;
 }
 
-TrackingEvaluation evaluate(Tracker& tracker, const vector<LabeledImage>& images) {
+TrackingEvaluation evaluate(MultiTracker& tracker, const vector<LabeledImage>& images) {
 	GrayscaleFilter grayscaleFilter;
 	int frames = 0;
 	int truePositives = 0;

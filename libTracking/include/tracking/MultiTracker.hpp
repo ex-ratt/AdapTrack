@@ -1,12 +1,12 @@
 /*
- * Tracker.hpp
+ * MultiTracker.hpp
  *
  *  Created on: 02.11.2016
  *      Author: poschmann
  */
 
-#ifndef TRACKING_TRACKER_HPP_
-#define TRACKING_TRACKER_HPP_
+#ifndef TRACKING_MULTITRACKER_HPP_
+#define TRACKING_MULTITRACKER_HPP_
 
 #include "classification/ProbabilisticSvmClassifier.hpp"
 #include "classification/IncrementalClassifierTrainer.hpp"
@@ -49,20 +49,20 @@ struct Associations {
 };
 
 /**
- * Tracker that estimates the position of detected targets in each frame.
+ * Tracker that estimates the position of multiple detected targets in each frame.
  */
-class Tracker {
+class MultiTracker {
 public:
 
 	/**
-	 * Constructs a new tracker.
+	 * Constructs a new multi-target tracker.
 	 *
 	 * @param[in] exactFeatureExtractor Feature extractor that provides patches exactly as requested.
 	 * @param[in] detector Detector that finds new targets to track.
 	 * @param[in] svm SVM that computes the likelihood of the particles.
 	 * @param[in] motionModel Motion model that samples new particles.
 	 */
-	Tracker(std::shared_ptr<imageprocessing::FeatureExtractor> exactFeatureExtractor,
+	MultiTracker(std::shared_ptr<imageprocessing::FeatureExtractor> exactFeatureExtractor,
 			std::shared_ptr<detection::AggregatedFeaturesDetector> detector,
 			std::shared_ptr<classification::ProbabilisticSvmClassifier> svm,
 			std::shared_ptr<filtering::MotionModel> motionModel);
@@ -233,4 +233,4 @@ public:
 
 } // namespace tracking
 
-#endif /* TRACKING_TRACKER_HPP_ */
+#endif /* TRACKING_MULTITRACKER_HPP_ */

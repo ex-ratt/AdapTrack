@@ -1,5 +1,5 @@
 /*
- * Tracker.cpp
+ * MultiTracker.cpp
  *
  *  Created on: 26.10.2016
  *      Author: poschmann
@@ -18,7 +18,7 @@
 #include "imageprocessing/GrayscaleFilter.hpp"
 #include "imageprocessing/extraction/ExactFhogExtractor.hpp"
 #include "imageprocessing/filtering/FhogFilter.hpp"
-#include "tracking/Tracker.hpp"
+#include "tracking/MultiTracker.hpp"
 #include "tracking/filtering/RandomWalkModel.hpp"
 #include <chrono>
 #include <fstream>
@@ -44,7 +44,7 @@ shared_ptr<ProbabilisticSvmClassifier> loadSvm(const string& filename, float thr
 shared_ptr<FhogFilter> createFhogFilter(int binCount, int cellSize);
 shared_ptr<AggregatedFeaturesDetector> createDetector(
 		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SvmClassifier> svm, int cellSize, int minWidth, int maxWidth);
-void run(Tracker& tracker, ImageSource& images);
+void run(MultiTracker& tracker, ImageSource& images);
 void drawParticles(Mat& output, vector<tracking::filtering::Particle> particles);
 
 int main(int argc, char **argv) {
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 	shared_ptr<ExactFhogExtractor> exactFhogExtractor = make_shared<ExactFhogExtractor>(fhogFilter, windowWidth, windowHeight);
 	shared_ptr<AggregatedFeaturesDetector> detector = createDetector(fhogFilter, svm->getSvm(), cellSize, minWidth, maxWidth);
 	shared_ptr<MotionModel> motionModel = make_shared<RandomWalkModel>(0.2, 0.05);
-	unique_ptr<Tracker> tracker = make_unique<Tracker>(exactFhogExtractor, detector, svm, motionModel);
+	unique_ptr<MultiTracker> tracker = make_unique<MultiTracker>(exactFhogExtractor, detector, svm, motionModel);
 	tracker->particleCount = 500;
 	tracker->adaptive = true;
 	tracker->associationThreshold = 0.3;
@@ -125,7 +125,7 @@ shared_ptr<AggregatedFeaturesDetector> createDetector(
 			fhogFilter, cellSize, Size(windowWidth, windowHeight), 5, svm, nms, 1.0, 1.0, minWidth, maxWidth);
 }
 
-void run(Tracker& tracker, ImageSource& images) {
+void run(MultiTracker& tracker, ImageSource& images) {
 	GrayscaleFilter grayscaleFilter;
 	Scalar colorUnconfirmed(0, 0, 0);
 	vector<Scalar> colors = {
@@ -152,11 +152,11 @@ void run(Tracker& tracker, ImageSource& images) {
 	bool debug = false;
 	while (run && images.next()) {
 		++frameCount;
-		Mat image = images.getImage();
+		Mat frame = images.getImage();
 		StopWatch iterationTimer = StopWatch::start();
-		vector<pair<int, cv::Rect>> targets = tracker.update(grayscaleFilter.applyTo(image));
+		vector<pair<int, Rect>> targets = tracker.update(grayscaleFilter.applyTo(frame));
 		milliseconds iterationTime = iterationTimer.stop();
-		image.copyTo(output);
+		frame.copyTo(output);
 		if (debug) {
 			for (const Track& track : tracker.getTracks()) {
 				Mat intermediate = output.clone();
@@ -167,12 +167,12 @@ void run(Tracker& tracker, ImageSource& images) {
 			for (const Track& track : tracker.getTracks())
 				drawParticles(output, track.filter->getParticles());
 		}
-		for (const pair<int, cv::Rect>& target : targets)
+		for (const pair<int, Rect>& target : targets)
 			rectangle(output, target.second, colors[target.first % colors.size()], thickness);
 		imshow("Detections", output);
 
 		iterationTimeSum += iterationTime;
-		float iterationFps = static_cast<double>(frameCount) / iterationTimeSum.count();
+		double iterationFps = static_cast<double>(frameCount) / iterationTimeSum.count();
 		cout << fixed << setprecision(1);
 		cout << frameCount << ": ";
 		cout << iterationTime.count() << " ms -> ";
