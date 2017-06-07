@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 		if (!initialized) {
 			if (landmarks.size() == 1 && landmarks[0]->isVisible()) {
 				StopWatch iterationTimer = StopWatch::start();
-				target = tracker.init(frame, landmarks[0]->getRect());
+				target = tracker.init(frame, landmarks[0]->getRect(), false);
 				iterationTime = iterationTimer.stop();
 				initialized = target.area() > 0;
 				if (initialized) {

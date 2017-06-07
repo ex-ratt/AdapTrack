@@ -46,7 +46,7 @@ SingleTracker::SingleTracker(shared_ptr<FhogFilter> fhogFilter,
 		throw invalid_argument("SingleTracker: scale factor must be greater than one");
 }
 
-Rect SingleTracker::init(const Mat& image, Rect bounds) {
+Rect SingleTracker::init(const Mat& image, Rect bounds, bool force) {
 	targetSize.width = max(targetSize.width, targetSize.height);
 	targetSize.height = max(targetSize.width, targetSize.height);
 	windowSize.width = max(windowSize.width, windowSize.height);
@@ -69,20 +69,24 @@ Rect SingleTracker::init(const Mat& image, Rect bounds) {
 		if (targetBounds.height % 2 != windowSize.height % 2)
 			--windowSize.height;
 	}
-	if (isTargetTooSmall(targetBounds.width, targetBounds.height)
-			|| !isTargetWithinImageBounds(image, targetBounds))
-		return Rect();
-	Mat window = getFeatures(image, getWindowBounds(image, targetBounds));
-	svmTrainer->train(*svm, getPositiveTrainingExamples(window), getNegativeTrainingExamples(window));
-  convolutionFilter->setKernel(svm->getSupportVectors()[0]);
-  convolutionFilter->setDelta(-svm->getBias());
-	svmTrainer->train(*svm, getPositiveTrainingExamples(window), getNegativeTrainingExamples(window, *svm));
-	convolutionFilter->setKernel(svm->getSupportVectors()[0]);
-	convolutionFilter->setDelta(-svm->getBias());
+	if (force ||
+			(isTargetWithinImageBounds(image, targetBounds) && !isTargetTooSmall(targetBounds.width, targetBounds.height))) {
+		Mat window = getFeatures(image, getWindowBounds(image, targetBounds));
+		svmTrainer->train(*svm, getPositiveTrainingExamples(window), getNegativeTrainingExamples(window));
+		convolutionFilter->setKernel(svm->getSupportVectors()[0]);
+		convolutionFilter->setDelta(-svm->getBias());
+		svmTrainer->train(*svm, getPositiveTrainingExamples(window), getNegativeTrainingExamples(window, *svm));
+		convolutionFilter->setKernel(svm->getSupportVectors()[0]);
+		convolutionFilter->setDelta(-svm->getBias());
+	} else { // target is (partially) outside image or too small - and initialization is not forced
+		targetBounds = Rect();
+	}
 	return targetBounds;
 }
 
 Rect SingleTracker::update(const Mat& image) {
+	if (targetBounds.area() == 0)
+		throw runtime_error("SingleTracker: not initialized (target bounds too small or outside the image)");
 	Rect windowBounds = getWindowBounds(image, targetBounds);
 	Mat window = getFeatures(image, windowBounds);
 	pair<Point2d, double> maxScore = getMaxScore(window);

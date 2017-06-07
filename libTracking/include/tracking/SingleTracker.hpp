@@ -57,14 +57,16 @@ public:
 			int targetSize, int padding, double scaleFactor, double svmC, double adaptationRate);
 
 	/**
-	 * Initializes the tracker on the first frame and given bounding box that indicates the initial target position. The
-	 * bounding box must be completely within the image bounds and it must not be too small.
+	 * Initializes the tracker on the first frame and given bounding box that indicates the initial target position. If
+	 * the initialization is not forced, then the bounding box must be completely within the image bounds and it must
+	 * not be too small. Otherwise, the tracker will remain uninitialized.
 	 *
 	 * @param[in] image First frame.
 	 * @param[in] bounds Bounding box that indicates the initial target position.
+	 * @param[in] force Flag that indicates whether to force the initialization, regardless of bounding box size and position.
 	 * @return Bounding box around the target position with adjusted aspect ratio to fit the tracker; empty if not initialized.
 	 */
-	cv::Rect init(const cv::Mat& image, cv::Rect bounds);
+	cv::Rect init(const cv::Mat& image, cv::Rect bounds, bool force = true);
 
 	/**
 	 * Updates the tracker with a frame and estimates the new target position.
