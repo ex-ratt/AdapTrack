@@ -21,7 +21,6 @@ MESSAGE(STATUS "OpenCV lib dir found at ${OpenCV_LIB_DIR}")
 # source and header files
 SET(HEADERS
 	include/detection/AggregatedFeaturesDetector.hpp
-	include/detection/ClassifiedPatch.hpp
 	include/detection/NonMaximumSuppression.hpp
 	include/detection/Detector.hpp
 )

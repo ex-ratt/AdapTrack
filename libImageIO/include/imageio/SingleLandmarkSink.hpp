@@ -8,7 +8,7 @@
 #ifndef SIMPLELANDMARKSINK_HPP_
 #define SIMPLELANDMARKSINK_HPP_
 
-#include "imageio/OrderedLandmarkSink.hpp"
+#include "imageio/LandmarkSink.hpp"
 #include <fstream>
 #include <memory>
 
@@ -22,7 +22,7 @@ class Landmark;
  * the x and y coordinate of the upper left corner, followed by the width and height. If the landmark is
  * invisible, all values will be zero. There will be whitespaces between the values.
  */
-class SingleLandmarkSink : public OrderedLandmarkSink {
+class SingleLandmarkSink : public LandmarkSink {
 public:
 
 	/**

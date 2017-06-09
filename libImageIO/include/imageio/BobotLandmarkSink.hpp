@@ -8,7 +8,7 @@
 #ifndef BOBOTLANDMARKSINK_HPP_
 #define BOBOTLANDMARKSINK_HPP_
 
-#include "imageio/OrderedLandmarkSink.hpp"
+#include "imageio/LandmarkSink.hpp"
 #include <fstream>
 #include <memory>
 
@@ -20,7 +20,7 @@ class ImageSource;
 /**
  * Landmark sink that writes rectangular landmarks to a file using the Bonn Benchmark on Tracking (BoBoT) format.
  */
-class BobotLandmarkSink : public OrderedLandmarkSink {
+class BobotLandmarkSink : public LandmarkSink {
 public:
 
 	/**

@@ -9,13 +9,11 @@
 #ifndef BOBOTLANDMARKSOURCE_HPP_
 #define BOBOTLANDMARKSOURCE_HPP_
 
-#include "imageio/NamedLandmarkSource.hpp"
 #include "imageio/LandmarkCollection.hpp"
+#include "imageio/LandmarkSource.hpp"
 #include "opencv2/core/core.hpp"
-#include "boost/filesystem/path.hpp"
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <memory>
 
 namespace imageio {
@@ -27,7 +25,7 @@ class ImageSource;
  * associated image source to determine the size of the images. Each image will have one associated landmark
  * whose name is "target".
  */
-class BobotLandmarkSource : public NamedLandmarkSource {
+class BobotLandmarkSource : public LandmarkSource {
 public:
 
 	/**
@@ -56,11 +54,7 @@ public:
 
 	bool next();
 
-	LandmarkCollection get(const boost::filesystem::path& imagePath); 	// Note: Modifies the state of this LandmarkSource
-
 	LandmarkCollection getLandmarks() const;
-
-	boost::filesystem::path getName() const;
 
 private:
 
@@ -77,8 +71,6 @@ private:
 	std::shared_ptr<ImageSource> imageSource; ///< The source of the images. Is assumed to be at the same position as this landmark source.
 	std::string videoFilename; ///< The name/path of the video file associated with this landmark source (first line of file).
 	std::vector<cv::Rect_<float>> positions; ///< The target positions inside each image.
-	std::unordered_map<std::string, size_t> name2index; ///< Mapping between image name and position index.
-	std::unordered_map<size_t, std::string> index2name; ///< Mapping between position index and image name.
 	int index; ///< The index of the current target position.
 };
 

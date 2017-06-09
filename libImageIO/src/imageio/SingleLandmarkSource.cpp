@@ -6,22 +6,14 @@
  */
 
 #include "imageio/SingleLandmarkSource.hpp"
-#include "imageio/ImageSource.hpp"
 #include "imageio/RectLandmark.hpp"
 #include <fstream>
 #include <sstream>
-#include <utility>
 #include <memory>
-#include <locale>
 #include <stdexcept>
 
 using cv::Rect_;
-using boost::filesystem::path;
 using std::string;
-using std::vector;
-using std::unordered_map;
-using std::shared_ptr;
-using std::make_pair;
 using std::make_shared;
 using std::invalid_argument;
 
@@ -69,11 +61,6 @@ bool SingleLandmarkSource::next() {
 	return index < static_cast<int>(positions.size());
 }
 
-LandmarkCollection SingleLandmarkSource::get(const path& imagePath) {
-	index = std::stoi(imagePath.string());
-	return getLandmarks();
-}
-
 LandmarkCollection SingleLandmarkSource::getLandmarks() const {
 	LandmarkCollection collection;
 	if (index >= 0 && index < static_cast<int>(positions.size())) {
@@ -84,10 +71,6 @@ LandmarkCollection SingleLandmarkSource::getLandmarks() const {
 			collection.insert(make_shared<RectLandmark>(landmarkName));
 	}
 	return collection;
-}
-
-path SingleLandmarkSource::getName() const {
-	return path(std::to_string(index));
 }
 
 } /* namespace imageio */

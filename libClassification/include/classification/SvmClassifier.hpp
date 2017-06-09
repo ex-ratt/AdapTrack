@@ -69,22 +69,6 @@ public:
 	void setSvmParameters(std::vector<cv::Mat> supportVectors, std::vector<float> coefficients, double bias);
 
 	/**
-	 * Creates a new SVM classifier from the parameters given in some Matlab file.
-	 *
-	 * @param[in] classifierFilename The name of the file containing the SVM parameters.
-	 * @return The newly created SVM classifier.
-	 */
-	static std::shared_ptr<SvmClassifier> loadFromMatlab(const std::string& classifierFilename);
-
-	/**
-	 * Creates a new SVM classifier from the parameters given in some text file.
-	 *
-	 * @param[in] classifierFilename The name of the file containing the SVM parameters.
-	 * @return The newly created SVM classifier.
-	 */
-	static std::shared_ptr<SvmClassifier> loadFromText(const std::string& classifierFilename);
-
-	/**
 	 * Stores the SVM parameters (kernel, bias, coefficients, support vectors) into a text file.
 	 *
 	 * @param[in] file The file output stream to store the parameters into.

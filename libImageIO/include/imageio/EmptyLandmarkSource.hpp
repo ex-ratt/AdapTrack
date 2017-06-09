@@ -8,7 +8,7 @@
 #ifndef EMPTYLANDMARKSOURCE_HPP_
 #define EMPTYLANDMARKSOURCE_HPP_
 
-#include "imageio/NamedLandmarkSource.hpp"
+#include "imageio/LandmarkSource.hpp"
 #include "imageio/LandmarkCollection.hpp"
 
 namespace imageio {
@@ -16,7 +16,7 @@ namespace imageio {
 /**
  * Landmark source without any landmarks.
  */
-class EmptyLandmarkSource : public NamedLandmarkSource {
+class EmptyLandmarkSource : public LandmarkSource {
 public:
 
 	/**
@@ -30,16 +30,8 @@ public:
 		return true;
 	}
 
-	LandmarkCollection get(const boost::filesystem::path& imagePath) {
-		return empty;
-	}
-
 	LandmarkCollection getLandmarks() const {
 		return empty;
-	}
-
-	boost::filesystem::path getName() const {
-		return boost::filesystem::path();
 	}
 
 private:

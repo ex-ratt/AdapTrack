@@ -8,17 +8,13 @@
 #ifndef SIMPLELANDMARKSOURCE_HPP_
 #define SIMPLELANDMARKSOURCE_HPP_
 
-#include "imageio/NamedLandmarkSource.hpp"
 #include "imageio/LandmarkCollection.hpp"
+#include "imageio/LandmarkSource.hpp"
 #include "opencv2/core/core.hpp"
 #include <string>
 #include <vector>
-#include <unordered_map>
-#include <memory>
 
 namespace imageio {
-
-class ImageSource;
 
 /**
  * Landmark source that has at most one rectangular landmark per frame named "target". The file must have one
@@ -26,7 +22,7 @@ class ImageSource;
  * width and height. If width or height is less than one, then the target is considered invisible. The values
  * should be separated by white space or a delimiter character (delimiter and whitespace is also allowed).
  */
-class SingleLandmarkSource : public NamedLandmarkSource {
+class SingleLandmarkSource : public LandmarkSource {
 public:
 
 	/**
@@ -40,11 +36,7 @@ public:
 
 	bool next();
 
-	LandmarkCollection get(const boost::filesystem::path& imagePath);
-
 	LandmarkCollection getLandmarks() const;
-
-	boost::filesystem::path getName() const;
 
 private:
 

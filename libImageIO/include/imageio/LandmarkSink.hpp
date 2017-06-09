@@ -1,12 +1,12 @@
 /*
- * OrderedLandmarkSink.hpp
+ * LandmarkSink.hpp
  *
  *  Created on: 27.05.2013
  *      Author: poschmann
  */
 
-#ifndef ORDEREDLANDMARKSINK_HPP_
-#define ORDEREDLANDMARKSINK_HPP_
+#ifndef LANDMARKSINK_HPP_
+#define LANDMARKSINK_HPP_
 
 #include <string>
 
@@ -17,10 +17,10 @@ class LandmarkCollection;
 /**
  * Sink for subsequent landmark collections.
  */
-class OrderedLandmarkSink {
+class LandmarkSink {
 public:
 
-	virtual ~OrderedLandmarkSink() {}
+	virtual ~LandmarkSink() {}
 
 	/**
 	 * Determines whether this landmark sink is open.
@@ -50,4 +50,4 @@ public:
 };
 
 } /* namespace imageio */
-#endif /* ORDEREDLANDMARKSINK_HPP_ */
+#endif /* LANDMARKSINK_HPP_ */
