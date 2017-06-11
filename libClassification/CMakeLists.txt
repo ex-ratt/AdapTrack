@@ -17,7 +17,6 @@ SET(HEADERS
 	include/classification/ConfidenceBasedExampleManagement.hpp
 	include/classification/EmptyExampleManagement.hpp
 	include/classification/ExampleManagement.hpp
-	include/classification/FixedTrainableProbabilisticSvmClassifier.hpp
 	include/classification/HistogramIntersectionKernel.hpp
 	include/classification/IncrementalClassifierTrainer.hpp
 	include/classification/IncrementalLinearSvmTrainer.hpp
@@ -31,11 +30,6 @@ SET(HEADERS
 	include/classification/PseudoProbabilisticSvmTrainer.hpp
 	include/classification/RbfKernel.hpp
 	include/classification/SvmClassifier.hpp
-	include/classification/TrainableBinaryClassifier.hpp
-	include/classification/TrainableClassifier.hpp
-	include/classification/TrainableProbabilisticClassifier.hpp
-	include/classification/TrainableProbabilisticSvmClassifier.hpp
-	include/classification/TrainableSvmClassifier.hpp
 	include/classification/UnlimitedExampleManagement.hpp
 	include/classification/VectorBasedExampleManagement.hpp
 	include/classification/VectorMachineClassifier.hpp
@@ -45,8 +39,6 @@ SET(SOURCE
 	src/classification/ConfidenceBasedExampleManagement.cpp
 	src/classification/ProbabilisticSvmClassifier.cpp
 	src/classification/SvmClassifier.cpp
-	src/classification/TrainableProbabilisticSvmClassifier.cpp
-	src/classification/TrainableSvmClassifier.cpp
 	src/classification/UnlimitedExampleManagement.cpp
 	src/classification/VectorBasedExampleManagement.cpp
 	src/classification/VectorMachineClassifier.cpp

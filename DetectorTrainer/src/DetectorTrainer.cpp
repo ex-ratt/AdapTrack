@@ -7,15 +7,17 @@
 
 #include "DetectorTrainer.hpp"
 #include "classification/LinearKernel.hpp"
-#include "classification/SvmClassifier.hpp"
+#include "classification/UnlimitedExampleManagement.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/Patch.hpp"
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 
-using classification::ExampleManagement;
 using classification::LinearKernel;
+using classification::ProbabilisticSvmClassifier;
+using classification::SvmClassifier;
+using classification::UnlimitedExampleManagement;
 using cv::Mat;
 using cv::Rect;
 using detection::AggregatedFeaturesDetector;
@@ -26,12 +28,12 @@ using imageio::Annotations;
 using imageprocessing::Patch;
 using imageprocessing::extraction::AggregatedFeaturesExtractor;
 using imageprocessing::filtering::ImageFilter;
-using libsvm::LibSvmClassifier;
+using libsvm::LibSvmTrainer;
 using std::make_shared;
+using std::make_unique;
 using std::runtime_error;
 using std::shared_ptr;
 using std::string;
-using std::unique_ptr;
 using std::vector;
 
 DetectorTrainer::DetectorTrainer(bool printProgressInformation, std::string printPrefix) :
@@ -48,37 +50,43 @@ shared_ptr<AggregatedFeaturesDetector> DetectorTrainer::getDetector(shared_ptr<N
 
 shared_ptr<AggregatedFeaturesDetector> DetectorTrainer::getDetector(
 		shared_ptr<NonMaximumSuppression> nms, int octaveLayerCount, float threshold) const {
-	if (!classifier->isUsable())
-		throw runtime_error("DetectorTrainer: must train a classifier first");
-	classifier->getSvm()->setThreshold(threshold);
+	if (!svm)
+		throw runtime_error("DetectorTrainer: must train the detector first");
+	svm->setThreshold(threshold);
 	shared_ptr<AggregatedFeaturesDetector> detector;
 	if (!imageFilter)
 		detector = make_shared<AggregatedFeaturesDetector>(filter, featureParams.cellSizeInPixels,
-				featureParams.windowSizeInCells, octaveLayerCount, classifier->getSvm(), nms,
+				featureParams.windowSizeInCells, octaveLayerCount, svm, nms,
 				featureParams.widthScaleFactorInv(), featureParams.heightScaleFactorInv());
 	else
 		detector = make_shared<AggregatedFeaturesDetector>(imageFilter, filter, featureParams.cellSizeInPixels,
-				featureParams.windowSizeInCells, octaveLayerCount, classifier->getSvm(), nms,
+				featureParams.windowSizeInCells, octaveLayerCount, svm, nms,
 				featureParams.widthScaleFactorInv(), featureParams.heightScaleFactorInv());
-	classifier->getSvm()->setThreshold(0);
+	svm->setThreshold(0);
 	return detector;
 }
 
 void DetectorTrainer::storeClassifier(const string& filename) const {
 	std::ofstream stream(filename);
 	if (trainingParams.probabilistic)
-		classifier->getProbabilisticSvm()->store(stream);
+		probabilisticSvm->store(stream);
 	else
-		classifier->getSvm()->store(stream);
+		svm->store(stream);
 	stream.close();
 }
 
 Mat DetectorTrainer::getWeightVector() const {
-	return classifier->getSvm()->getSupportVectors().front();
+	return svm->getSupportVectors().front();
 }
 
 void DetectorTrainer::setTrainingParameters(TrainingParams params) {
 	trainingParams = params;
+	trainer = make_shared<LibSvmTrainer>(trainingParams.C, trainingParams.compensateImbalance);
+	positives = make_unique<UnlimitedExampleManagement>();
+	if (trainingParams.maxNegatives > 0)
+		negatives = make_unique<HardNegativeExampleManagement>(svm, trainingParams.maxNegatives);
+	else
+		negatives = make_unique<UnlimitedExampleManagement>();
 }
 
 void DetectorTrainer::setFeatures(FeatureParams params, const shared_ptr<ImageFilter>& filter, const shared_ptr<ImageFilter>& imageFilter) {
@@ -96,6 +104,10 @@ void DetectorTrainer::setFeatures(FeatureParams params, const shared_ptr<ImageFi
 }
 
 void DetectorTrainer::train(vector<AnnotatedImage> images) {
+	if (!featureExtractor)
+		throw runtime_error("DetectorTrainer: must set feature parameters first");
+	if (!trainer)
+		throw runtime_error("DetectorTrainer: must set training parameters first");
 	createEmptyClassifier();
 	collectInitialTrainingExamples(images);
 	trainClassifier();
@@ -106,11 +118,10 @@ void DetectorTrainer::train(vector<AnnotatedImage> images) {
 }
 
 void DetectorTrainer::createEmptyClassifier() {
-	classifier = LibSvmClassifier::createBinarySvm(make_shared<LinearKernel>(),
-			trainingParams.C, trainingParams.compensateImbalance, trainingParams.probabilistic);
-	if (trainingParams.maxNegatives > 0)
-		classifier->setNegativeExampleManagement(unique_ptr<ExampleManagement>(
-				new HardNegativeExampleManagement(classifier, trainingParams.maxNegatives)));
+	svm = make_shared<SvmClassifier>(make_shared<LinearKernel>());
+	probabilisticSvm = make_shared<ProbabilisticSvmClassifier>(svm);
+	positives->clear();
+	negatives->clear();
 }
 
 void DetectorTrainer::collectInitialTrainingExamples(vector<AnnotatedImage> images) {
@@ -127,9 +138,9 @@ void DetectorTrainer::collectHardTrainingExamples(vector<AnnotatedImage> images)
 }
 
 void DetectorTrainer::createHardNegativesDetector() {
-	classifier->getSvm()->setThreshold(trainingParams.negativeScoreThreshold);
-	hardNegativesDetector = make_shared<AggregatedFeaturesDetector>(featureExtractor, classifier->getSvm(), noSuppression);
-	classifier->getSvm()->setThreshold(0);
+	svm->setThreshold(trainingParams.negativeScoreThreshold);
+	hardNegativesDetector = make_shared<AggregatedFeaturesDetector>(featureExtractor, svm, noSuppression);
+	svm->setThreshold(0);
 }
 
 void DetectorTrainer::collectTrainingExamples(vector<AnnotatedImage> images, bool initial) {
@@ -209,7 +220,7 @@ void DetectorTrainer::addPositiveExamples(const vector<Rect>& positiveBoxes) {
 	for (const Rect& bounds : positiveBoxes) {
 		shared_ptr<Patch> patch = featureExtractor->extract(bounds);
 		if (patch)
-			positiveTrainingExamples.push_back(patch->getData());
+			newPositives.push_back(patch->getData());
 	}
 }
 
@@ -247,7 +258,7 @@ bool DetectorTrainer::addNegativeIfNotOverlapping(Rect candidate, const vector<R
 	shared_ptr<Patch> patch = featureExtractor->extract(candidate);
 	if (!patch || isOverlapping(patch->getBounds(), nonNegativeBoxes))
 		return false;
-	negativeTrainingExamples.push_back(patch->getData());
+	newNegatives.push_back(patch->getData());
 	return true;
 }
 
@@ -267,24 +278,24 @@ double DetectorTrainer::computeOverlap(Rect a, Rect b) const {
 }
 
 void DetectorTrainer::trainClassifier() {
-	trainClassifier(true);
+	if (printProgressInformation)
+		std::cout << printPrefix << "training SVM (with " << newPositives.size() << " positives and " << newNegatives.size() << " negatives)" << std::endl;
+	trainSvm();
 }
 
 void DetectorTrainer::retrainClassifier() {
-	trainClassifier(false);
+	if (printProgressInformation)
+		std::cout << printPrefix << "re-training SVM (found " << newNegatives.size() << " potential new negatives)" << std::endl;
+	trainSvm();
 }
 
-void DetectorTrainer::trainClassifier(bool initial) {
-	if (printProgressInformation) {
-		if (initial)
-			std::cout << printPrefix << "training classifier (with " << positiveTrainingExamples.size() << " positives and " << negativeTrainingExamples.size() << " negatives)" << std::endl;
-		else
-			std::cout << printPrefix << "re-training classifier (found " << negativeTrainingExamples.size() << " potential new negatives)" << std::endl;
-	}
-	if (!classifier->retrain(positiveTrainingExamples, negativeTrainingExamples))
-		throw runtime_error("DetectorTrainer: SVM is not usable after training");
-	if (classifier->getSvm()->getSupportVectors().size() != 1) // should never happen because of linear kernel
-		throw runtime_error("DetectorTrainer: the amount of support vectors has to be one (w)");
-	positiveTrainingExamples.clear();
-	negativeTrainingExamples.clear();
+void DetectorTrainer::trainSvm() {
+	positives->add(newPositives);
+	negatives->add(newNegatives);
+	if (trainingParams.probabilistic)
+		trainer->train(*probabilisticSvm, positives->getAll(), negatives->getAll());
+	else
+		trainer->train(*svm, positives->getAll(), negatives->getAll());
+	newPositives.clear();
+	newNegatives.clear();
 }

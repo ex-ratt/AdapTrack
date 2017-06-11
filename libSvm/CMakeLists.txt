@@ -12,14 +12,12 @@ FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core)
 # source and header files
 SET(HEADERS
 	include/svm.h
-	include/libsvm/LibSvmClassifier.hpp
 	include/libsvm/LibSvmKernelParamSetter.hpp
 	include/libsvm/LibSvmTrainer.hpp
 	include/libsvm/LibSvmUtils.hpp
 )
 SET(SOURCE
 	src/svm.cpp
-	src/libsvm/LibSvmClassifier.cpp
 	src/libsvm/LibSvmTrainer.cpp
 	src/libsvm/LibSvmUtils.cpp
 )

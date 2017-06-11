@@ -9,9 +9,12 @@
 #define DETECTORTRAINER_HPP_
 
 #include "classification/ConfidenceBasedExampleManagement.hpp"
+#include "classification/ExampleManagement.hpp"
+#include "classification/ProbabilisticSvmClassifier.hpp"
+#include "classification/SvmClassifier.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
-#include "libsvm/LibSvmClassifier.hpp"
+#include "libsvm/LibSvmTrainer.hpp"
 #include "imageio/AnnotatedImage.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
 #include "imageprocessing/filtering/ImageFilter.hpp"
@@ -92,7 +95,7 @@ public:
 };
 
 /**
- * Trainer for detectors based on aggregated features and linear SVMs.
+ * Trainer for detectors based on aggregated features and a linear support vector machine.
  */
 class DetectorTrainer {
 public:
@@ -213,7 +216,7 @@ private:
 
 	void retrainClassifier();
 
-	void trainClassifier(bool initial);
+	void trainSvm();
 
 	bool printProgressInformation;
 	std::string printPrefix;
@@ -225,10 +228,14 @@ private:
 	std::shared_ptr<imageprocessing::filtering::ImageFilter> imageFilter;
 	std::shared_ptr<imageprocessing::filtering::ImageFilter> filter;
 	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor;
-	std::shared_ptr<libsvm::LibSvmClassifier> classifier;
+	std::shared_ptr<classification::SvmClassifier> svm;
+	std::shared_ptr<classification::ProbabilisticSvmClassifier> probabilisticSvm;
+	std::shared_ptr<libsvm::LibSvmTrainer> trainer;
 	std::shared_ptr<detection::AggregatedFeaturesDetector> hardNegativesDetector;
-	std::vector<cv::Mat> positiveTrainingExamples;
-	std::vector<cv::Mat> negativeTrainingExamples;
+	std::unique_ptr<classification::ExampleManagement> positives;
+	std::unique_ptr<classification::ExampleManagement> negatives;
+	std::vector<cv::Mat> newPositives;
+	std::vector<cv::Mat> newNegatives;
 	cv::Mat image;
 	cv::Size imageSize;
 	mutable std::mt19937 generator;
