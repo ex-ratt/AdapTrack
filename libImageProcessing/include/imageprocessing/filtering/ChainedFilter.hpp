@@ -5,14 +5,15 @@
  *      Author: poschmann
  */
 
-#ifndef CHAINEDFILTER_HPP_
-#define CHAINEDFILTER_HPP_
+#ifndef IMAGEPROCESSING_FILTERING_CHAINEDFILTER_HPP_
+#define IMAGEPROCESSING_FILTERING_CHAINEDFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include <vector>
 #include <memory>
 
 namespace imageprocessing {
+namespace filtering {
 
 /**
  * Image filter that applies several filters in order. The result of a filter is used as input of the following filter,
@@ -68,5 +69,6 @@ private:
 	std::vector<std::shared_ptr<ImageFilter>> filters; ///< The filters in order of application.
 };
 
+} /* namespace filtering */
 } /* namespace imageprocessing */
-#endif /* CHAINEDFILTER_HPP_ */
+#endif /* IMAGEPROCESSING_FILTERING_CHAINEDFILTER_HPP_ */

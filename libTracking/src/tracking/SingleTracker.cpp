@@ -13,10 +13,9 @@
 
 using namespace classification;
 using namespace cv;
-using namespace imageprocessing;
+using namespace imageprocessing::filtering;
 using namespace std;
 using libsvm::LibSvmTrainer;
-using imageprocessing::filtering::FhogFilter;
 
 namespace tracking {
 

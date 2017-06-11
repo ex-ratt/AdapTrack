@@ -8,9 +8,9 @@
 #ifndef IMAGEPROCESSING_FILTERING_GRADIENTHISTOGRAMFILTER_HPP_
 #define IMAGEPROCESSING_FILTERING_GRADIENTHISTOGRAMFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
 #include "imageprocessing/filtering/GradientMagnitudeFilter.hpp"
 #include "imageprocessing/filtering/GradientOrientationFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include <array>
 #include <memory>
 

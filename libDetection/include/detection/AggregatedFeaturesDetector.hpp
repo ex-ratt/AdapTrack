@@ -11,10 +11,10 @@
 #include "classification/SvmClassifier.hpp"
 #include "detection/Detector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
-#include "imageprocessing/ConvolutionFilter.hpp"
-#include "imageprocessing/ImageFilter.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
+#include "imageprocessing/filtering/ConvolutionFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include <utility>
 #include <vector>
 
@@ -41,8 +41,8 @@ public:
 	 * @param[in] minWindowWidth Width of the smallest detectable window in pixels (cannot be smaller than actual window width in pixels).
 	 * @param[in] maxWindowWidth Width of the largest detectable window in pixels.
 	 */
-	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::ImageFilter> imageFilter,
-			std::shared_ptr<imageprocessing::ImageFilter> layerFilter, int cellSize, cv::Size windowSize, int octaveLayerCount,
+	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::filtering::ImageFilter> imageFilter,
+			std::shared_ptr<imageprocessing::filtering::ImageFilter> layerFilter, int cellSize, cv::Size windowSize, int octaveLayerCount,
 			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
 			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0, int maxWindowWidth = 0);
 
@@ -60,7 +60,7 @@ public:
 	 * @param[in] minWindowWidth Width of the smallest detectable window in pixels (cannot be smaller than actual window width in pixels).
 	 * @param[in] maxWindowWidth Width of the largest detectable window in pixels.
 	 */
-	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::ImageFilter> filter, int cellSize, cv::Size windowSize, int octaveLayerCount,
+	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::filtering::ImageFilter> filter, int cellSize, cv::Size windowSize, int octaveLayerCount,
 			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
 			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0, int maxWindowWidth = 0);
 
@@ -158,7 +158,7 @@ private:
 	std::vector<std::pair<cv::Rect, float>> extractBoundingBoxesWithScores(std::vector<Detection> detections);
 
 	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor;
-	std::shared_ptr<imageprocessing::ConvolutionFilter> convolutionFilter;
+	std::shared_ptr<imageprocessing::filtering::ConvolutionFilter> convolutionFilter;
 	std::shared_ptr<imageprocessing::ImagePyramid> scorePyramid; ///< Classification score pyramid.
 	std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression;
 	cv::Size kernelSize;

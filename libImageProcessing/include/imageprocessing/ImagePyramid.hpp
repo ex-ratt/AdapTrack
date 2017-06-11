@@ -5,23 +5,20 @@
  *      Author: huber & poschmann
  */
 
-#pragma once
+#ifndef IMAGEPROCESSING_IMAGEPYRAMID_HPP_
+#define IMAGEPROCESSING_IMAGEPYRAMID_HPP_
 
-#ifndef IMAGEPYRAMID_HPP_
-#define IMAGEPYRAMID_HPP_
-
+#include "imageprocessing/ImagePyramidLayer.hpp"
 #include "imageprocessing/Version.hpp"
+#include "imageprocessing/VersionedImage.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
+#include "imageprocessing/filtering/ChainedFilter.hpp"
 #include "opencv2/core/core.hpp"
 #include <vector>
 #include <memory>
 #include <utility>
 
 namespace imageprocessing {
-
-class VersionedImage;
-class ImagePyramidLayer;
-class ImageFilter;
-class ChainedFilter;
 
 /**
  * Image pyramid consisting of scaled representations of an image.
@@ -46,8 +43,8 @@ public:
 	 * @param[in] filter Image filter applied to the scaled images. May be empty (filters can be added later).
 	 * @return Image pyramid that uses the given pyramid as its source and applies additional filters to the scaled images.
 	 */
-	static std::shared_ptr<ImagePyramid> createFiltered(
-			std::shared_ptr<ImagePyramid> pyramid, const std::shared_ptr<ImageFilter>& filter = std::shared_ptr<ImageFilter>());
+	static std::shared_ptr<ImagePyramid> createFiltered(std::shared_ptr<ImagePyramid> pyramid,
+			const std::shared_ptr<filtering::ImageFilter>& filter = std::shared_ptr<filtering::ImageFilter>());
 
 	/**
 	 * Creates an image pyramid that approximates all but one layer for each octave.
@@ -116,14 +113,14 @@ public:
 	 *
 	 * @param[in] filter The new image filter.
 	 */
-	void addImageFilter(const std::shared_ptr<ImageFilter>& filter);
+	void addImageFilter(const std::shared_ptr<filtering::ImageFilter>& filter);
 
 	/**
 	 * Adds a new filter that is applied to the down-scaled images after the currently existing layer filters.
 	 *
 	 * @param[in] filter The new layer filter.
 	 */
-	void addLayerFilter(const std::shared_ptr<ImageFilter>& filter);
+	void addLayerFilter(const std::shared_ptr<filtering::ImageFilter>& filter);
 
 	/**
 	 * Forces an update of this pyramid using the saved parameters. If this pyramid's source is another pyramid, then
@@ -306,9 +303,9 @@ private:
 	std::shared_ptr<ImagePyramid> sourcePyramid; ///< The source pyramid.
 	Version version; ///< The version.
 
-	std::shared_ptr<ChainedFilter> imageFilter; ///< Filter that is applied to the image before down-scaling.
-	std::shared_ptr<ChainedFilter> layerFilter; ///< Filter that is applied to the down-scaled images of the layers.
+	std::shared_ptr<filtering::ChainedFilter> imageFilter; ///< Filter that is applied to the image before down-scaling.
+	std::shared_ptr<filtering::ChainedFilter> layerFilter; ///< Filter that is applied to the down-scaled images of the layers.
 };
 
 } /* namespace imageprocessing */
-#endif // IMAGEPYRAMID_HPP_
+#endif // IMAGEPROCESSING_IMAGEPYRAMID_HPP_

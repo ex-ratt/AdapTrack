@@ -5,10 +5,10 @@
  *      Author: poschmann
  */
 
-#ifndef IMAGEPYRAMIDLAYER_HPP_
-#define IMAGEPYRAMIDLAYER_HPP_
+#ifndef IMAGEPROCESSING_IMAGEPYRAMIDLAYER_HPP_
+#define IMAGEPROCESSING_IMAGEPYRAMIDLAYER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include "opencv2/core/core.hpp"
 #include <memory>
 
@@ -49,7 +49,7 @@ public:
 	 * @param[in] filter The filter to apply to the copied image.
 	 * @return The copied image pyramid layer with a filtered image.
 	 */
-	std::shared_ptr<ImagePyramidLayer> createFiltered(const ImageFilter& filter) {
+	std::shared_ptr<ImagePyramidLayer> createFiltered(const filtering::ImageFilter& filter) {
 		return std::make_shared<ImagePyramidLayer>(*this, filter.applyTo(image));
 	}
 
@@ -164,4 +164,4 @@ private:
 };
 
 } /* namespace imageprocessing */
-#endif /* IMAGEPYRAMIDLAYER_HPP_ */
+#endif /* IMAGEPROCESSING_IMAGEPYRAMIDLAYER_HPP_ */

@@ -11,8 +11,8 @@
 #include "classification/ProbabilisticSvmClassifier.hpp"
 #include "classification/IncrementalClassifierTrainer.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
-#include "imageprocessing/FeatureExtractor.hpp"
 #include "imageprocessing/VersionedImage.hpp"
+#include "imageprocessing/extraction/FeatureExtractor.hpp"
 #include "opencv2/core/core.hpp"
 #include "tracking/filtering/MeasurementModel.hpp"
 #include "tracking/filtering/MotionModel.hpp"
@@ -62,7 +62,7 @@ public:
 	 * @param[in] svm SVM that computes the likelihood of the particles.
 	 * @param[in] motionModel Motion model that samples new particles.
 	 */
-	MultiTracker(std::shared_ptr<imageprocessing::FeatureExtractor> exactFeatureExtractor,
+	MultiTracker(std::shared_ptr<imageprocessing::extraction::FeatureExtractor> exactFeatureExtractor,
 			std::shared_ptr<detection::AggregatedFeaturesDetector> detector,
 			std::shared_ptr<classification::ProbabilisticSvmClassifier> svm,
 			std::shared_ptr<filtering::MotionModel> motionModel);
@@ -213,8 +213,8 @@ private:
 	std::vector<Track> tracks; ///< Tracked targets.
 	int nextTrackId; ///< Identifier that is associated to the next new target.
 	std::shared_ptr<detection::AggregatedFeaturesDetector> detector; ///< Detector that finds new targets to track.
-	std::shared_ptr<imageprocessing::FeatureExtractor> pyramidFeatureExtractor; ///< Feature extractor that re-uses the feature pyramid of the detector.
-	std::shared_ptr<imageprocessing::FeatureExtractor> exactFeatureExtractor; ///< Feature extractor that provides patches exactly as requested.
+	std::shared_ptr<imageprocessing::extraction::FeatureExtractor> pyramidFeatureExtractor; ///< Feature extractor that re-uses the feature pyramid of the detector.
+	std::shared_ptr<imageprocessing::extraction::FeatureExtractor> exactFeatureExtractor; ///< Feature extractor that provides patches exactly as requested.
 	std::shared_ptr<classification::ProbabilisticSvmClassifier> svm; ///< SVM that is common to all targets.
 	std::shared_ptr<filtering::MeasurementModel> commonMeasurementModel; ///< Measurement model that is common to all targets.
 	std::shared_ptr<filtering::MotionModel> motionModel; ///< Motion model of the targets.

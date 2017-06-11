@@ -8,10 +8,10 @@
 #ifndef IMAGEPROCESSING_FILTERING_FHOGFILTER_HPP_
 #define IMAGEPROCESSING_FILTERING_FHOGFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
 #include "imageprocessing/filtering/FhogAggregationFilter.hpp"
 #include "imageprocessing/filtering/GradientMagnitudeFilter.hpp"
 #include "imageprocessing/filtering/GradientOrientationFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include <array>
 #include <memory>
 

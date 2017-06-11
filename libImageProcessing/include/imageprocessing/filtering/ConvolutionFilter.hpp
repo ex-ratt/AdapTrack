@@ -5,12 +5,13 @@
  *      Author: poschmann
  */
 
-#ifndef CONVOLUTIONFILTER_HPP_
-#define CONVOLUTIONFILTER_HPP_
+#ifndef IMAGEPROCESSING_FILTERING_CONVOLUTIONFILTER_HPP_
+#define IMAGEPROCESSING_FILTERING_CONVOLUTIONFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 
 namespace imageprocessing {
+namespace filtering {
 
 /**
  * Filter that convolves the image with a kernel.
@@ -68,5 +69,6 @@ private:
 	int depth; ///< The desired depth of the filted image.
 };
 
+} /* namespace filtering */
 } /* namespace imageprocessing */
-#endif /* CONVOLUTIONFILTER_HPP_ */
+#endif /* IMAGEPROCESSING_FILTERING_CONVOLUTIONFILTER_HPP_ */

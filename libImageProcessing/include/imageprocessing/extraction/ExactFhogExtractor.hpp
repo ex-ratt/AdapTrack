@@ -8,9 +8,9 @@
 #ifndef IMAGEPROCESSING_EXTRACTION_EXACTFHOGEXTRACTOR_HPP_
 #define IMAGEPROCESSING_EXTRACTION_EXACTFHOGEXTRACTOR_HPP_
 
-#include "imageprocessing/FeatureExtractor.hpp"
 #include "imageprocessing/Patch.hpp"
 #include "imageprocessing/VersionedImage.hpp"
+#include "imageprocessing/extraction/FeatureExtractor.hpp"
 #include "imageprocessing/filtering/FhogFilter.hpp"
 
 namespace imageprocessing {

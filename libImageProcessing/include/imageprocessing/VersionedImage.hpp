@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef VERSIONEDIMAGE_HPP_
-#define VERSIONEDIMAGE_HPP_
+#ifndef IMAGEPROCESSING_VERSIONEDIMAGE_HPP_
+#define IMAGEPROCESSING_VERSIONEDIMAGE_HPP_
 
 #include "imageprocessing/Version.hpp"
 #include "opencv2/core/core.hpp"
@@ -67,4 +67,4 @@ private:
 };
 
 } /* namespace imageprocessing */
-#endif /* VERSIONEDIMAGE_HPP_ */
+#endif /* IMAGEPROCESSING_VERSIONEDIMAGE_HPP_ */

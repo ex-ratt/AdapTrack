@@ -8,7 +8,7 @@
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/ImagePyramidLayer.hpp"
 #include "imageprocessing/VersionedImage.hpp"
-#include "imageprocessing/ChainedFilter.hpp"
+#include "imageprocessing/filtering/ChainedFilter.hpp"
 #include "logging/LoggerFactory.hpp"
 #include "logging/Logger.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -16,6 +16,8 @@
 #include <sstream>
 #include <stdexcept>
 
+using imageprocessing::filtering::ChainedFilter;
+using imageprocessing::filtering::ImageFilter;
 using logging::LoggerFactory;
 using cv::Mat;
 using cv::Size;

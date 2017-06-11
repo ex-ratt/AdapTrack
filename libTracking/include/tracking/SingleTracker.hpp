@@ -10,7 +10,7 @@
 
 #include "classification/IncrementalClassifierTrainer.hpp"
 #include "classification/SvmClassifier.hpp"
-#include "imageprocessing/ConvolutionFilter.hpp"
+#include "imageprocessing/filtering/ConvolutionFilter.hpp"
 #include "imageprocessing/filtering/FhogFilter.hpp"
 #include "opencv2/core/core.hpp"
 #include <memory>
@@ -104,7 +104,7 @@ private:
 	std::shared_ptr<imageprocessing::filtering::FhogFilter> fhogFilter; ///< Filter that computes the FHOG descriptors of the search window.
 	std::shared_ptr<classification::SvmClassifier> svm; ///< SVM that is adapted to the target.
 	std::shared_ptr<classification::IncrementalClassifierTrainer<classification::SvmClassifier>> svmTrainer; ///< SVM trainer.
-	std::shared_ptr<imageprocessing::ConvolutionFilter> convolutionFilter; ///< Filter that convolves the FHOG window with the SVM weight.
+	std::shared_ptr<imageprocessing::filtering::ConvolutionFilter> convolutionFilter; ///< Filter that convolves the FHOG window with the SVM weight.
 	cv::Size targetSize; ///< Size of the target in FHOG cells.
 	cv::Size windowSize; ///< Size of the search window in FHOG cells.
 	double scaleFactor; ///< Scale factor of neighboring scales that are searched for the target.

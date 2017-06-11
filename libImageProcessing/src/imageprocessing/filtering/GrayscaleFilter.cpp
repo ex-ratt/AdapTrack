@@ -5,13 +5,14 @@
  *      Author: poschmann
  */
 
-#include "imageprocessing/GrayscaleFilter.hpp"
+#include "imageprocessing/filtering/GrayscaleFilter.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
 using cv::Mat;
 using cv::cvtColor;
 
 namespace imageprocessing {
+namespace filtering {
 
 GrayscaleFilter::GrayscaleFilter() {}
 
@@ -31,4 +32,5 @@ void GrayscaleFilter::applyInPlace(Mat& image) const {
 	}
 }
 
+} /* namespace filtering */
 } /* namespace imageprocessing */

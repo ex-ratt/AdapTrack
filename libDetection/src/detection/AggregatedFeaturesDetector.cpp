@@ -7,9 +7,8 @@
 
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "classification/LinearKernel.hpp"
-#include "imageprocessing/GrayscaleFilter.hpp"
-#include "imageprocessing/ImagePyramidLayer.hpp"
 #include "imageprocessing/Patch.hpp"
+#include "imageprocessing/filtering/GrayscaleFilter.hpp"
 #include <stdexcept>
 
 using classification::LinearKernel;
@@ -18,14 +17,14 @@ using cv::Point;
 using cv::Rect;
 using cv::Size;
 using cv::Mat;
-using imageprocessing::ConvolutionFilter;
-using imageprocessing::GrayscaleFilter;
-using imageprocessing::ImageFilter;
 using imageprocessing::ImagePyramid;
 using imageprocessing::ImagePyramidLayer;
 using imageprocessing::Patch;
 using imageprocessing::VersionedImage;
 using imageprocessing::extraction::AggregatedFeaturesExtractor;
+using imageprocessing::filtering::ConvolutionFilter;
+using imageprocessing::filtering::GrayscaleFilter;
+using imageprocessing::filtering::ImageFilter;
 using std::make_shared;
 using std::pair;
 using std::shared_ptr;

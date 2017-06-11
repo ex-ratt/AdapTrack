@@ -9,8 +9,8 @@
 #define TRACKING_FILTERING_CLASSIFIERMEASUREMENTMODEL_HPP_
 
 #include "classification/ProbabilisticClassifier.hpp"
-#include "imageprocessing/FeatureExtractor.hpp"
 #include "imageprocessing/Patch.hpp"
+#include "imageprocessing/extraction/FeatureExtractor.hpp"
 #include "tracking/filtering/MeasurementModel.hpp"
 
 namespace tracking {
@@ -29,7 +29,7 @@ public:
 	 * @param[in] classifier Classifier that computes a probability given features.
 	 */
 	ClassifierMeasurementModel(
-			std::shared_ptr<imageprocessing::FeatureExtractor> featureExtractor,
+			std::shared_ptr<imageprocessing::extraction::FeatureExtractor> featureExtractor,
 			std::shared_ptr<classification::ProbabilisticClassifier> classifier) :
 					featureExtractor(featureExtractor),
 					classifier(classifier) {}
@@ -46,7 +46,7 @@ public:
 
 private:
 
-	std::shared_ptr<imageprocessing::FeatureExtractor> featureExtractor; ///< Extractor of features given a bounding box.
+	std::shared_ptr<imageprocessing::extraction::FeatureExtractor> featureExtractor; ///< Extractor of features given a bounding box.
 	std::shared_ptr<classification::ProbabilisticClassifier> classifier; ///< Classifier that computes a probability given features.
 };
 

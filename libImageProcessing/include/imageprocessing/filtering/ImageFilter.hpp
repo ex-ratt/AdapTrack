@@ -5,12 +5,13 @@
  *      Author: poschmann
  */
 
-#ifndef IMAGEFILTER_HPP_
-#define IMAGEFILTER_HPP_
+#ifndef IMAGEPROCESSING_FILTERING_IMAGEFILTER_HPP_
+#define IMAGEPROCESSING_FILTERING_IMAGEFILTER_HPP_
 
 #include "opencv2/core/core.hpp"
 
 namespace imageprocessing {
+namespace filtering {
 
 /**
  * Filter of images.
@@ -56,5 +57,6 @@ public:
 	}
 };
 
+} /* namespace filtering */
 } /* namespace imageprocessing */
-#endif /* IMAGEFILTER_HPP_ */
+#endif /* IMAGEPROCESSING_FILTERING_IMAGEFILTER_HPP_ */

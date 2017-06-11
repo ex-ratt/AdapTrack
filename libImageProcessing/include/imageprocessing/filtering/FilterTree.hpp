@@ -8,7 +8,7 @@
 #ifndef IMAGEPROCESSING_FILTERING_FILTERTREE_HPP_
 #define IMAGEPROCESSING_FILTERING_FILTERTREE_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include <memory>
 #include <vector>
 

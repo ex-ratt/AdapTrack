@@ -8,7 +8,7 @@
 #ifndef IMAGEPROCESSING_FILTERING_GRADIENTMAGNITUDEFILTER_HPP_
 #define IMAGEPROCESSING_FILTERING_GRADIENTMAGNITUDEFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include "imageprocessing/filtering/TriangularConvolutionFilter.hpp"
 
 namespace imageprocessing {

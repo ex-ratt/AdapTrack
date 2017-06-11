@@ -5,13 +5,14 @@
  *      Author: poschmann
  */
 
-#ifndef RESIZINGFILTER_HPP_
-#define RESIZINGFILTER_HPP_
+#ifndef IMAGEPROCESSING_FILTERING_RESIZINGFILTER_HPP_
+#define IMAGEPROCESSING_FILTERING_RESIZINGFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
 namespace imageprocessing {
+namespace filtering {
 
 /**
  * Filter that resizes images to a certain size.
@@ -37,5 +38,6 @@ private:
 	int interpolation; ///< The interpolation method.
 };
 
+} /* namespace filtering */
 } /* namespace imageprocessing */
-#endif /* RESIZINGFILTER_HPP_ */
+#endif /* IMAGEPROCESSING_FILTERING_RESIZINGFILTER_HPP_ */

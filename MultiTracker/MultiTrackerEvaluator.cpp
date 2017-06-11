@@ -11,9 +11,9 @@
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
 #include "imageio/DlibImageSource.hpp"
-#include "imageprocessing/GrayscaleFilter.hpp"
 #include "imageprocessing/extraction/ExactFhogExtractor.hpp"
 #include "imageprocessing/filtering/FhogFilter.hpp"
+#include "imageprocessing/filtering/GrayscaleFilter.hpp"
 #include "tracking/MultiTracker.hpp"
 #include "tracking/filtering/RandomWalkModel.hpp"
 #include <chrono>

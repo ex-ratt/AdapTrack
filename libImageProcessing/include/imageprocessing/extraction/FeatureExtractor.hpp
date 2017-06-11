@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef FEATUREEXTRACTOR_HPP_
-#define FEATUREEXTRACTOR_HPP_
+#ifndef IMAGEPROCESSING_EXTRACTION_FEATUREEXTRACTOR_HPP_
+#define IMAGEPROCESSING_EXTRACTION_FEATUREEXTRACTOR_HPP_
 
 #include "opencv2/core/core.hpp"
 #include "imageprocessing/Patch.hpp"
@@ -14,6 +14,7 @@
 #include <memory>
 
 namespace imageprocessing {
+namespace extraction {
 
 /**
  * Feature extractor that constructs a feature vector given an image and a rectangular size specifying a patch.
@@ -63,5 +64,6 @@ public:
 	}
 };
 
+} /* namespace extraction */
 } /* namespace imageprocessing */
-#endif /* FEATUREEXTRACTOR_HPP_ */
+#endif /* IMAGEPROCESSING_EXTRACTION_FEATUREEXTRACTOR_HPP_ */

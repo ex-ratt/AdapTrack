@@ -8,7 +8,7 @@
 #ifndef IMAGEPROCESSING_FILTERING_BGRTOLUVCONVERTER_HPP_
 #define IMAGEPROCESSING_FILTERING_BGRTOLUVCONVERTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include <vector>
 
 namespace imageprocessing {

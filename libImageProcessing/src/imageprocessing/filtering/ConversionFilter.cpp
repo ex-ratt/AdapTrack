@@ -5,11 +5,12 @@
  *      Author: poschmann
  */
 
-#include "imageprocessing/ConversionFilter.hpp"
+#include "imageprocessing/filtering/ConversionFilter.hpp"
 
 using cv::Mat;
 
 namespace imageprocessing {
+namespace filtering {
 
 ConversionFilter::ConversionFilter(int type, double alpha, double beta) : type(type), alpha(alpha), beta(beta) {}
 
@@ -22,4 +23,5 @@ void ConversionFilter::applyInPlace(Mat& image) const {
 	applyTo(image, image);
 }
 
+} /* namespace filtering */
 } /* namespace imageprocessing */

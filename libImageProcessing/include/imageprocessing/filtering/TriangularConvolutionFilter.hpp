@@ -8,7 +8,7 @@
 #ifndef IMAGEPROCESSING_FILTERING_TRIANGULARCONVOLUTIONFILTER_HPP_
 #define IMAGEPROCESSING_FILTERING_TRIANGULARCONVOLUTIONFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 
 namespace imageprocessing {
 namespace filtering {

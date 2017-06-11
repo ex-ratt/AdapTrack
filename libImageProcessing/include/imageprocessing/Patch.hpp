@@ -5,8 +5,8 @@
  *      Author: poschmann & huber
  */
 
-#ifndef PATCH_HPP_
-#define PATCH_HPP_
+#ifndef IMAGEPROCESSING_PATCH_HPP_
+#define IMAGEPROCESSING_PATCH_HPP_
 
 #include "opencv2/core/core.hpp"
 
@@ -244,4 +244,4 @@ private:
 };
 
 } /* namespace imageprocessing */
-#endif /* PATCH_HPP_ */
+#endif /* IMAGEPROCESSING_PATCH_HPP_ */

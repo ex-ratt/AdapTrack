@@ -14,7 +14,7 @@
 #include "libsvm/LibSvmClassifier.hpp"
 #include "imageio/AnnotatedImage.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include "opencv2/core/core.hpp"
 #include <memory>
 #include <random>
@@ -111,8 +111,8 @@ public:
 	 * @param[in] filter Image filter that transforms the image into a descriptor image, were each pixel describes a cell.
 	 * @param[in] imageFilter Image filter that is applied to the image before creating the image pyramid. Optional.
 	 */
-	void setFeatures(FeatureParams params, const std::shared_ptr<imageprocessing::ImageFilter>& filter,
-			const std::shared_ptr<imageprocessing::ImageFilter>& imageFilter = std::shared_ptr<imageprocessing::ImageFilter>());
+	void setFeatures(FeatureParams params, const std::shared_ptr<imageprocessing::filtering::ImageFilter>& filter,
+			const std::shared_ptr<imageprocessing::filtering::ImageFilter>& imageFilter = std::shared_ptr<imageprocessing::filtering::ImageFilter>());
 
 	/**
 	 * Trains the classifier that is used by the detector.
@@ -222,8 +222,8 @@ private:
 	FeatureParams featureParams;
 	double aspectRatio;
 	double aspectRatioInv;
-	std::shared_ptr<imageprocessing::ImageFilter> imageFilter;
-	std::shared_ptr<imageprocessing::ImageFilter> filter;
+	std::shared_ptr<imageprocessing::filtering::ImageFilter> imageFilter;
+	std::shared_ptr<imageprocessing::filtering::ImageFilter> filter;
 	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor;
 	std::shared_ptr<libsvm::LibSvmClassifier> classifier;
 	std::shared_ptr<detection::AggregatedFeaturesDetector> hardNegativesDetector;

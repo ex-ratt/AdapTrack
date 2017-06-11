@@ -8,12 +8,12 @@
 #ifndef IMAGEPROCESSING_FILTERING_FPDWFEATURESFILTER_HPP_
 #define IMAGEPROCESSING_FILTERING_FPDWFEATURESFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
-#include "imageprocessing/GrayscaleFilter.hpp"
 #include "imageprocessing/filtering/BgrToLuvConverter.hpp"
+#include "imageprocessing/filtering/GrayscaleFilter.hpp"
 #include "imageprocessing/filtering/GradientFilter.hpp"
 #include "imageprocessing/filtering/GradientMagnitudeFilter.hpp"
 #include "imageprocessing/filtering/GradientOrientationFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 
 namespace imageprocessing {
 namespace filtering {

@@ -13,6 +13,7 @@ using cv::Point;
 using cv::Point_;
 using cv::Rect;
 using cv::Size;
+using imageprocessing::filtering::ImageFilter;
 using std::make_shared;
 using std::round;
 using std::shared_ptr;

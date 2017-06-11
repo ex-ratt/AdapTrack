@@ -5,13 +5,14 @@
  *      Author: poschmann
  */
 
-#include "imageprocessing/ChainedFilter.hpp"
+#include "imageprocessing/filtering/ChainedFilter.hpp"
 
 using cv::Mat;
 using std::vector;
 using std::shared_ptr;
 
 namespace imageprocessing {
+namespace filtering {
 
 ChainedFilter::ChainedFilter() : filters() {}
 
@@ -49,4 +50,5 @@ void ChainedFilter::applyInPlace(Mat& image) const {
 		filters[i]->applyInPlace(image);
 }
 
+} /* namespace filtering */
 } /* namespace imageprocessing */

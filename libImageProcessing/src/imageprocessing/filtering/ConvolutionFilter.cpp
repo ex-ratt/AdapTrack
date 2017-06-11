@@ -5,8 +5,7 @@
  *      Author: poschmann
  */
 
-#include "imageprocessing/ConvolutionFilter.hpp"
-#include "imageprocessing/Patch.hpp"
+#include "imageprocessing/filtering/ConvolutionFilter.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <stdexcept>
 
@@ -16,6 +15,7 @@ using std::vector;
 using std::invalid_argument;
 
 namespace imageprocessing {
+namespace filtering {
 
 ConvolutionFilter::ConvolutionFilter(const Mat& kernel, Point anchor, double delta, int depth) :
 		anchor(anchor), delta(delta), depth(depth) {
@@ -56,4 +56,5 @@ void ConvolutionFilter::setDelta(double delta) {
 	this->delta = delta;
 }
 
+} /* namespace filtering */
 } /* namespace imageprocessing */

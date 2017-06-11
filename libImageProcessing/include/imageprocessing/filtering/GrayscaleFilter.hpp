@@ -5,12 +5,13 @@
  *      Author: poschmann
  */
 
-#ifndef GRAYSCALEFILTER_HPP_
-#define GRAYSCALEFILTER_HPP_
+#ifndef IMAGEPROCESSING_FILTERING_GRAYSCALEFILTER_HPP_
+#define IMAGEPROCESSING_FILTERING_GRAYSCALEFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 
 namespace imageprocessing {
+namespace filtering {
 
 /**
  * Image filter that converts images to grayscale. If the input image does have only one channel, then the data
@@ -31,5 +32,6 @@ public:
 	void applyInPlace(cv::Mat& image) const;
 };
 
+} /* namespace filtering */
 } /* namespace imageprocessing */
-#endif /* GRAYSCALEFILTER_HPP_ */
+#endif /* IMAGEPROCESSING_FILTERING_GRAYSCALEFILTER_HPP_ */

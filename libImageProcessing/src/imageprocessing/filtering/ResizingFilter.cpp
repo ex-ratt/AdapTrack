@@ -5,13 +5,14 @@
  *      Author: poschmann
  */
 
-#include "imageprocessing/ResizingFilter.hpp"
+#include "imageprocessing/filtering/ResizingFilter.hpp"
 
 using cv::Mat;
 using cv::Size;
 using cv::resize;
 
 namespace imageprocessing {
+namespace filtering {
 
 ResizingFilter::ResizingFilter(Size size, int interpolation) : size(size), interpolation(interpolation) {}
 
@@ -20,4 +21,5 @@ Mat ResizingFilter::applyTo(const Mat& image, Mat& filtered) const {
 	return filtered;
 }
 
+} /* namespace filtering */
 } /* namespace imageprocessing */

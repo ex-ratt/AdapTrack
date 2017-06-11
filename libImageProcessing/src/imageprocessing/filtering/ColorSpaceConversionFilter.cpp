@@ -5,12 +5,13 @@
  *      Author: poschmann
  */
 
-#include "imageprocessing/ColorSpaceConversionFilter.hpp"
+#include "imageprocessing/filtering/ColorSpaceConversionFilter.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
 using cv::Mat;
 
 namespace imageprocessing {
+namespace filtering {
 
 ColorSpaceConversionFilter::ColorSpaceConversionFilter(int conversion) : conversion(conversion) {}
 
@@ -19,4 +20,5 @@ Mat ColorSpaceConversionFilter::applyTo(const Mat& image, Mat& filtered) const {
 	return filtered;
 }
 
+} /* namespace filtering */
 } /* namespace imageprocessing */

@@ -8,11 +8,11 @@
 #ifndef IMAGEPROCESSING_EXTRACTION_AGGREGATEDFEATURESEXTRACTOR_HPP_
 #define IMAGEPROCESSING_EXTRACTION_AGGREGATEDFEATURESEXTRACTOR_HPP_
 
-#include "imageprocessing/FeatureExtractor.hpp"
-#include "imageprocessing/ImageFilter.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/Patch.hpp"
 #include "imageprocessing/VersionedImage.hpp"
+#include "imageprocessing/extraction/FeatureExtractor.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 
 namespace imageprocessing {
 namespace extraction {
@@ -47,7 +47,7 @@ public:
 	 * @param[in] minPatchWidthInPixels Width of the smallest patches that should be extracted in pixels (cannot be smaller than patch width).
 	 * @param[in] maxPatchWidthInPixels Width of the largest patches that should be extracted in pixels.
 	 */
-	AggregatedFeaturesExtractor(std::shared_ptr<ImageFilter> layerFilter, cv::Size patchSizeInCells,
+	AggregatedFeaturesExtractor(std::shared_ptr<filtering::ImageFilter> layerFilter, cv::Size patchSizeInCells,
 			int cellSizeInPixels, int octaveLayerCount, int minPatchWidthInPixels = 0, int maxPatchWidthInPixels = 0);
 
 	/**
@@ -62,7 +62,7 @@ public:
 	 * @param[in] minPatchWidthInPixels Width of the smallest patches that should be extracted in pixels (cannot be smaller than patch width).
 	 * @param[in] maxPatchWidthInPixels Width of the largest patches that should be extracted in pixels.
 	 */
-	AggregatedFeaturesExtractor(std::shared_ptr<ImageFilter> imageFilter, std::shared_ptr<ImageFilter> layerFilter,
+	AggregatedFeaturesExtractor(std::shared_ptr<filtering::ImageFilter> imageFilter, std::shared_ptr<filtering::ImageFilter> layerFilter,
 			cv::Size patchSizeInCells, int cellSizeInPixels, int octaveLayerCount, int minPatchWidthInPixels = 0, int maxPatchWidthInPixels = 0);
 
 	using FeatureExtractor::update;

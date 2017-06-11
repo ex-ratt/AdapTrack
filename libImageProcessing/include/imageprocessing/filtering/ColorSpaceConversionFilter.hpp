@@ -5,12 +5,13 @@
  *      Author: poschmann
  */
 
-#ifndef COLORSPACECONVERSIONFILTER_HPP_
-#define COLORSPACECONVERSIONFILTER_HPP_
+#ifndef IMAGEPROCESSING_FILTERING_COLORSPACECONVERSIONFILTER_HPP_
+#define IMAGEPROCESSING_FILTERING_COLORSPACECONVERSIONFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 
 namespace imageprocessing {
+namespace filtering {
 
 /**
  * Image filter that converts images from one color space to another.
@@ -34,5 +35,6 @@ private:
 	int conversion; ///< The conversion code, see cv::cvtColor for details.
 };
 
+} /* namespace filtering */
 } /* namespace imageprocessing */
-#endif /* COLORSPACECONVERSIONFILTER_HPP_ */
+#endif /* IMAGEPROCESSING_FILTERING_COLORSPACECONVERSIONFILTER_HPP_ */

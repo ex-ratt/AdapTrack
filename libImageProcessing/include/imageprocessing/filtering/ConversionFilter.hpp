@@ -5,12 +5,13 @@
  *      Author: poschmann
  */
 
-#ifndef CONVERSIONFILTER_HPP_
-#define CONVERSIONFILTER_HPP_
+#ifndef IMAGEPROCESSING_FILTERING_CONVERSIONFILTER_HPP_
+#define IMAGEPROCESSING_FILTERING_CONVERSIONFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 
 namespace imageprocessing {
+namespace filtering {
 
 /**
  * Filter that converts the image to another type, rescaling the values. The amount of channels will remain unchanged.
@@ -40,5 +41,6 @@ private:
 	double beta;  ///< The delta that is added to the scaled values.
 };
 
+} /* namespace filtering */
 } /* namespace imageprocessing */
-#endif /* CONVERSIONFILTER_HPP_ */
+#endif /* IMAGEPROCESSING_FILTERING_CONVERSIONFILTER_HPP_ */

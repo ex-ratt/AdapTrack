@@ -8,8 +8,8 @@
 #ifndef IMAGEPROCESSING_FILTERING_GRADIENTORIENTATIONFILTER_HPP_
 #define IMAGEPROCESSING_FILTERING_GRADIENTORIENTATIONFILTER_HPP_
 
-#include "imageprocessing/ImageFilter.hpp"
 #include "imageprocessing/filtering/GradientMagnitudeFilter.hpp"
+#include "imageprocessing/filtering/ImageFilter.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <array>
 
