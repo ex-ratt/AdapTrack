@@ -37,22 +37,17 @@ public:
 	 */
 	explicit DirectoryImageSource(const string& directory);
 
-	~DirectoryImageSource();
-
 	void reset();
 
 	bool next();
 
 	const Mat getImage() const;
 
-	path getName() const;
-
-	vector<path> getNames() const;
+	string getName() const;
 
 private:
 	vector<path> files; ///< The files of the given directory, ordered by name.
-	int index;			///< The index of the next file.
-
+	int index; ///< The index of the next file.
 };
 
 } /* namespace imageio */

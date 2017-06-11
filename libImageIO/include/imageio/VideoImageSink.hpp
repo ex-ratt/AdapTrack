@@ -34,9 +34,9 @@ public:
 
 private:
 	const std::string filename; ///< The name of the video file.
-	double fps;            ///< Framerate of the video stream.
-	int fourcc;            ///< 4-character code of video codec.
-	cv::VideoWriter writer;    ///< The video writer.
+	double fps; ///< Framerate of the video stream.
+	int fourcc; ///< 4-character code of video codec.
+	cv::VideoWriter writer; ///< The video writer.
 };
 
 } /* namespace imageio */

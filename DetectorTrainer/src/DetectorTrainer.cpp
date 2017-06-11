@@ -5,7 +5,6 @@
  *      Author: poschmann
  */
 
-#include "Annotations.hpp"
 #include "DetectorTrainer.hpp"
 #include "classification/LinearKernel.hpp"
 #include "classification/SvmClassifier.hpp"
@@ -17,19 +16,17 @@
 
 using classification::ExampleManagement;
 using classification::LinearKernel;
-using classification::SvmClassifier;
 using cv::Mat;
 using cv::Rect;
-using cv::Size;
 using detection::AggregatedFeaturesDetector;
 using detection::NonMaximumSuppression;
-using imageio::RectLandmark;
+using imageio::AnnotatedImage;
+using imageio::Annotation;
+using imageio::Annotations;
 using imageprocessing::ImageFilter;
 using imageprocessing::Patch;
 using imageprocessing::extraction::AggregatedFeaturesExtractor;
 using libsvm::LibSvmClassifier;
-using std::back_inserter;
-using std::copy_if;
 using std::make_shared;
 using std::runtime_error;
 using std::shared_ptr;
@@ -98,7 +95,7 @@ void DetectorTrainer::setFeatures(FeatureParams params, const shared_ptr<ImageFi
 				params.windowSizeInCells, params.cellSizeInPixels, params.octaveLayerCount);
 }
 
-void DetectorTrainer::train(vector<LabeledImage> images) {
+void DetectorTrainer::train(vector<AnnotatedImage> images) {
 	createEmptyClassifier();
 	collectInitialTrainingExamples(images);
 	trainClassifier();
@@ -116,13 +113,13 @@ void DetectorTrainer::createEmptyClassifier() {
 				new HardNegativeExampleManagement(classifier, trainingParams.maxNegatives)));
 }
 
-void DetectorTrainer::collectInitialTrainingExamples(vector<LabeledImage> images) {
+void DetectorTrainer::collectInitialTrainingExamples(vector<AnnotatedImage> images) {
 	if (printProgressInformation)
 		std::cout << printPrefix << "collecting initial training examples" << std::endl;
 	collectTrainingExamples(images, true);
 }
 
-void DetectorTrainer::collectHardTrainingExamples(vector<LabeledImage> images) {
+void DetectorTrainer::collectHardTrainingExamples(vector<AnnotatedImage> images) {
 	if (printProgressInformation)
 		std::cout << printPrefix << "collecting additional hard negative training examples" << std::endl;
 	createHardNegativesDetector();
@@ -135,40 +132,41 @@ void DetectorTrainer::createHardNegativesDetector() {
 	classifier->getSvm()->setThreshold(0);
 }
 
-void DetectorTrainer::collectTrainingExamples(vector<LabeledImage> images, bool initial) {
-	for (LabeledImage labeledImage : images) {
-		vector<RectLandmark> landmarks = adjustSizes(labeledImage.landmarks);
-		addTrainingExamples(labeledImage.image, landmarks, initial);
+void DetectorTrainer::collectTrainingExamples(vector<AnnotatedImage> images, bool initial) {
+	for (AnnotatedImage annotatedImage : images) {
+		Annotations annotations = adjustSizes(annotatedImage.annotations);
+		addTrainingExamples(annotatedImage.image, annotations, initial);
 		if (trainingParams.mirrorTrainingData)
-			addMirroredTrainingExamples(labeledImage.image, landmarks, initial);
+			addMirroredTrainingExamples(annotatedImage.image, annotations, initial);
 	}
 }
 
-vector<RectLandmark> DetectorTrainer::adjustSizes(const vector<RectLandmark>& landmarks) const {
-	vector<RectLandmark> adjustedLandmarks;
-	adjustedLandmarks.reserve(landmarks.size());
-	for (const RectLandmark& landmark : landmarks)
-		adjustedLandmarks.push_back(adjustSize(landmark));
-	return adjustedLandmarks;
+Annotations DetectorTrainer::adjustSizes(const Annotations& annotations) const {
+	vector<Annotation> adjustedAnnotations;
+	adjustedAnnotations.reserve(annotations.annotations.size());
+	for (Annotation annotation : annotations.annotations)
+		adjustedAnnotations.push_back(adjustSize(annotation));
+	return Annotations{adjustedAnnotations};
 }
 
-RectLandmark DetectorTrainer::adjustSize(const RectLandmark& landmark) const {
-	const string& name = landmark.getName();
-	float x = landmark.getX();
-	float y = landmark.getY();
-	float width = featureParams.widthScaleFactor * landmark.getWidth();
-	float height = featureParams.heightScaleFactor * landmark.getHeight();
+Annotation DetectorTrainer::adjustSize(Annotation annotation) const {
+	double cx = annotation.bounds.x + 0.5 * annotation.bounds.width;
+	double cy = annotation.bounds.y + 0.5 * annotation.bounds.height;
+	double width = featureParams.widthScaleFactor * annotation.bounds.width;
+	double height = featureParams.heightScaleFactor * annotation.bounds.height;
 	if (width < aspectRatio * height)
 		width = aspectRatio * height;
 	else if (width > aspectRatio * height)
 		height = width * aspectRatioInv;
-	return RectLandmark(name, x, y, width, height);
+	double x = cx - 0.5 * width;
+	double y = cy - 0.5 * height;
+	return Annotation(cv::Rect_<double>(x, y, width, height), annotation.fuzzy);
 }
 
-void DetectorTrainer::addMirroredTrainingExamples(const Mat& image, const vector<RectLandmark>& landmarks, bool initial) {
+void DetectorTrainer::addMirroredTrainingExamples(const Mat& image, const Annotations& annotations, bool initial) {
 	Mat mirroredImage = flipHorizontally(image);
-	vector<RectLandmark> mirroredLandmarks = flipHorizontally(landmarks, image.cols);
-	addTrainingExamples(mirroredImage, mirroredLandmarks, initial);
+	Annotations mirroredAnnotations = flipHorizontally(annotations, image.cols);
+	addTrainingExamples(mirroredImage, mirroredAnnotations, initial);
 }
 
 Mat DetectorTrainer::flipHorizontally(const Mat& image) {
@@ -177,35 +175,26 @@ Mat DetectorTrainer::flipHorizontally(const Mat& image) {
 	return flippedImage;
 }
 
-vector<RectLandmark> DetectorTrainer::flipHorizontally(const vector<RectLandmark>& landmarks, int imageWidth) {
-	vector<RectLandmark> flippedLandmarks;
-	flippedLandmarks.reserve(landmarks.size());
-	for (const RectLandmark& landmark : landmarks)
-		flippedLandmarks.push_back(flipHorizontally(landmark, imageWidth));
-	return flippedLandmarks;
+Annotations DetectorTrainer::flipHorizontally(const Annotations& annotations, int imageWidth) {
+	vector<Annotation> flippedAnnotations;
+	flippedAnnotations.reserve(annotations.annotations.size());
+	for (Annotation annotation : annotations.annotations)
+		flippedAnnotations.push_back(flipHorizontally(annotation, imageWidth));
+	return Annotations{flippedAnnotations};
 }
 
-RectLandmark DetectorTrainer::flipHorizontally(const RectLandmark& landmark, int imageWidth) {
-	const string& name = landmark.getName();
-	float x = landmark.getX();
-	float y = landmark.getY();
-	float width = landmark.getWidth();
-	float height = landmark.getHeight();
-	float mirroredX = imageWidth - x - 1;
-	return RectLandmark(name, mirroredX, y, width, height);
-}
-
-void DetectorTrainer::addTrainingExamples(const Mat& image, const vector<RectLandmark>& landmarks, bool initial) {
-	addTrainingExamples(image, Annotations(landmarks), initial);
+Annotation DetectorTrainer::flipHorizontally(Annotation annotation, int imageWidth) {
+	annotation.bounds.x = imageWidth - (annotation.bounds.x + annotation.bounds.width);
+	return annotation;
 }
 
 void DetectorTrainer::addTrainingExamples(const Mat& image, const Annotations& annotations, bool initial) {
 	setImage(image);
 	if (initial) {
-		addPositiveExamples(annotations.positives);
-		addRandomNegativeExamples(annotations.nonNegatives);
+		addPositiveExamples(annotations.positiveAnnotations());
+		addRandomNegativeExamples(annotations.allAnnotations());
 	} else {
-		addHardNegativeExamples(annotations.nonNegatives);
+		addHardNegativeExamples(annotations.allAnnotations());
 	}
 }
 

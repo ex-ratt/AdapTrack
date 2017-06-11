@@ -8,17 +8,17 @@
 #ifndef DLIBIMAGESOURCE_HPP_
 #define DLIBIMAGESOURCE_HPP_
 
-#include "imageio/LabeledImageSource.hpp"
-#include "imageio/LandmarkCollection.hpp"
+#include "imageio/AnnotatedImageSource.hpp"
 #include "boost/property_tree/ptree.hpp"
+#include "boost/filesystem.hpp"
 
 namespace imageio {
 
 /**
- * Labeled image source that reads the file names and annotations from an XML file created with
+ * Annotated image source that reads the file names and annotations from an XML file created with
  * the imglab-tool of dlib.
  */
-class DlibImageSource : public LabeledImageSource {
+class DlibImageSource : public AnnotatedImageSource {
 public:
 
 	/**
@@ -34,11 +34,9 @@ public:
 
 	const cv::Mat getImage() const;
 
-	boost::filesystem::path getName() const;
+	std::string getName() const;
 
-	std::vector<boost::filesystem::path> getNames() const;
-
-	const LandmarkCollection getLandmarks() const;
+	Annotations getAnnotations() const;
 
 private:
 
@@ -47,9 +45,9 @@ private:
 	boost::property_tree::ptree::const_assoc_iterator imagesBegin; ///< Iterator pointing to the first image entry.
 	boost::property_tree::ptree::const_assoc_iterator imagesEnd; ///< Iterator pointing behind the last image entry.
 	boost::property_tree::ptree::const_assoc_iterator imagesNext; ///< Iterator pointing to the next image entry.
-	boost::filesystem::path name; ///< Current image name.
+	boost::filesystem::path filename; ///< Current image filename.
 	cv::Mat image; ///< Current image.
-	LandmarkCollection landmarks; ///< Current landmarks.
+	Annotations annotations; ///< Current annotations.
 };
 
 } /* namespace imageio */

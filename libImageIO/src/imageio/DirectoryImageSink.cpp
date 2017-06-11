@@ -13,8 +13,8 @@
 #endif
 #include "boost/filesystem.hpp"
 #include <sstream>
-#include <iostream>
 #include <iomanip>
+#include <stdexcept>
 
 using cv::Mat;
 using boost::filesystem::path;
@@ -35,18 +35,16 @@ DirectoryImageSink::DirectoryImageSink(string directory, string ending) :
 	path path(this->directory);
 	if (!exists(path)) {
 		if (!create_directory(path))
-			std::cerr << "Could not create directory '" << directory << "'" << std::endl;
+			throw std::runtime_error("DirectoryImageSink: Could not create directory '" + directory + "'");
 	} else if (!is_directory(path))
-		std::cerr << "'" << directory << "' is no directory" << std::endl;
+		throw std::runtime_error("'" + directory + "' is no directory");
 }
-
-DirectoryImageSink::~DirectoryImageSink() {}
 
 void DirectoryImageSink::add(const Mat& image) {
 	ostringstream filename;
 	filename << directory << setfill('0') << setw(5) << index++ << setw(0) << '.' << ending;
 	if (!imwrite(filename.str(), image))
-		std::cerr << "Could not write image file '" << filename.str() << "'" << std::endl;
+		throw std::runtime_error("DirectoryImageSink: Could not write image file '" + filename.str() + "'");
 }
 
 } /* namespace imageio */

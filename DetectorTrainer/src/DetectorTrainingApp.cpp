@@ -11,7 +11,6 @@
 #include "boost/property_tree/ptree.hpp"
 #include "DetectorTester.hpp"
 #include "DetectorTrainer.hpp"
-#include "LabeledImage.hpp"
 #include "classification/SvmClassifier.hpp"
 #include "imageio/DlibImageSource.hpp"
 #include "imageprocessing/ChainedFilter.hpp"
@@ -44,8 +43,8 @@ using classification::SvmClassifier;
 using detection::AggregatedFeaturesDetector;
 using detection::NonMaximumSuppression;
 using imageio::DlibImageSource;
-using imageio::LabeledImageSource;
-using imageio::Landmark;
+using imageio::AnnotatedImage;
+using imageio::AnnotatedImageSource;
 using imageprocessing::ChainedFilter;
 using imageprocessing::GrayscaleFilter;
 using imageprocessing::ImageFilter;
@@ -122,27 +121,27 @@ struct DetectionParams {
 	double nmsOverlapThreshold; ///< Maximum allowed overlap between two detections.
 };
 
-vector<LabeledImage> getLabeledImages(shared_ptr<LabeledImageSource> source, FeatureParams featureParams) {
-	vector<LabeledImage> images;
+vector<AnnotatedImage> getAnnotatedImages(shared_ptr<AnnotatedImageSource> source, FeatureParams featureParams) {
+	vector<AnnotatedImage> images;
 	while (source->next())
-		images.emplace_back(source->getImage(), source->getLandmarks().getLandmarks());
+		images.push_back(source->getAnnotatedImage());
 	double width = featureParams.windowSizeInCells.width / featureParams.widthScaleFactor;
 	double height = featureParams.windowSizeInCells.height / featureParams.heightScaleFactor;
 	double aspectRatio = width / height;
-	for (LabeledImage& image : images)
-		image.adjustSizes(aspectRatio);
+	for (AnnotatedImage& image : images)
+		image.annotations.adjustSizes(aspectRatio);
 	return images;
 }
 
-vector<vector<LabeledImage>> getSubsets(const vector<LabeledImage>& labeledImages, int setCount) {
-	vector<vector<LabeledImage>> subsets(setCount);
-	for (int i = 0; i < labeledImages.size(); ++i)
-		subsets[i % setCount].push_back(labeledImages[i]);
+vector<vector<AnnotatedImage>> getSubsets(const vector<AnnotatedImage>& images, int setCount) {
+	vector<vector<AnnotatedImage>> subsets(setCount);
+	for (int i = 0; i < images.size(); ++i)
+		subsets[i % setCount].push_back(images[i]);
 	return subsets;
 }
 
-vector<LabeledImage> getTrainingSet(const vector<vector<LabeledImage>>& subsets, int testSetIndex) {
-	vector<LabeledImage> trainingSet;
+vector<AnnotatedImage> getTrainingSet(const vector<vector<AnnotatedImage>>& subsets, int testSetIndex) {
+	vector<AnnotatedImage> trainingSet;
 	for (int i = 0; i < subsets.size(); ++i) {
 		if (i != testSetIndex) {
 			std::copy(subsets[i].begin(), subsets[i].end(), std::back_inserter(trainingSet));
@@ -197,15 +196,15 @@ void setFeatures(DetectorTrainer& detectorTrainer, const Features& features) {
 		detectorTrainer.setFeatures(features.params, features.createLayerFilter());
 }
 
-bool showDetections(const DetectorTester& tester, AggregatedFeaturesDetector& detector, const vector<LabeledImage>& images) {
+bool showDetections(const DetectorTester& tester, AggregatedFeaturesDetector& detector, const vector<AnnotatedImage>& images) {
 	Mat output;
 	cv::Scalar correctDetectionColor(0, 255, 0);
 	cv::Scalar wrongDetectionColor(0, 0, 255);
 	cv::Scalar ignoredDetectionColor(255, 204, 0);
 	cv::Scalar missedDetectionColor(0, 153, 255);
 	int thickness = 2;
-	for (const LabeledImage& image : images) {
-		DetectionResult result = tester.detect(detector, image.image, image.landmarks);
+	for (const AnnotatedImage& image : images) {
+		DetectionResult result = tester.detect(detector, image.image, image.annotations);
 		image.image.copyTo(output);
 		for (const Rect& target : result.correctDetections)
 			cv::rectangle(output, target, correctDetectionColor, thickness);
@@ -361,7 +360,7 @@ int main(int argc, char** argv) {
 		read_info(argv[5], detectionConfig);
 	}
 	shared_ptr<Features> features = getFeatures(featureConfig);
-	vector<LabeledImage> imageSet = getLabeledImages(imageSource, features->params);
+	vector<AnnotatedImage> imageSet = getAnnotatedImages(imageSource, features->params);
 
 	if (taskType == TaskType::TRAIN) {
 		TrainingParams trainingParams = getTrainingParams(trainingConfig);
@@ -381,7 +380,7 @@ int main(int argc, char** argv) {
 			}
 		} else { // train on subsets for cross-validation
 			cout << setCount << " sets" << endl;
-			vector<vector<LabeledImage>> subsets = getSubsets(imageSet, setCount);
+			vector<vector<AnnotatedImage>> subsets = getSubsets(imageSet, setCount);
 			for (int testSetIndex = 0; testSetIndex < subsets.size(); ++testSetIndex) {
 				cout << "training on subset " << (testSetIndex + 1) << endl;
 				path svmFile = directory / ("svm" + std::to_string(testSetIndex + 1));
@@ -434,7 +433,7 @@ int main(int argc, char** argv) {
 						svmFile.string(), *features, detectionParams, -1.0f);
 				tester.evaluate(*detector, imageSet);
 			} else { // cross-validation, test on subsets
-				vector<vector<LabeledImage>> subsets = getSubsets(imageSet, setCount);
+				vector<vector<AnnotatedImage>> subsets = getSubsets(imageSet, setCount);
 				for (int testSetIndex = 0; testSetIndex < subsets.size(); ++testSetIndex) {
 					cout << "testing on subset " << (testSetIndex + 1) << endl;
 					path svmFile = directory / ("svm" + std::to_string(testSetIndex + 1));
@@ -465,7 +464,7 @@ int main(int argc, char** argv) {
 					svmFile.string(), *features, detectionParams, threshold);
 			showDetections(tester, *detector, imageSet);
 		} else { // cross-validation, show subset-detectors
-			vector<vector<LabeledImage>> subsets = getSubsets(imageSet, setCount);
+			vector<vector<AnnotatedImage>> subsets = getSubsets(imageSet, setCount);
 			for (int testSetIndex = 0; testSetIndex < subsets.size(); ++testSetIndex) {
 				path svmFile = directory / ("svm" + std::to_string(testSetIndex + 1));
 				shared_ptr<AggregatedFeaturesDetector> detector = loadDetector(

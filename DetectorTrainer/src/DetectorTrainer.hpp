@@ -8,12 +8,11 @@
 #ifndef DETECTORTRAINER_HPP_
 #define DETECTORTRAINER_HPP_
 
-#include "LabeledImage.hpp"
 #include "classification/ConfidenceBasedExampleManagement.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
 #include "libsvm/LibSvmClassifier.hpp"
-#include "imageio/RectLandmark.hpp"
+#include "imageio/AnnotatedImage.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
 #include "imageprocessing/ImageFilter.hpp"
 #include "opencv2/core/core.hpp"
@@ -123,7 +122,7 @@ public:
 	 *
 	 * @param[in] images Images labeled with bounding boxes around positive and fuzzy examples (anything else is considered negative).
 	 */
-	void train(std::vector<LabeledImage> images);
+	void train(std::vector<imageio::AnnotatedImage> images);
 
 	/**
 	 * Stores the SVM data into a file.
@@ -160,41 +159,39 @@ private:
 
 	void createEmptyClassifier();
 
-	void collectInitialTrainingExamples(std::vector<LabeledImage> images);
+	void collectInitialTrainingExamples(std::vector<imageio::AnnotatedImage> images);
 
-	void collectHardTrainingExamples(std::vector<LabeledImage> images);
+	void collectHardTrainingExamples(std::vector<imageio::AnnotatedImage> images);
 
 	void createHardNegativesDetector();
 
-	void collectTrainingExamples(std::vector<LabeledImage> images, bool initial);
+	void collectTrainingExamples(std::vector<imageio::AnnotatedImage> images, bool initial);
 
 	/**
-	 * Adjusts the size and aspect ratio of the landmarks to fit the feature window size.
+	 * Adjusts the size and aspect ratio of the annotations to fit the feature window size.
 	 *
-	 * @param[in] landmarks Labeled bounding boxes with potentially differing aspect ratios.
-	 * @return Labeled bounding boxes with the correct aspect ratio.
+	 * @param[in] annotations Annotated bounding boxes.
+	 * @return Annotated bounding boxes with the correct aspect ratio.
 	 */
-	std::vector<imageio::RectLandmark> adjustSizes(const std::vector<imageio::RectLandmark>& landmarks) const;
+	imageio::Annotations adjustSizes(const imageio::Annotations& annotations) const;
 
 	/**
-	 * Adjusts the size and aspect ratio of a landmark to fit the feature window size.
+	 * Adjusts the size and aspect ratio of an annotation to fit the feature window size.
 	 *
-	 * @param[in] landmark Labeled bounding box with potentially differing aspect ratio.
-	 * @return Labeled bounding box with the correct aspect ratio.
+	 * @param[in] annotation Bounding box with potentially differing aspect ratio.
+	 * @return Bounding box with the correct aspect ratio.
 	 */
-	imageio::RectLandmark adjustSize(const imageio::RectLandmark& landmark) const;
+	imageio::Annotation adjustSize(imageio::Annotation annotation) const;
 
-	void addMirroredTrainingExamples(const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks, bool initial);
+	void addMirroredTrainingExamples(const cv::Mat& image, const imageio::Annotations& annotations, bool initial);
 
 	cv::Mat flipHorizontally(const cv::Mat& image);
 
-	std::vector<imageio::RectLandmark> flipHorizontally(const std::vector<imageio::RectLandmark>& landmarks, int imageWidth);
+	imageio::Annotations flipHorizontally(const imageio::Annotations& annotations, int imageWidth);
 
-	imageio::RectLandmark flipHorizontally(const imageio::RectLandmark& landmark, int imageWidth);
+	imageio::Annotation flipHorizontally(imageio::Annotation annotation, int imageWidth);
 
-	void addTrainingExamples(const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks, bool initial);
-
-	void addTrainingExamples(const cv::Mat& image, const Annotations& annotations, bool initial);
+	void addTrainingExamples(const cv::Mat& image, const imageio::Annotations& annotations, bool initial);
 
 	void setImage(const cv::Mat& image);
 

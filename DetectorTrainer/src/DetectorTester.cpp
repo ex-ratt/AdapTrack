@@ -5,7 +5,6 @@
  *      Author: poschmann
  */
 
-#include "Annotations.hpp"
 #include "DetectorTester.hpp"
 #include <fstream>
 #include <string>
@@ -13,7 +12,9 @@
 using cv::Mat;
 using cv::Rect;
 using detection::Detector;
-using imageio::RectLandmark;
+using imageio::AnnotatedImage;
+using imageio::Annotation;
+using imageio::Annotations;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::steady_clock;
@@ -30,19 +31,19 @@ DetectorTester::DetectorTester(cv::Size minWindowSize, double overlapThreshold) 
 		throw invalid_argument("the overlap threshold must be between zero (exclusive) and one (inclusive)");
 }
 
-void DetectorTester::evaluate(Detector& detector, const vector<LabeledImage>& images) {
-	for (const LabeledImage& image : images)
-		evaluate(detector, image.image, image.landmarks);
+void DetectorTester::evaluate(Detector& detector, const vector<AnnotatedImage>& images) {
+	for (const AnnotatedImage& image : images)
+		evaluate(detector, image.image, image.annotations);
 }
 
-void DetectorTester::evaluate(Detector& detector, const Mat& image, const vector<RectLandmark>& landmarks) {
-	Annotations annotations(landmarks, minWindowSize);
+void DetectorTester::evaluate(Detector& detector, const Mat& image, Annotations annotations) {
+	ignoreSmallAnnotations(annotations);
 	steady_clock::time_point start = steady_clock::now();
 	vector<pair<Rect, float>> detections = detector.detectWithScores(image);
 	steady_clock::time_point end = steady_clock::now();
 	detectionTimeSum += duration_cast<milliseconds>(end - start);
 	imageCount += 1;
-	positiveCount += annotations.positives.size();
+	positiveCount += annotations.positiveCount();
 	mergeInto(classifiedScores, classifyScores(detections, annotations));
 }
 
@@ -50,41 +51,31 @@ vector<pair<float, bool>> DetectorTester::classifyScores(const vector<pair<Rect,
 	vector<pair<float, bool>> classifiedScores;
 	classifiedScores.reserve(detections.size());
 	for (pair<Rect, float> detection : detections) {
-		pair<double, vector<Rect>::const_iterator> bestPositiveMatch = getBestMatch(detection.first, annotations.positives);
-		pair<double, vector<Rect>::const_iterator> bestFuzzyMatch = getBestMatch(detection.first, annotations.fuzzies);
-		if (isFalsePositive(bestPositiveMatch.first, bestFuzzyMatch.first)) {
+		pair<double, vector<Annotation>::const_iterator> bestMatch = getBestMatch(detection.first, annotations.annotations);
+		if (bestMatch.first < overlapThreshold) { // detection is false positive
 			classifiedScores.emplace_back(detection.second, false);
-		} else if (isTruePositive(bestPositiveMatch.first, bestFuzzyMatch.first)) {
-			classifiedScores.emplace_back(detection.second, true);
-			annotations.positives.erase(bestPositiveMatch.second);
-		} else { // detection is neither true positive, nor false positive
-			annotations.fuzzies.erase(bestFuzzyMatch.second);
+		} else {
+			if (!bestMatch.second->fuzzy) // detection is true positive
+				classifiedScores.emplace_back(detection.second, true);
+			annotations.annotations.erase(bestMatch.second);
 		}
 	}
 	return classifiedScores;
 }
 
-pair<double, vector<Rect>::const_iterator> DetectorTester::getBestMatch(Rect detection, const vector<Rect>& annotations) const {
+pair<double, vector<Annotation>::const_iterator> DetectorTester::getBestMatch(Rect detection, const vector<Annotation>& annotations) const {
 	if (annotations.empty())
 		return make_pair(0.0, annotations.end());
 	auto bestAnnotation = annotations.begin();
-	double bestOverlap = computeOverlap(detection, *bestAnnotation);
+	double bestOverlap = computeOverlap(detection, bestAnnotation->bounds);
 	for (auto it = bestAnnotation + 1; it != annotations.end(); ++it) {
-		double overlap = computeOverlap(detection, *it);
+		double overlap = computeOverlap(detection, it->bounds);
 		if (overlap > bestOverlap) {
 			bestAnnotation = it;
 			bestOverlap = overlap;
 		}
 	}
 	return make_pair(bestOverlap, bestAnnotation);
-}
-
-bool DetectorTester::isFalsePositive(double bestPositiveOverlap, double bestFuzzyOverlap) const {
-	return bestPositiveOverlap < overlapThreshold && bestFuzzyOverlap < overlapThreshold;
-}
-
-bool DetectorTester::isTruePositive(double bestPositiveOverlap, double bestFuzzyOverlap) const {
-	return bestPositiveOverlap >= overlapThreshold && bestPositiveOverlap >= bestFuzzyOverlap;
 }
 
 void DetectorTester::mergeInto(vector<pair<float, bool>>& scores, const vector<pair<float, bool>>& additionalScores) const {
@@ -96,9 +87,9 @@ void DetectorTester::mergeInto(vector<pair<float, bool>>& scores, const vector<p
 	scores.swap(mergedScores);
 }
 
-DetectionResult DetectorTester::detect(Detector& detector, const Mat& image, const vector<RectLandmark>& landmarks) const {
+DetectionResult DetectorTester::detect(Detector& detector, const Mat& image, Annotations annotations) const {
 	vector<Rect> detections = detector.detect(image);
-	Annotations annotations(landmarks, minWindowSize);
+	ignoreSmallAnnotations(annotations);
 	Status status = compareWithGroundTruth(detections, annotations);
 	DetectionResult result;
 	for (int i = 0; i < detections.size(); ++i) {
@@ -110,20 +101,29 @@ DetectionResult DetectorTester::detect(Detector& detector, const Mat& image, con
 		else if (s == DetectionStatus::IGNORED)
 			result.ignoredDetections.push_back(detections[i]);
 	}
-	for (int i = 0; i < annotations.positives.size(); ++i) {
+	std::vector<cv::Rect> positives = annotations.positiveAnnotations();
+	for (int i = 0; i < positives.size(); ++i) {
 		PositiveStatus s = status.positiveStatus[i];
 		if (s == PositiveStatus::FALSE_NEGATIVE)
-			result.missedDetections.push_back(annotations.positives[i]);
+			result.missedDetections.push_back(positives[i]);
 	}
 	return result;
+}
+
+void DetectorTester::ignoreSmallAnnotations(Annotations& annotations) const {
+	for (Annotation& annotation : annotations.annotations) {
+		Rect bounds = annotation.bounds;
+		if (bounds.width < minWindowSize.width && bounds.height < minWindowSize.height)
+			annotation.fuzzy = true;
+	}
 }
 
 DetectorTester::Status DetectorTester::compareWithGroundTruth(const vector<Rect>& detections, const Annotations& annotations) const {
 	DetectorTester::Status status;
 	status.detectionStatus.resize(detections.size());
-	status.positiveStatus.resize(annotations.positives.size());
-	Mat positiveOverlaps = createOverlapMatrix(detections, annotations.positives);
-	Mat ignoreOverlaps = createOverlapMatrix(detections, annotations.fuzzies);
+	status.positiveStatus.resize(annotations.positiveCount());
+	Mat positiveOverlaps = createOverlapMatrix(detections, annotations.positiveAnnotations());
+	Mat ignoreOverlaps = createOverlapMatrix(detections, annotations.fuzzyAnnotations());
 	computeStatus(positiveOverlaps, ignoreOverlaps, status);
 	return status;
 }

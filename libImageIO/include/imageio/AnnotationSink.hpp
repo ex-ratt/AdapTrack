@@ -1,29 +1,28 @@
 /*
- * LandmarkSink.hpp
+ * AnnotationSink.hpp
  *
  *  Created on: 27.05.2013
  *      Author: poschmann
  */
 
-#ifndef LANDMARKSINK_HPP_
-#define LANDMARKSINK_HPP_
+#ifndef ANNOTATIONSINK_HPP_
+#define ANNOTATIONSINK_HPP_
 
+#include "imageio/Annotations.hpp"
 #include <string>
 
 namespace imageio {
 
-class LandmarkCollection;
-
 /**
- * Sink for subsequent landmark collections.
+ * Sink for subsequent annotations.
  */
-class LandmarkSink {
+class AnnotationSink {
 public:
 
-	virtual ~LandmarkSink() {}
+	virtual ~AnnotationSink() {}
 
 	/**
-	 * Determines whether this landmark sink is open.
+	 * Determines whether this sink is open.
 	 *
 	 * @return True if this landmark sink was opened (and not closed since), false otherwise.
 	 */
@@ -42,12 +41,12 @@ public:
 	virtual void close() = 0;
 
 	/**
-	 * Adds a landmark collection.
+	 * Adds annotations of a frame.
 	 *
-	 * @param[in] collection The landmark collection.
+	 * @param[in] annotations The annotations.
 	 */
-	virtual void add(const LandmarkCollection& collection) = 0;
+	virtual void add(Annotations annotations) = 0;
 };
 
 } /* namespace imageio */
-#endif /* LANDMARKSINK_HPP_ */
+#endif /* ANNOTATIONSINK_HPP_ */

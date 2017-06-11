@@ -12,41 +12,37 @@ find_package(OpenCV 2.4.3 REQUIRED core highgui)
 
 # source and header files
 set(HEADERS
-	include/imageio/BobotLandmarkSink.hpp
-	include/imageio/BobotLandmarkSource.hpp
+	include/imageio/AnnotatedImage.hpp
+	include/imageio/AnnotatedImageSource.hpp
+	include/imageio/Annotation.hpp
+	include/imageio/Annotations.hpp
+	include/imageio/AnnotationSink.hpp
+	include/imageio/AnnotationSource.hpp
+	include/imageio/BobotAnnotationSink.hpp
+	include/imageio/BobotAnnotationSource.hpp
 	include/imageio/CameraImageSource.hpp
 	include/imageio/DirectoryImageSink.hpp
 	include/imageio/DirectoryImageSource.hpp
 	include/imageio/DlibImageSource.hpp
-	include/imageio/EmptyLandmarkSource.hpp
+	include/imageio/EmptyAnnotationSource.hpp
 	include/imageio/ImageSink.hpp
 	include/imageio/ImageSource.hpp
-	include/imageio/LabeledImageSource.hpp
-	include/imageio/Landmark.hpp
-	include/imageio/LandmarkCollection.hpp
-	include/imageio/LandmarkSink.hpp
-	include/imageio/LandmarkSource.hpp
-	include/imageio/OrderedLabeledImageSource.hpp
-	include/imageio/RectLandmark.hpp
-	include/imageio/RepeatingFileImageSource.hpp
-	include/imageio/SingleLandmarkSink.hpp
-	include/imageio/SingleLandmarkSource.hpp
+	include/imageio/OrderedAnnotatedImageSource.hpp
+	include/imageio/SingleAnnotationSink.hpp
+	include/imageio/SingleAnnotationSource.hpp
 	include/imageio/VideoImageSink.hpp
 	include/imageio/VideoImageSource.hpp
 )
 set(SOURCE
-	src/imageio/BobotLandmarkSink.cpp
-	src/imageio/BobotLandmarkSource.cpp
+	src/imageio/BobotAnnotationSink.cpp
+	src/imageio/BobotAnnotationSource.cpp
 	src/imageio/CameraImageSource.cpp
 	src/imageio/DirectoryImageSink.cpp
 	src/imageio/DirectoryImageSource.cpp
 	src/imageio/DlibImageSource.cpp
-	src/imageio/LandmarkCollection.cpp
-	src/imageio/OrderedLabeledImageSource.cpp
-	src/imageio/RectLandmark.cpp
-	src/imageio/RepeatingFileImageSource.cpp
-	src/imageio/SingleLandmarkSink.cpp
-	src/imageio/SingleLandmarkSource.cpp
+	src/imageio/OrderedAnnotatedImageSource.cpp
+	src/imageio/SingleAnnotationSink.cpp
+	src/imageio/SingleAnnotationSource.cpp
 	src/imageio/VideoImageSink.cpp
 	src/imageio/VideoImageSource.cpp
 )

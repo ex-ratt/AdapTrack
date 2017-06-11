@@ -26,14 +26,12 @@ public:
 	 */
 	explicit DirectoryImageSink(std::string directory, std::string ending = "png");
 
-	~DirectoryImageSink();
-
 	void add(const cv::Mat& image);
 
 private:
 
-	std::string directory;   ///< The name of the directory.
-	std::string ending;      ///< The file ending of the image files.
+	std::string directory; ///< The name of the directory.
+	std::string ending; ///< The file ending of the image files.
 	unsigned int index; ///< The index of the next file.
 };
 

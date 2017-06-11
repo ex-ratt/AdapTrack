@@ -50,16 +50,15 @@ int main(int argc, char **argv) {
 	while (run && images.next()) {
 		++frameCount;
 		Mat frame = images.getImage();
-		LandmarkCollection collection = images.getLandmarks();
-		vector<shared_ptr<Landmark>> landmarks = collection.getLandmarks();
-		if (landmarks.size() > 1)
+		vector<Rect> annotations = images.getAnnotations().positiveAnnotations();
+		if (annotations.size() > 1)
 			throw invalid_argument("only one annotation per frame is permitted");
 		Rect target;
 		milliseconds iterationTime;
 		if (!initialized) {
-			if (landmarks.size() == 1 && landmarks[0]->isVisible()) {
+			if (annotations.size() == 1) {
 				StopWatch iterationTimer = StopWatch::start();
-				target = tracker.init(frame, landmarks[0]->getRect(), false);
+				target = tracker.init(frame, annotations[0], false);
 				iterationTime = iterationTimer.stop();
 				initialized = target.area() > 0;
 				if (initialized) {

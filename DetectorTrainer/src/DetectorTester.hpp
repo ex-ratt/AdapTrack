@@ -8,10 +8,8 @@
 #ifndef DETECTORTESTER_HPP_
 #define DETECTORTESTER_HPP_
 
-#include "Annotations.hpp"
-#include "LabeledImage.hpp"
+#include "imageio/AnnotatedImage.hpp"
 #include "detection/Detector.hpp"
-#include "imageio/RectLandmark.hpp"
 #include "opencv2/core/core.hpp"
 #include <chrono>
 #include <vector>
@@ -78,27 +76,27 @@ public:
 	 *
 	 * @param[in] detector Detector.
 	 * @param[in] image Image.
-	 * @param[in] landmarks Labeled bounding boxes that are either positive or should be ignored (neither positive, nor negative).
+	 * @param[in] annotations Annotated bounding boxes.
 	 * @return Result containing correct, wrong, ignored and missed detections.
 	 */
-	DetectionResult detect(detection::Detector& detector, const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks) const;
+	DetectionResult detect(detection::Detector& detector, const cv::Mat& image, imageio::Annotations annotations) const;
 
 	/**
 	 * Evaluates a detector on several images.
 	 *
 	 * @param[in] detector Detector that should be evaluated.
-	 * @param[in] images Images with labeled bounding boxes.
+	 * @param[in] images Images with annotated bounding boxes.
 	 */
-	void evaluate(detection::Detector& detector, const std::vector<LabeledImage>& images);
+	void evaluate(detection::Detector& detector, const std::vector<imageio::AnnotatedImage>& images);
 
 	/**
 	 * Evaluates a detector on a single image.
 	 *
 	 * @param[in] detector Detector that should be evaluated.
 	 * @param[in] image Image to detect targets in.
-	 * @param[in] landmarks Labeled bounding boxes that are either positive or should be ignored (neither positive, nor negative).
+	 * @param[in] annotations Annotated bounding boxes.
 	 */
-	void evaluate(detection::Detector& detector, const cv::Mat& image, const std::vector<imageio::RectLandmark>& landmarks);
+	void evaluate(detection::Detector& detector, const cv::Mat& image, imageio::Annotations annotations);
 
 	/**
 	 * @return Summary of the evaluation.
@@ -165,7 +163,7 @@ private:
 	 * @return Detections scores in descending order with their binary classification label.
 	 */
 	std::vector<std::pair<float, bool>> classifyScores(
-			const std::vector<std::pair<cv::Rect, float>>& detections, Annotations annotations) const;
+			const std::vector<std::pair<cv::Rect, float>>& detections, imageio::Annotations annotations) const;
 
 	/**
 	 * Determines the annotation that overlaps the most with a detection.
@@ -174,31 +172,8 @@ private:
 	 * @param[in] annotations Annotated objects.
 	 * @return Overlap ratio and iterator to the best matching annotation.
 	 */
-	std::pair<double, std::vector<cv::Rect>::const_iterator> getBestMatch(
-			cv::Rect detection, const std::vector<cv::Rect>& annotations) const;
-
-	/**
-	 * Determines whether a detection is a false positive by examining the overlaps with the best matching
-	 * annotations. A detection is considered a false positive if the overlap ratios are both less than the
-	 * overlap threshold.
-	 *
-	 * @param[in] Overlap ratio to the best matching positive annotation.
-	 * @param[in] Overlap ratio to the best matching fuzzy annotation.
-	 * @return True if the detection is a false positive, false otherwise.
-	 */
-	bool isFalsePositive(double bestPositiveOverlap, double bestFuzzyOverlap) const;
-
-	/**
-	 * Determines whether a detection is a true positive by examining the overlaps with the best matching
-	 * annotations. A detection is considered a true positive if the overlap ratio of the best matching
-	 * positive annotation is at least as high as the overlap threshold and the overlap ratio of the best
-	 * matching fuzzy annotation.
-	 *
-	 * @param[in] Overlap ratio to the best matching positive annotation.
-	 * @param[in] Overlap ratio to the best matching fuzzy annotation.
-	 * @return True if the detection is a true positive, false otherwise.
-	 */
-	bool isTruePositive(double bestPositiveOverlap, double bestFuzzyOverlap) const;
+	std::pair<double, std::vector<imageio::Annotation>::const_iterator> getBestMatch(
+			cv::Rect detection, const std::vector<imageio::Annotation>& annotations) const;
 
 	/**
 	 * Merges additional classified scores into an existing vector of classified scores.
@@ -208,7 +183,9 @@ private:
 	 */
 	void mergeInto(std::vector<std::pair<float, bool>>& scores, const std::vector<std::pair<float, bool>>& additionalScores) const;
 
-	Status compareWithGroundTruth(const std::vector<cv::Rect>& detections, const Annotations& annotations) const;
+	void ignoreSmallAnnotations(imageio::Annotations& annotations) const;
+
+	Status compareWithGroundTruth(const std::vector<cv::Rect>& detections, const imageio::Annotations& annotations) const;
 
 	cv::Mat createOverlapMatrix(const std::vector<cv::Rect>& detections, const std::vector<cv::Rect>& annotations) const;
 

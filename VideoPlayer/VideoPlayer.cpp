@@ -9,13 +9,11 @@
 #include "logging/LoggerFactory.hpp"
 #include "logging/Logger.hpp"
 #include "logging/ConsoleAppender.hpp"
-#include "imageio/BobotLandmarkSource.hpp"
-#include "imageio/SingleLandmarkSource.hpp"
-#include "imageio/VideoImageSource.hpp"
+#include "imageio/BobotAnnotationSource.hpp"
 #include "imageio/DirectoryImageSource.hpp"
+#include "imageio/SingleAnnotationSource.hpp"
 #include "imageio/VideoImageSink.hpp"
-#include "imageio/LandmarkCollection.hpp"
-#include "imageio/Landmark.hpp"
+#include "imageio/VideoImageSource.hpp"
 #include "boost/filesystem.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include <iostream>
@@ -24,6 +22,7 @@
 using namespace logging;
 using namespace imageio;
 using cv::Mat;
+using cv::Rect;
 using cv::Scalar;
 using boost::filesystem::path;
 using std::cout;
@@ -60,22 +59,22 @@ void VideoPlayer::strokeWidthChanged(int state, void* userdata) {
 	player->strokeWidth = state;
 }
 
-void VideoPlayer::drawLandmarks(Mat& image, const LandmarkCollection& landmarks, const Scalar color) {
-	for (const shared_ptr<Landmark>& landmark : landmarks.getLandmarks())
-		landmark->draw(image, color, strokeWidth);
+void VideoPlayer::drawAnnotations(Mat& image, const Annotations& annotations, const Scalar color) {
+	for (Rect annotation : annotations.allAnnotations())
+		cv::rectangle(image, annotation, color, strokeWidth);
 }
 
 void VideoPlayer::play(shared_ptr<ImageSource> imageSource,
-		vector<shared_ptr<LandmarkSource>> landmarkSources,
+		vector<shared_ptr<AnnotationSource>> annotationSources,
 		shared_ptr<ImageSink> imageSink) {
 	while (imageSource->next()) {
 		frame = imageSource->getImage();
 		frame.copyTo(image);
-		for (size_t i = 0; i < landmarkSources.size(); ++i) {
-			const shared_ptr<LandmarkSource>& landmarkSource = landmarkSources[i];
+		for (size_t i = 0; i < annotationSources.size(); ++i) {
+			const shared_ptr<AnnotationSource>& annotationSource = annotationSources[i];
 			const Scalar& color = colors[std::min(colors.size() - 1, i)];
-			if (landmarkSource->next())
-				drawLandmarks(image, landmarkSource->getLandmarks(), color);
+			if (annotationSource->next())
+				drawAnnotations(image, annotationSource->getAnnotations(), color);
 		}
 		imshow(videoWindowName, image);
 		if (imageSink.get() != 0)
@@ -118,7 +117,7 @@ int main(int argc, char *argv[]) {
 
 	enum GroundTruthType { UNKNOWN, SIMPLE, BOBOT };
 	GroundTruthType type = GroundTruthType::UNKNOWN;
-	vector<shared_ptr<LandmarkSource>> landmarkSources;
+	vector<shared_ptr<AnnotationSource>> annotationSources;
 	int i = 2;
 	for (; i < argc; ++i) {
 		if (argv[i][0] == '-') {
@@ -137,9 +136,9 @@ int main(int argc, char *argv[]) {
 		if (!exists(landmarkFile))
 			throw invalid_argument("landmark file " + landmarkFile.string() + " does not exist");
 		if (type == GroundTruthType::SIMPLE)
-			landmarkSources.push_back(make_shared<SingleLandmarkSource>(landmarkFile.string()));
+			annotationSources.push_back(make_shared<SingleAnnotationSource>(landmarkFile.string()));
 		else if (type == GroundTruthType::BOBOT)
-			landmarkSources.push_back(make_shared<BobotLandmarkSource>(landmarkFile.string(), imageSource));
+			annotationSources.push_back(make_shared<BobotAnnotationSource>(landmarkFile.string(), imageSource));
 		else
 			throw invalid_argument("no type specified for landmark file " + landmarkFile.string() + " (needs option -s or -b before giving landmark files)");
 	}
@@ -168,7 +167,7 @@ int main(int argc, char *argv[]) {
 	log.addAppender(make_shared<ConsoleAppender>(LogLevel::Info));
 	try {
 		unique_ptr<VideoPlayer> player(new VideoPlayer());
-		player->play(imageSource, landmarkSources, imageSink);
+		player->play(imageSource, annotationSources, imageSink);
 	} catch (std::exception& exc) {
 		log.error(string("A wild exception appeared: ") + exc.what());
 		throw;

@@ -5,8 +5,6 @@
  *      Author: poschmann
  */
 
-#include "Annotations.hpp"
-#include "LabeledImage.hpp"
 #include "stacktrace.hpp"
 #include "StopWatch.hpp"
 #include "classification/ProbabilisticSvmClassifier.hpp"
@@ -47,8 +45,8 @@ shared_ptr<ProbabilisticSvmClassifier> loadSvm(const string& filename, float thr
 shared_ptr<FhogFilter> createFhogFilter(int binCount, int cellSize);
 shared_ptr<AggregatedFeaturesDetector> createDetector(
 		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SvmClassifier> svm, int cellSize, int minWidth, int maxWidth);
-void evaluate(MultiTracker& tracker, LabeledImageSource& images, double aspectRatio, int count);
-TrackingEvaluation evaluate(MultiTracker& tracker, const vector<LabeledImage>& images);
+void evaluate(MultiTracker& tracker, AnnotatedImageSource& images, double aspectRatio, int count);
+TrackingEvaluation evaluate(MultiTracker& tracker, const vector<AnnotatedImage>& images);
 double computeOverlap(Rect a, Rect b);
 
 int main(int argc, char **argv) {
@@ -130,12 +128,12 @@ shared_ptr<AggregatedFeaturesDetector> createDetector(
 			fhogFilter, cellSize, Size(windowWidth, windowHeight), 5, svm, nms, 1.0, 1.0, minWidth, maxWidth);
 }
 
-void evaluate(MultiTracker& tracker, LabeledImageSource& source, double aspectRatio, int count) {
-	vector<LabeledImage> images;
+void evaluate(MultiTracker& tracker, AnnotatedImageSource& source, double aspectRatio, int count) {
+	vector<AnnotatedImage> images;
 	while (source.next())
-		images.emplace_back(source.getImage(), source.getLandmarks().getLandmarks());
-	for (LabeledImage& image : images)
-		image.adjustSizes(aspectRatio);
+		images.push_back(source.getAnnotatedImage());
+	for (AnnotatedImage& image : images)
+		image.annotations.adjustSizes(aspectRatio);
 
 	TrackingEvaluation mean{0,0,0,0};
 	vector<TrackingEvaluation> results(count);
@@ -201,7 +199,7 @@ void evaluate(MultiTracker& tracker, LabeledImageSource& source, double aspectRa
 	cout << ")" << endl;
 }
 
-TrackingEvaluation evaluate(MultiTracker& tracker, const vector<LabeledImage>& images) {
+TrackingEvaluation evaluate(MultiTracker& tracker, const vector<AnnotatedImage>& images) {
 	GrayscaleFilter grayscaleFilter;
 	int frames = 0;
 	int truePositives = 0;
@@ -209,15 +207,14 @@ TrackingEvaluation evaluate(MultiTracker& tracker, const vector<LabeledImage>& i
 	int falseNegatives = 0;
 	double overlapSum = 0;
 	duration<double> iterationTimeSum(0);
-	for (const LabeledImage& image : images) {
+	for (const AnnotatedImage& image : images) {
 		++frames;
 		Mat frame = image.image;
-		Annotations annotations(image.landmarks);
 		StopWatch iterationTimer = StopWatch::start();
 		vector<pair<int, Rect>> targets = tracker.update(grayscaleFilter.applyTo(frame));
 		milliseconds iterationTime = iterationTimer.stop();
 		iterationTimeSum += iterationTime;
-		for (Rect annotation : annotations.positives) {
+		for (Rect annotation : image.annotations.positiveAnnotations()) {
 			++falseNegatives;
 			for (auto target = targets.begin(); target != targets.end(); ++target) {
 				if (computeOverlap(annotation, target->second) >= 0.5) {
@@ -229,10 +226,9 @@ TrackingEvaluation evaluate(MultiTracker& tracker, const vector<LabeledImage>& i
 				}
 			}
 		}
-		for (Rect annotation : annotations.fuzzies) {
+		for (Rect annotation : image.annotations.fuzzyAnnotations()) {
 			for (auto target = targets.begin(); target != targets.end(); ++target) {
 				if (computeOverlap(annotation, target->second) >= 0.5) {
-					overlapSum += computeOverlap(annotation, target->second);
 					targets.erase(target);
 					break;
 				}
