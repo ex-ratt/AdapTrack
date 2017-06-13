@@ -26,12 +26,12 @@ public:
 	 * Constructs a new pseudo probabilistic SVM trainer with given logistic parameters.
 	 *
 	 * @param[in] svmTrainer SVM trainer.
-	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
-	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
+	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
 	 */
 	PseudoProbabilisticSvmTrainer(std::shared_ptr<IncrementalClassifierTrainer<SupportVectorMachine>> svmTrainer,
 			double logisticA, double logisticB) :
-			svmTrainer(svmTrainer), logisticB(logisticB), logisticA(logisticA) {}
+			svmTrainer(svmTrainer), logisticA(logisticA), logisticB(logisticB) {}
 
 	/**
 	 * Constructs a new pseudo probabilistic SVM trainer, computing the logistic parameters on construction.
@@ -45,24 +45,26 @@ public:
 	PseudoProbabilisticSvmTrainer(std::shared_ptr<IncrementalClassifierTrainer<SupportVectorMachine>> svmTrainer,
 			double posProb, double negProb, double meanPosOutput, double meanNegOutput) :
 			svmTrainer(svmTrainer),
-			logisticB((std::log((1 - negProb) / negProb) - std::log((1 - posProb) / posProb)) / (meanNegOutput - meanPosOutput)),
-			logisticA(std::log((1 - posProb) / posProb) - logisticB * meanPosOutput) {}
+			logisticA((std::log((1 - negProb) / negProb) - std::log((1 - posProb) / posProb)) / (meanNegOutput - meanPosOutput)),
+			logisticB(std::log((1 - posProb) / posProb) - logisticA * meanPosOutput) {}
 
 	void train(ProbabilisticSupportVectorMachine& svm, const std::vector<cv::Mat>& positives, const std::vector<cv::Mat>& negatives) const {
 		svmTrainer->train(*svm.getSvm(), positives, negatives);
-		svm.setLogisticParameters(logisticA, logisticB);// TODO why change at all?
+		svm.setLogisticA(logisticA);
+		svm.setLogisticB(logisticB);
 	}
 
 	void retrain(ProbabilisticSupportVectorMachine& svm, const std::vector<cv::Mat>& positives, const std::vector<cv::Mat>& negatives) const {
 		svmTrainer->retrain(*svm.getSvm(), positives, negatives);
-		svm.setLogisticParameters(logisticA, logisticB);// TODO why change at all?
+		svm.setLogisticA(logisticA);
+		svm.setLogisticB(logisticB);
 	}
 
 private:
 
 	std::shared_ptr<IncrementalClassifierTrainer<SupportVectorMachine>> svmTrainer; ///< SVM trainer.
-	double logisticB; ///< Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
-	double logisticA; ///< Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	double logisticA; ///< Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
+	double logisticB; ///< Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
 };
 
 } /* namespace classification */

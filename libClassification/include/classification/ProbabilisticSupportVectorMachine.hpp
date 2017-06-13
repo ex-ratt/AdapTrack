@@ -18,7 +18,7 @@ namespace classification {
  * Logistic-function-based wrapper around a support vector machine that procudes pseudo-probabilistic output.
  *
  * The hyperplane distance of a feature vector will be transformed into a probability using a logistic function
- * p(x) = 1 / (1 + exp(a + b * x)) with x being the hyperplane distance and a and b being parameters.
+ * p(x) = 1 / (1 + exp(a * x + b)) with x being the hyperplane distance and a and b being parameters.
  */
 class ProbabilisticSupportVectorMachine : public ProbabilisticClassifier {
 public:
@@ -27,19 +27,19 @@ public:
 	 * Constructs a new probabilistic support vector machine that creates the underlying SVM using the given kernel.
 	 *
 	 * @param[in] kernel The kernel function.
-	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
-	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
+	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
 	 */
-	explicit ProbabilisticSupportVectorMachine(std::shared_ptr<Kernel> kernel, double logisticA = 0.00556, double logisticB = -2.95);
+	explicit ProbabilisticSupportVectorMachine(std::shared_ptr<Kernel> kernel, double logisticA = -2.95, double logisticB = 0.00556);
 
 	/**
 	 * Constructs a new probabilistic support vector machine that is based on an already constructed SVM.
 	 *
 	 * @param[in] svm The actual support vector machine.
-	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
-	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
+	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
 	 */
-	explicit ProbabilisticSupportVectorMachine(std::shared_ptr<SupportVectorMachine> svm, double logisticA = 0.00556, double logisticB = -2.95);
+	explicit ProbabilisticSupportVectorMachine(std::shared_ptr<SupportVectorMachine> svm, double logisticA = -2.95, double logisticB = 0.00556);
 
 	bool classify(const cv::Mat& featureVector) const;
 
@@ -56,24 +56,16 @@ public:
 	std::pair<bool, double> getProbability(double hyperplaneDistance) const;
 
 	/**
-	 * Changes the logistic parameters of this probabilistic support vector machine.
-	 *
-	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
-	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
-	 */
-	void setLogisticParameters(double logisticA, double logisticB);
-
-	/**
 	 * Changes logistic parameter a.
 	 *
-	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	 * @param[in] logisticA Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
 	 */
 	void setLogisticA(double logisticA);
 
 	/**
 	 * Changes logistic parameter b.
 	 *
-	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	 * @param[in] logisticB Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
 	 */
 	void setLogisticB(double logisticB);
 
@@ -110,8 +102,8 @@ public:
 private:
 
 	std::shared_ptr<SupportVectorMachine> svm; ///< The wrapped support vector machine.
-	double logisticA; ///< Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
-	double logisticB; ///< Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a + b * x)).
+	double logisticA; ///< Parameter a of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
+	double logisticB; ///< Parameter b of the logistic function for pseudo-probabilistic output p(x) = 1 / (1 + exp(a * x + b)).
 };
 
 } /* namespace classification */

@@ -109,7 +109,7 @@ shared_ptr<ProbabilisticSupportVectorMachine> loadSvm(const string& filename, fl
 	shared_ptr<ProbabilisticSupportVectorMachine> svm = ProbabilisticSupportVectorMachine::load(stream);
 	stream.close();
 	svm->getSvm()->setThreshold(threshold);
-	svm->setLogisticA(0.0);
+	svm->setLogisticB(0.0);
 	return svm;
 }
 

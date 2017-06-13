@@ -37,14 +37,9 @@ pair<bool, double> ProbabilisticSupportVectorMachine::getProbability(const Mat& 
 }
 
 pair<bool, double> ProbabilisticSupportVectorMachine::getProbability(double hyperplaneDistance) const {
-	double fABp = logisticA + logisticB * hyperplaneDistance;
-	double probability = fABp >= 0 ? exp(-fABp) / (1.0 + exp(-fABp)) : 1.0 / (1.0 + exp(fABp));
+	double f = logisticA * hyperplaneDistance + logisticB;
+	double probability = f >= 0 ? exp(-f) / (1.0 + exp(-f)) : 1.0 / (1.0 + exp(f));
 	return make_pair(svm->classify(hyperplaneDistance), probability);
-}
-
-void ProbabilisticSupportVectorMachine::setLogisticParameters(double logisticA, double logisticB) {
-	this->logisticA = logisticA;
-	this->logisticB = logisticB;
 }
 
 void ProbabilisticSupportVectorMachine::setLogisticA(double logisticA) {
@@ -57,7 +52,7 @@ void ProbabilisticSupportVectorMachine::setLogisticB(double logisticB) {
 
 void ProbabilisticSupportVectorMachine::store(std::ofstream& file) {
 	svm->store(file);
-	file << "Logistic " << logisticA << ' ' << logisticB << '\n';
+	file << "Logistic " << logisticB << ' ' << logisticA << '\n';
 }
 
 std::shared_ptr<ProbabilisticSupportVectorMachine> ProbabilisticSupportVectorMachine::load(std::ifstream& file) {
@@ -65,8 +60,8 @@ std::shared_ptr<ProbabilisticSupportVectorMachine> ProbabilisticSupportVectorMac
 	string tmp;
 	double logisticA, logisticB;
 	file >> tmp; // "Logistic"
-	file >> logisticA;
 	file >> logisticB;
+	file >> logisticA;
 	return make_shared<ProbabilisticSupportVectorMachine>(svm, logisticA, logisticB);
 }
 

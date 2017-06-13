@@ -115,9 +115,8 @@ void LibSvmTrainer::setSvmParameters(SupportVectorMachine& svm, const struct svm
 }
 
 void LibSvmTrainer::setLogisticParameters(ProbabilisticSupportVectorMachine& svm, const struct svm_model* model) const {
-	// order of A and B in libSVM is reverse of order in ProbabilisticSvmClassifier
-	// therefore ProbabilisticSvmClassifier.logisticA = libSVM.logisticB and vice versa
-	svm.setLogisticParameters(utils.extractLogisticParamB(model), utils.extractLogisticParamA(model));
+	svm.setLogisticA(utils.extractLogisticParamA(model));
+	svm.setLogisticB(utils.extractLogisticParamB(model));
 }
 
 } /* namespace libsvm */
