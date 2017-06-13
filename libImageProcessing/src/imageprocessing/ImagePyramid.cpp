@@ -10,8 +10,6 @@
 #include "imageprocessing/VersionedImage.hpp"
 #include "imageprocessing/filtering/ChainedFilter.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include <iostream>
-#include <sstream>
 #include <stdexcept>
 
 using imageprocessing::filtering::ChainedFilter;
@@ -21,23 +19,14 @@ using cv::Size;
 using std::vector;
 using std::shared_ptr;
 using std::pair;
-using std::string; // TODO nur für createException
-using std::ostringstream; // TODO nur für createException
 using std::make_shared;
 using std::invalid_argument;
 using std::runtime_error;
 
 namespace imageprocessing {
 
-template<class T>// TODO in header-datei verschieben, die in jedem projekt eingebunden werden kann
-static T createException(const string& file, int line, const string& message) {
-	ostringstream text;
-	text << file.substr(file.find_last_of("/\\") + 1) << ':' << line << ':' << ' ' << message;
-	return T(text.str());
-}
-
 shared_ptr<ImagePyramid> ImagePyramid::create(int octaveLayerCount, double minScaleFactor, double maxScaleFactor) {
-	return make_shared<ImagePyramid>(static_cast<size_t>(octaveLayerCount), minScaleFactor, maxScaleFactor);
+	return make_shared<ImagePyramid>(octaveLayerCount, minScaleFactor, maxScaleFactor);
 }
 
 shared_ptr<ImagePyramid> ImagePyramid::createFiltered(shared_ptr<ImagePyramid> pyramid, const shared_ptr<ImageFilter>& filter) {
@@ -55,46 +44,25 @@ shared_ptr<ImagePyramid> ImagePyramid::createApproximated(
 shared_ptr<ImagePyramid> ImagePyramid::createApproximated(
 		shared_ptr<ImagePyramid> pyramid, int octaveLayerCount, vector<double> lambdas) {
 	auto approximatePyramid = make_shared<ImagePyramid>(
-			static_cast<size_t>(octaveLayerCount), pyramid->getMinScaleFactor(), pyramid->getMaxScaleFactor());
+			octaveLayerCount, pyramid->getMinScaleFactor(), pyramid->getMaxScaleFactor());
 	approximatePyramid->setLambdas(lambdas);
 	approximatePyramid->setSource(pyramid);
 	return approximatePyramid;
 }
 
-ImagePyramid::ImagePyramid(size_t octaveLayerCount, double minScaleFactor, double maxScaleFactor) :
+ImagePyramid::ImagePyramid(int octaveLayerCount, double minScaleFactor, double maxScaleFactor) :
 		octaveLayerCount(octaveLayerCount), incrementalScaleFactor(0),
 		minScaleFactor(minScaleFactor), maxScaleFactor(maxScaleFactor),
 		firstLayer(0), layers(), lambdas(), sourceImage(), sourcePyramid(), version(),
 		imageFilter(make_shared<ChainedFilter>()), layerFilter(make_shared<ChainedFilter>()) {
 	if (octaveLayerCount == 0)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the number of layers per octave must be greater than zero");
+		throw invalid_argument("ImagePyramid: the number of layers per octave must be greater than zero");
 	if (minScaleFactor <= 0)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the minimum scale factor must be greater than zero");
+		throw invalid_argument("ImagePyramid: the minimum scale factor must be greater than zero");
 	if (maxScaleFactor > 1)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the maximum scale factor must not exceed one");
+		throw invalid_argument("ImagePyramid: the maximum scale factor must not exceed one");
 	incrementalScaleFactor = pow(0.5, 1. / octaveLayerCount);
 }
-
-ImagePyramid::ImagePyramid(double incrementalScaleFactor, double minScaleFactor, double maxScaleFactor) :
-		octaveLayerCount(0), incrementalScaleFactor(0),
-		minScaleFactor(minScaleFactor), maxScaleFactor(maxScaleFactor),
-		firstLayer(0), layers(), lambdas(), sourceImage(), sourcePyramid(), version(),
-		imageFilter(make_shared<ChainedFilter>()), layerFilter(make_shared<ChainedFilter>()) {
-	if (incrementalScaleFactor <= 0 || incrementalScaleFactor >= 1)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the incremental scale factor must be greater than zero and smaller than one");
-	if (minScaleFactor <= 0)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the minimum scale factor must be greater than zero");
-	if (maxScaleFactor > 1)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the maximum scale factor must not exceed one");
-	octaveLayerCount = static_cast<size_t>(std::round(log(0.5) / log(incrementalScaleFactor)));
-	this->incrementalScaleFactor = pow(0.5, 1. / octaveLayerCount);
-}
-
-ImagePyramid::ImagePyramid(double minScaleFactor, double maxScaleFactor) :
-		octaveLayerCount(0), incrementalScaleFactor(0),
-		minScaleFactor(minScaleFactor), maxScaleFactor(maxScaleFactor),
-		firstLayer(0), layers(), lambdas(), sourceImage(), sourcePyramid(), version(),
-		imageFilter(make_shared<ChainedFilter>()), layerFilter(make_shared<ChainedFilter>()) {}
 
 ImagePyramid::ImagePyramid(shared_ptr<ImagePyramid> pyramid, double minScaleFactor, double maxScaleFactor) :
 		octaveLayerCount(pyramid->octaveLayerCount), incrementalScaleFactor(pyramid->incrementalScaleFactor),
@@ -132,9 +100,9 @@ void ImagePyramid::setSource(const Mat& image) {
 
 void ImagePyramid::setSource(const shared_ptr<VersionedImage>& image) {
 	if (octaveLayerCount == 0)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the number of layers per octave must be greater than zero");
+		throw invalid_argument("ImagePyramid: the number of layers per octave must be greater than zero");
 	if (minScaleFactor <= 0)
-		throw createException<invalid_argument>(__FILE__, __LINE__, "the minimum scale factor must be greater than zero");
+		throw invalid_argument("ImagePyramid: the minimum scale factor must be greater than zero");
 	sourcePyramid.reset();
 	sourceImage = image;
 }
@@ -166,7 +134,6 @@ void ImagePyramid::update() {
 
 void ImagePyramid::createLayers(const Mat& image) {
 	Mat filteredImage = imageFilter->applyTo(image);
-	// TODO wenn maxscale <= 0.5 -> erstmal pyrdown auf bild (etc pp)
 	for (size_t i = 0; i < octaveLayerCount; ++i) {
 		double scaleFactor = pow(incrementalScaleFactor, i);
 		Mat scaledImage;
@@ -196,8 +163,8 @@ void ImagePyramid::createLayers(const Mat& image) {
 
 void ImagePyramid::createLayers(const ImagePyramid& pyramid) {
 	if (octaveLayerCount % pyramid.octaveLayerCount != 0)
-		throw createException<runtime_error>(__FILE__, __LINE__,
-				"octaveLayerCount must be divisible by the source pyramid's octaveLayerCount to enable approximation of layers");
+		throw runtime_error(
+				"ImagePyramid: octaveLayerCount must be divisible by the source pyramid's octaveLayerCount to enable approximation of layers");
 	vector<shared_ptr<ImagePyramidLayer>> filteredLayers;
 	filteredLayers.reserve(pyramid.layers.size());
 	for (const shared_ptr<ImagePyramidLayer>& layer : pyramid.layers)
@@ -207,7 +174,7 @@ void ImagePyramid::createLayers(const ImagePyramid& pyramid) {
 	if (lambdas.size() == 0)
 		lambdas = estimateLambdas(filteredLayers);
 	else if (!filteredLayers.empty() && filteredLayers.front()->getScaledImage().channels() != lambdas.size())
-		throw createException<runtime_error>(__FILE__, __LINE__, "the number number of lambdas does not match the number of channels");
+		throw runtime_error("ImagePyramid: the number number of lambdas does not match the number of channels");
 	for (shared_ptr<ImagePyramidLayer>& exactLayer : filteredLayers) {
 		if (exactLayer->getScaleFactor() < minScaleFactor)
 			break;
@@ -233,7 +200,7 @@ void ImagePyramid::createLayers(const ImagePyramid& pyramid) {
 
 vector<double> ImagePyramid::estimateLambdas(const vector<shared_ptr<ImagePyramidLayer>>& layers) const {
 	if (layers.size() < 2)
-		throw createException<runtime_error>(__FILE__, __LINE__, "at least two pyramid layers are needed to estimate the lambdas");
+		throw runtime_error("ImagePyramid: at least two pyramid layers are needed to estimate the lambdas");
 	if (layers.size() == 2)
 		return estimateLambdas(*layers[0], *layers[1]);
 	else // layers.size() > 2
@@ -285,15 +252,6 @@ Mat ImagePyramid::resize(const Mat& image, double scaleFactor, const vector<doub
 	return resizedImage;
 }
 
-Size ImagePyramid::getImageSize() const {
-	if (sourceImage)
-		return Size(sourceImage->getData().cols, sourceImage->getData().rows);
-	else if (sourcePyramid)
-		return sourcePyramid->getImageSize();
-	else
-		return Size();
-}
-
 const shared_ptr<ImagePyramidLayer> ImagePyramid::getLayer(int index) const {
 	int realIndex = index - firstLayer;
 	if (realIndex < 0 || realIndex >= (int)layers.size())
@@ -304,22 +262,6 @@ const shared_ptr<ImagePyramidLayer> ImagePyramid::getLayer(int index) const {
 const shared_ptr<ImagePyramidLayer> ImagePyramid::getLayer(double scaleFactor) const {
 	double power = log(scaleFactor) / log(incrementalScaleFactor);
 	return getLayer(static_cast<int>(std::round(power)));
-}
-
-vector<pair<int, double>> ImagePyramid::getLayerScales() const {
-	vector<pair<int, double>> scales;
-	scales.reserve(layers.size());
-	for (size_t i = 0; i < layers.size(); ++i)
-		scales.emplace_back(i + firstLayer, layers[i]->getScaleFactor());
-	return scales;
-}
-
-vector<Size> ImagePyramid::getLayerSizes() const {
-	vector<Size> sizes;
-	sizes.reserve(layers.size());
-	for (const auto& layer : layers)
-		sizes.push_back(layer->getSize());
-	return sizes;
 }
 
 } /* namespace imageprocessing */

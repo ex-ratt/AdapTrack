@@ -54,19 +54,6 @@ public:
 	}
 
 	/**
-	 * Computes the scaled representation of an original value (coordinate, size, ...) and rounds accordingly.
-	 *
-	 * TODO bad, because a) it uses the theoretical scale factor and b) it rounds in a way that may be suboptimal
-	 *      -> remove at some point, replace calls by getScaledX and getScaledY
-	 *
-	 * @param[in] value The value in the original image.
-	 * @return The corresponding value in this layer.
-	 */
-	int getScaled(int value) const {
-		return cvRound(value * scale);
-	}
-
-	/**
 	 * Computes the scaled representation of an original x/column value (coordinate, size, ...).
 	 *
 	 * @param[in] x The x-value in the original image.
@@ -87,19 +74,6 @@ public:
 	}
 
 	/**
-	 * Computes the original representation of a scaled value (coordinate, size, ...) and rounds accordingly.
-	 *
-	 * TODO bad, because a) it uses the theoretical scale factor and b) it rounds in a way that may be suboptimal
-	 *      -> remove at some point, replace calls by getOriginalX and getOriginalY
-	 *
-	 * @param[in] value The value in this layer.
-	 * @return corresponding The value in the original image.
-	 */
-	int getOriginal(int value) const {
-		return cvRound(value / scale);
-	}
-
-	/**
 	 * Computes the original representation of a scaled x/column value (coordinate, size, ...).
 	 *
 	 * @param[in] x The x-value in this layer.
@@ -117,13 +91,6 @@ public:
 	 */
 	double getOriginalY(double y) const {
 		return y / scaleY;
-	}
-
-	/**
-	 * @return The size of this layer (size of the scaled image).
-	 */
-	cv::Size getSize() const {
-		return cv::Size(image.cols, image.rows);
 	}
 
 	/**

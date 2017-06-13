@@ -82,21 +82,7 @@ public:
 	 * @param[in] minScaleFactor The minimum scale factor (the scale factor of the smallest scaled (last) image is bigger or equal).
 	 * @param[in] maxScaleFactor The maximum scale factor (the scale factor of the biggest scaled (first) image is less or equal).
 	 */
-	ImagePyramid(size_t octaveLayerCount, double minScaleFactor, double maxScaleFactor = 1);
-
-	/**
-	 * Constructs a new empty image pyramid using the incremental scale factor for determining the number of layers per octave.
-	 *
-	 * @param[in] incrementalScaleFactor The incremental scale factor between two layers of the pyramid.
-	 * @param[in] minScaleFactor The minimum scale factor (the scale factor of the smallest scaled (last) image is bigger or equal).
-	 * @param[in] maxScaleFactor The maximum scale factor (the scale factor of the biggest scaled (first) image is less or equal).
-	 */
-	ImagePyramid(double incrementalScaleFactor, double minScaleFactor, double maxScaleFactor = 1);
-
-	/**
-	 * Constructs a new empty image pyramid that will use another pyramid as its source.
-	 */
-	explicit ImagePyramid(double minScaleFactor = 0, double maxScaleFactor = 1);
+	ImagePyramid(int octaveLayerCount, double minScaleFactor, double maxScaleFactor = 1);
 
 	/**
 	 * Constructs a new empty image pyramid with another pyramid as its source.
@@ -189,20 +175,6 @@ public:
 	const std::shared_ptr<ImagePyramidLayer> getLayer(double scaleFactor) const;
 
 	/**
-	 * Determines the scale factors of each pyramid layer.
-	 *
-	 * @return Pairs containing the index and scale factor of each pyramid layer, beginning from the largest layer.
-	 */
-	std::vector<std::pair<int, double>> getLayerScales() const;
-
-	/**
-	 * Determines the size of the scaled image of each pyramid layer.
-	 *
-	 * @return The sizes of the pyramid layer's scaled images, beginning from the largest layer.
-	 */
-	std::vector<cv::Size> getLayerSizes() const;
-
-	/**
 	 * @return A reference to the pyramid layers.
 	 */
 	const std::vector<std::shared_ptr<ImagePyramidLayer>>& getLayers() const {
@@ -212,7 +184,7 @@ public:
 	/**
 	 * @return The number of layers per octave.
 	 */
-	size_t getOctaveLayerCount() const {
+	int getOctaveLayerCount() const {
 		return octaveLayerCount;
 	}
 
@@ -260,11 +232,6 @@ public:
 	}
 
 	/**
-	 * @return The size of the original image.
-	 */
-	cv::Size getImageSize() const;
-
-	/**
 	 * Changes the coefficients for power law scaling.
 	 *
 	 * param[in] lambdas Coefficients for power law scaling. Must be empty or have as many elements as there are image channels.
@@ -291,7 +258,7 @@ private:
 
 	cv::Mat resize(const cv::Mat& image, double scaleFactor, const std::vector<double>& lambdas) const;
 
-	size_t octaveLayerCount; ///< The number of layers per octave.
+	int octaveLayerCount; ///< The number of layers per octave.
 	double incrementalScaleFactor; ///< The incremental scale factor between two layers of the pyramid.
 	double minScaleFactor; ///< The minimum scale factor (the scale factor of the smallest scaled (last) image is bigger or equal).
 	double maxScaleFactor; ///< The maximum scale factor (the scale factor of the biggest scaled (first) image is less or equal).

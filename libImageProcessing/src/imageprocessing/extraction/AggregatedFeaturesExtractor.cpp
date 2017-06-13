@@ -37,7 +37,7 @@ AggregatedFeaturesExtractor::AggregatedFeaturesExtractor(shared_ptr<ImagePyramid
 
 AggregatedFeaturesExtractor::AggregatedFeaturesExtractor(shared_ptr<ImageFilter> layerFilter, Size patchSizeInCells,
 		int cellSizeInPixels, int octaveLayerCount, int minPatchWidthInPixels, int maxPatchWidthInPixels) :
-				AggregatedFeaturesExtractor(make_shared<ImagePyramid>(static_cast<size_t>(octaveLayerCount), 0.5, 1),
+				AggregatedFeaturesExtractor(make_shared<ImagePyramid>(octaveLayerCount, 0.5, 1),
 						patchSizeInCells, cellSizeInPixels, true, minPatchWidthInPixels, maxPatchWidthInPixels) {
 	featurePyramid->addLayerFilter(layerFilter);
 }
