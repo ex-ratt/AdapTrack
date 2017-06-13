@@ -9,8 +9,6 @@
 #include "imageprocessing/ImagePyramidLayer.hpp"
 #include "imageprocessing/VersionedImage.hpp"
 #include "imageprocessing/filtering/ChainedFilter.hpp"
-#include "logging/LoggerFactory.hpp"
-#include "logging/Logger.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 #include <sstream>
@@ -18,7 +16,6 @@
 
 using imageprocessing::filtering::ChainedFilter;
 using imageprocessing::filtering::ImageFilter;
-using logging::LoggerFactory;
 using cv::Mat;
 using cv::Size;
 using std::vector;
@@ -164,8 +161,6 @@ void ImagePyramid::update() {
 				firstLayer = layers.front()->getIndex();
 			version = sourcePyramid->version;
 		}
-	} else { // neither source pyramid nor source image are set, therefore the other parameters are missing, too
-		Loggers->getLogger("ImageProcessing").warn("ImagePyramid: could not update because there is no source (image or pyramid)");
 	}
 }
 

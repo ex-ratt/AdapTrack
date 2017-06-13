@@ -72,14 +72,12 @@ include_directories( "include" )
 
 # add dependencies
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-include_directories( ${Logging_SOURCE_DIR}/include )
 
 # make library
 add_library( ${SUBPROJECT_NAME} ${SOURCE} ${HEADERS} )
-target_link_libraries(${SUBPROJECT_NAME} Logging ${OpenCV_LIBS})
+target_link_libraries(${SUBPROJECT_NAME} ${OpenCV_LIBS})
 
 install(TARGETS ${SUBPROJECT_NAME}
 	LIBRARY DESTINATION lib
 )
 install(DIRECTORY include/ DESTINATION include)
-

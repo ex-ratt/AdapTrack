@@ -7,7 +7,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(BUILD_SHARED_LIBS ON)
 
 # Libraries
-add_subdirectory(libLogging)         # text logging to terminal or files
 add_subdirectory(libImageIO)         # reading and writing of images, videos, and annotations
 add_subdirectory(libImageProcessing) # image pyramids, filters, feature extraction
 add_subdirectory(libClassification)  # binary and probabilistic classification
