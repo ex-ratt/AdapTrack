@@ -5,14 +5,16 @@
  *      Author: poschmann
  */
 
-#ifndef DETECTORTESTER_HPP_
-#define DETECTORTESTER_HPP_
+#ifndef DETECTION_DETECTORTESTER_HPP_
+#define DETECTION_DETECTORTESTER_HPP_
 
 #include "imageio/AnnotatedImage.hpp"
 #include "detection/Detector.hpp"
 #include "opencv2/core/core.hpp"
 #include <chrono>
 #include <vector>
+
+namespace detection {
 
 /**
  * Summary of a detector evaluation.
@@ -203,4 +205,6 @@ private:
 	std::chrono::milliseconds detectionTimeSum = std::chrono::milliseconds::zero(); ///< Sum of detection times.
 };
 
-#endif /* DETECTORTESTER_HPP_ */
+} /* namespace detection */
+
+#endif /* DETECTION_DETECTORTESTER_HPP_ */

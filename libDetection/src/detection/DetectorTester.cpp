@@ -5,7 +5,7 @@
  *      Author: poschmann
  */
 
-#include "DetectorTester.hpp"
+#include "detection/DetectorTester.hpp"
 #include <fstream>
 #include <string>
 
@@ -24,6 +24,8 @@ using std::ofstream;
 using std::vector;
 
 using namespace std;
+
+namespace detection {
 
 DetectorTester::DetectorTester(cv::Size minWindowSize, double overlapThreshold) :
 		minWindowSize(minWindowSize), overlapThreshold(overlapThreshold) {
@@ -327,3 +329,5 @@ void DetectorTester::writeCurve(string filename, function<double(int, int)> x, f
 	}
 	curveFile.close();
 }
+
+} /* namespace detection */

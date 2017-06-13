@@ -5,9 +5,9 @@
  *      Author: poschmann
  */
 
-#include "DetectorTrainer.hpp"
 #include "classification/LinearKernel.hpp"
 #include "classification/UnlimitedExampleManagement.hpp"
+#include "detection/DetectorTrainer.hpp"
 #include "imageprocessing/Patch.hpp"
 #include <fstream>
 #include <iostream>
@@ -34,6 +34,8 @@ using std::runtime_error;
 using std::shared_ptr;
 using std::string;
 using std::vector;
+
+namespace detection {
 
 shared_ptr<AggregatedFeaturesDetector> DetectorTrainer::getDetector(shared_ptr<NonMaximumSuppression> nms) const {
 	return getDetector(nms, featureExtractor);
@@ -279,3 +281,5 @@ void DetectorTrainer::trainSvm() {
 	newPositives.clear();
 	newNegatives.clear();
 }
+
+} /* namespace detection */

@@ -22,8 +22,6 @@ include_directories(${Detection_SOURCE_DIR}/include)
 # make executable
 add_executable(${SUBPROJECT_NAME}
 	src/DetectorTrainingApp.cpp
-	src/DetectorTrainer.cpp
-	src/DetectorTester.cpp
 )
 target_link_libraries(${SUBPROJECT_NAME}
 	Detection

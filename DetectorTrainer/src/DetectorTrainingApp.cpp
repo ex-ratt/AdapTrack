@@ -6,12 +6,12 @@
  */
 
 #include "stacktrace.hpp"
-#include "DetectorTester.hpp"
-#include "DetectorTrainer.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/property_tree/info_parser.hpp"
 #include "boost/property_tree/ptree.hpp"
 #include "classification/SupportVectorMachine.hpp"
+#include "detection/DetectorTester.hpp"
+#include "detection/DetectorTrainer.hpp"
 #include "imageio/DlibImageSource.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
@@ -40,6 +40,10 @@ using cv::Size;
 using classification::SupportVectorMachine;
 using detection::AggregatedFeaturesDetector;
 using detection::NonMaximumSuppression;
+using detection::DetectionResult;
+using detection::DetectorEvaluationSummary;
+using detection::DetectorTester;
+using detection::DetectorTrainer;
 using imageio::DlibImageSource;
 using imageio::AnnotatedImage;
 using imageio::AnnotatedImageSource;

@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef DETECTORTRAINER_HPP_
-#define DETECTORTRAINER_HPP_
+#ifndef DETECTION_DETECTORTRAINER_HPP_
+#define DETECTION_DETECTORTRAINER_HPP_
 
 #include "classification/ClassifierTrainer.hpp"
 #include "classification/ConfidenceBasedExampleManagement.hpp"
@@ -22,6 +22,8 @@
 #include <random>
 #include <string>
 #include <vector>
+
+namespace detection {
 
 /**
  * Management of negative training examples that only keeps the hardest examples.
@@ -195,4 +197,6 @@ private:
 	cv::Size imageSize;
 };
 
-#endif /* DETECTORTRAINER_HPP_ */
+} /* namespace detection */
+
+#endif /* DETECTION_DETECTORTRAINER_HPP_ */
