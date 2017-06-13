@@ -6,7 +6,6 @@
  */
 
 #include "stacktrace.hpp"
-#include "StopWatch.hpp"
 #include "boost/filesystem.hpp"
 #include "classification/ProbabilisticSupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
@@ -153,9 +152,10 @@ void run(MultiTracker& tracker, ImageSource& images) {
 	while (run && images.next()) {
 		++frameCount;
 		Mat frame = images.getImage();
-		StopWatch iterationTimer = StopWatch::start();
+		steady_clock::time_point iterationStart = steady_clock::now();
 		vector<pair<int, Rect>> targets = tracker.update(grayscaleFilter.applyTo(frame));
-		milliseconds iterationTime = iterationTimer.stop();
+		steady_clock::time_point iterationEnd = steady_clock::now();
+		milliseconds iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
 		frame.copyTo(output);
 		if (debug) {
 			for (const Track& track : tracker.getTracks()) {

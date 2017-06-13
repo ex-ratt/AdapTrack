@@ -6,7 +6,6 @@
  */
 
 #include "stacktrace.hpp"
-#include "StopWatch.hpp"
 #include "classification/ProbabilisticSupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
@@ -210,9 +209,10 @@ TrackingEvaluation evaluate(MultiTracker& tracker, const vector<AnnotatedImage>&
 	for (const AnnotatedImage& image : images) {
 		++frames;
 		Mat frame = image.image;
-		StopWatch iterationTimer = StopWatch::start();
+		steady_clock::time_point iterationStart = steady_clock::now();
 		vector<pair<int, Rect>> targets = tracker.update(grayscaleFilter.applyTo(frame));
-		milliseconds iterationTime = iterationTimer.stop();
+		steady_clock::time_point iterationEnd = steady_clock::now();
+		milliseconds iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
 		iterationTimeSum += iterationTime;
 		for (Rect annotation : image.annotations.positiveAnnotations()) {
 			++falseNegatives;

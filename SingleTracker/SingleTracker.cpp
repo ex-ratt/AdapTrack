@@ -6,7 +6,6 @@
  */
 
 #include "stacktrace.hpp"
-#include "StopWatch.hpp"
 #include "imageio/DlibImageSource.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -57,9 +56,10 @@ int main(int argc, char **argv) {
 		milliseconds iterationTime;
 		if (!initialized) {
 			if (annotations.size() == 1) {
-				StopWatch iterationTimer = StopWatch::start();
+				steady_clock::time_point iterationStart = steady_clock::now();
 				target = tracker.init(frame, annotations[0], false);
-				iterationTime = iterationTimer.stop();
+				steady_clock::time_point iterationEnd = steady_clock::now();
+				milliseconds iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
 				initialized = target.area() > 0;
 				if (initialized) {
 					iterationTimeSum += iterationTime;
@@ -69,9 +69,10 @@ int main(int argc, char **argv) {
 				}
 			}
 		} else {
-			StopWatch iterationTimer = StopWatch::start();
+			steady_clock::time_point iterationStart = steady_clock::now();
 			target = tracker.update(frame);
-			iterationTime = iterationTimer.stop();
+			steady_clock::time_point iterationEnd = steady_clock::now();
+			milliseconds iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
 			iterationTimeSum += iterationTime;
 		}
 		if (initialized) {
