@@ -8,18 +8,19 @@
 #include "DetectorTrainer.hpp"
 #include "classification/LinearKernel.hpp"
 #include "classification/UnlimitedExampleManagement.hpp"
-#include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/Patch.hpp"
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 
+using classification::ClassifierTrainer;
 using classification::LinearKernel;
 using classification::ProbabilisticSupportVectorMachine;
 using classification::SupportVectorMachine;
 using classification::UnlimitedExampleManagement;
 using cv::Mat;
 using cv::Rect;
+using cv::Size;
 using detection::AggregatedFeaturesDetector;
 using detection::NonMaximumSuppression;
 using imageio::AnnotatedImage;
@@ -27,8 +28,6 @@ using imageio::Annotation;
 using imageio::Annotations;
 using imageprocessing::Patch;
 using imageprocessing::extraction::AggregatedFeaturesExtractor;
-using imageprocessing::filtering::ImageFilter;
-using libsvm::LibSvmTrainer;
 using std::make_shared;
 using std::make_unique;
 using std::runtime_error;
@@ -36,39 +35,23 @@ using std::shared_ptr;
 using std::string;
 using std::vector;
 
-DetectorTrainer::DetectorTrainer(bool printProgressInformation, std::string printPrefix) :
-		printProgressInformation(printProgressInformation),
-		printPrefix(printPrefix),
-		aspectRatio(1),
-		aspectRatioInv(1),
-		noSuppression(make_shared<NonMaximumSuppression>(1.0)),
-		generator(std::random_device()()) {}
-
 shared_ptr<AggregatedFeaturesDetector> DetectorTrainer::getDetector(shared_ptr<NonMaximumSuppression> nms) const {
-	return getDetector(nms, featureParams.octaveLayerCount);
+	return getDetector(nms, featureExtractor);
 }
 
-shared_ptr<AggregatedFeaturesDetector> DetectorTrainer::getDetector(
-		shared_ptr<NonMaximumSuppression> nms, int octaveLayerCount, float threshold) const {
+shared_ptr<AggregatedFeaturesDetector> DetectorTrainer::getDetector(shared_ptr<NonMaximumSuppression> nms,
+		shared_ptr<AggregatedFeaturesExtractor> featureExtractor, float threshold) const {
 	if (!svm)
 		throw runtime_error("DetectorTrainer: must train the detector first");
 	svm->setThreshold(threshold);
-	shared_ptr<AggregatedFeaturesDetector> detector;
-	if (!imageFilter)
-		detector = make_shared<AggregatedFeaturesDetector>(filter, featureParams.cellSizeInPixels,
-				featureParams.windowSizeInCells, octaveLayerCount, svm, nms,
-				featureParams.widthScaleFactorInv(), featureParams.heightScaleFactorInv());
-	else
-		detector = make_shared<AggregatedFeaturesDetector>(imageFilter, filter, featureParams.cellSizeInPixels,
-				featureParams.windowSizeInCells, octaveLayerCount, svm, nms,
-				featureParams.widthScaleFactorInv(), featureParams.heightScaleFactorInv());
+	shared_ptr<AggregatedFeaturesDetector> detector = make_shared<AggregatedFeaturesDetector>(featureExtractor, svm, nms);
 	svm->setThreshold(0);
 	return detector;
 }
 
 void DetectorTrainer::storeClassifier(const string& filename) const {
 	std::ofstream stream(filename);
-	if (trainingParams.probabilistic)
+	if (probabilisticSvm)
 		probabilisticSvm->store(stream);
 	else
 		svm->store(stream);
@@ -79,39 +62,32 @@ Mat DetectorTrainer::getWeightVector() const {
 	return svm->getSupportVectors().front();
 }
 
-void DetectorTrainer::setTrainingParameters(TrainingParams params) {
-	trainingParams = params;
-	trainer = make_shared<LibSvmTrainer>(trainingParams.C, trainingParams.compensateImbalance);
-	positives = make_unique<UnlimitedExampleManagement>();
-	if (trainingParams.maxNegatives > 0)
-		negatives = make_unique<HardNegativeExampleManagement>(svm, trainingParams.maxNegatives);
-	else
-		negatives = make_unique<UnlimitedExampleManagement>();
+void DetectorTrainer::setFeatureExtractor(shared_ptr<AggregatedFeaturesExtractor> featureExtractor) {
+	this->featureExtractor = featureExtractor;
+	Size patchSize = featureExtractor->getPatchSizeInCells();
+	aspectRatio = static_cast<double>(patchSize.width) / static_cast<double>(patchSize.height);
+	aspectRatioInv = 1.0 / aspectRatio;
 }
 
-void DetectorTrainer::setFeatures(FeatureParams params, const shared_ptr<ImageFilter>& filter, const shared_ptr<ImageFilter>& imageFilter) {
-	featureParams = params;
-	aspectRatio = params.windowAspectRatio();
-	aspectRatioInv = 1.0 / aspectRatio;
-	this->imageFilter = imageFilter;
-	this->filter = filter;
-	if (!imageFilter)
-		featureExtractor = make_shared<AggregatedFeaturesExtractor>(filter,
-				params.windowSizeInCells, params.cellSizeInPixels, params.octaveLayerCount);
-	else
-		featureExtractor = make_shared<AggregatedFeaturesExtractor>(imageFilter, filter,
-				params.windowSizeInCells, params.cellSizeInPixels, params.octaveLayerCount);
+void DetectorTrainer::setSvmTrainer(shared_ptr<ClassifierTrainer<SupportVectorMachine>> trainer) {
+	svmTrainer = trainer;
+	probabilisticSvmTrainer.reset();
+}
+
+void DetectorTrainer::setProbabilisticSvmTrainer(shared_ptr<ClassifierTrainer<ProbabilisticSupportVectorMachine>> trainer) {
+	probabilisticSvmTrainer = trainer;
+	svmTrainer.reset();
 }
 
 void DetectorTrainer::train(vector<AnnotatedImage> images) {
 	if (!featureExtractor)
-		throw runtime_error("DetectorTrainer: must set feature parameters first");
-	if (!trainer)
-		throw runtime_error("DetectorTrainer: must set training parameters first");
+		throw runtime_error("DetectorTrainer: must set feature extractor first");
+	if (!svmTrainer && !probabilisticSvmTrainer)
+		throw runtime_error("DetectorTrainer: must set SVM trainer first");
 	createEmptyClassifier();
 	collectInitialTrainingExamples(images);
 	trainClassifier();
-	for (int round = 0; round < trainingParams.bootstrappingRounds; ++round) {
+	for (int round = 0; round < bootstrappingRounds; ++round) {
 		collectHardTrainingExamples(images);
 		retrainClassifier();
 	}
@@ -119,9 +95,13 @@ void DetectorTrainer::train(vector<AnnotatedImage> images) {
 
 void DetectorTrainer::createEmptyClassifier() {
 	svm = make_shared<SupportVectorMachine>(make_shared<LinearKernel>());
-	probabilisticSvm = make_shared<ProbabilisticSupportVectorMachine>(svm);
-	positives->clear();
-	negatives->clear();
+	if (probabilisticSvmTrainer)
+		probabilisticSvm = make_shared<ProbabilisticSupportVectorMachine>(svm);
+	positives = make_unique<UnlimitedExampleManagement>();
+	if (maxNegatives > 0)
+		negatives = make_unique<HardNegativeExampleManagement>(svm, maxNegatives);
+	else
+		negatives = make_unique<UnlimitedExampleManagement>();
 }
 
 void DetectorTrainer::collectInitialTrainingExamples(vector<AnnotatedImage> images) {
@@ -138,7 +118,7 @@ void DetectorTrainer::collectHardTrainingExamples(vector<AnnotatedImage> images)
 }
 
 void DetectorTrainer::createHardNegativesDetector() {
-	svm->setThreshold(trainingParams.negativeScoreThreshold);
+	svm->setThreshold(negativeScoreThreshold);
 	hardNegativesDetector = make_shared<AggregatedFeaturesDetector>(featureExtractor, svm, noSuppression);
 	svm->setThreshold(0);
 }
@@ -147,7 +127,7 @@ void DetectorTrainer::collectTrainingExamples(vector<AnnotatedImage> images, boo
 	for (AnnotatedImage annotatedImage : images) {
 		Annotations annotations = adjustSizes(annotatedImage.annotations);
 		addTrainingExamples(annotatedImage.image, annotations, initial);
-		if (trainingParams.mirrorTrainingData)
+		if (mirrorTrainingData)
 			addMirroredTrainingExamples(annotatedImage.image, annotations, initial);
 	}
 }
@@ -163,8 +143,8 @@ Annotations DetectorTrainer::adjustSizes(const Annotations& annotations) const {
 Annotation DetectorTrainer::adjustSize(Annotation annotation) const {
 	double cx = annotation.bounds.x + 0.5 * annotation.bounds.width;
 	double cy = annotation.bounds.y + 0.5 * annotation.bounds.height;
-	double width = featureParams.widthScaleFactor * annotation.bounds.width;
-	double height = featureParams.heightScaleFactor * annotation.bounds.height;
+	double width = annotation.bounds.width;
+	double height = annotation.bounds.height;
 	if (width < aspectRatio * height)
 		width = aspectRatio * height;
 	else if (width > aspectRatio * height)
@@ -226,7 +206,7 @@ void DetectorTrainer::addPositiveExamples(const vector<Rect>& positiveBoxes) {
 
 void DetectorTrainer::addRandomNegativeExamples(const vector<Rect>& nonNegativeBoxes) {
 	int addedCount = 0;
-	while (addedCount < trainingParams.randomNegativesPerImage) {
+	while (addedCount < randomNegativesPerImage) {
 		if (addNegativeIfNotOverlapping(createRandomBounds(), nonNegativeBoxes))
 			++addedCount;
 	}
@@ -234,7 +214,7 @@ void DetectorTrainer::addRandomNegativeExamples(const vector<Rect>& nonNegativeB
 
 Rect DetectorTrainer::createRandomBounds() const {
 	typedef std::uniform_int_distribution<int> uniform_int;
-	int minWidth = featureParams.windowSizeInPixels().width;
+	int minWidth = featureExtractor->getPatchSizeInCells().width;
 	int maxWidth = std::min(imageSize.width, static_cast<int>(imageSize.height * aspectRatio));
 	int width = uniform_int{minWidth, maxWidth}(generator);
 	int height = static_cast<int>(std::round(width * aspectRatioInv));
@@ -247,7 +227,7 @@ void DetectorTrainer::addHardNegativeExamples(const vector<Rect>& nonNegativeBox
 	vector<Rect> detections = hardNegativesDetector->detect(image);
 	auto detection = detections.begin();
 	int addedCount = 0;
-	while (detection != detections.end() && addedCount < trainingParams.maxHardNegativesPerImage) {
+	while (detection != detections.end() && addedCount < maxHardNegativesPerImage) {
 		if (addNegativeIfNotOverlapping(*detection, nonNegativeBoxes))
 			++addedCount;
 		++detection;
@@ -264,7 +244,7 @@ bool DetectorTrainer::addNegativeIfNotOverlapping(Rect candidate, const vector<R
 
 bool DetectorTrainer::isOverlapping(Rect boxToTest, const vector<Rect>& otherBoxes) const {
 	for (Rect otherBox : otherBoxes) {
-		if (computeOverlap(boxToTest, otherBox) > trainingParams.overlapThreshold) {
+		if (computeOverlap(boxToTest, otherBox) > overlapThreshold) {
 			return true;
 		}
 	}
@@ -292,10 +272,10 @@ void DetectorTrainer::retrainClassifier() {
 void DetectorTrainer::trainSvm() {
 	positives->add(newPositives);
 	negatives->add(newNegatives);
-	if (trainingParams.probabilistic)
-		trainer->train(*probabilisticSvm, positives->examples, negatives->examples);
+	if (probabilisticSvmTrainer)
+		probabilisticSvmTrainer->train(*probabilisticSvm, positives->examples, negatives->examples);
 	else
-		trainer->train(*svm, positives->examples, negatives->examples);
+		svmTrainer->train(*svm, positives->examples, negatives->examples);
 	newPositives.clear();
 	newNegatives.clear();
 }

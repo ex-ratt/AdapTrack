@@ -8,79 +8,20 @@
 #ifndef DETECTORTRAINER_HPP_
 #define DETECTORTRAINER_HPP_
 
+#include "classification/ClassifierTrainer.hpp"
 #include "classification/ConfidenceBasedExampleManagement.hpp"
 #include "classification/ExampleManagement.hpp"
 #include "classification/ProbabilisticSupportVectorMachine.hpp"
 #include "classification/SupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
-#include "libsvm/LibSvmTrainer.hpp"
 #include "imageio/AnnotatedImage.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
-#include "imageprocessing/filtering/ImageFilter.hpp"
 #include "opencv2/core/core.hpp"
 #include <memory>
 #include <random>
 #include <string>
 #include <vector>
-
-/**
- * Parameters of the features.
- */
-struct FeatureParams {
-	cv::Size windowSizeInCells; ///< Detection window size in cells.
-	int cellSizeInPixels; ///< Cell size in pixels.
-	int octaveLayerCount; ///< Number of image pyramid layers per octave.
-	float widthScaleFactor = 1.0f; ///< Scale factor that is applied to the window width before training.
-	float heightScaleFactor = 1.0f; ///< Scale factor that is applied to the window height before training.
-
-	/**
-	 * @return Detection window size in pixels.
-	 */
-	cv::Size windowSizeInPixels() const {
-		return cv::Size(
-				windowSizeInCells.width * cellSizeInPixels,
-				windowSizeInCells.height * cellSizeInPixels
-		);
-	}
-
-	/**
-	 * @return Aspect ratio of the window (width / height).
-	 */
-	double windowAspectRatio() const {
-		return static_cast<double>(windowSizeInCells.width) / static_cast<double>(windowSizeInCells.height);
-	}
-
-	/**
-	 * @return Scale factor that is applied to the window width after detection.
-	 */
-	float widthScaleFactorInv() const {
-		return 1.0f / widthScaleFactor;
-	}
-
-	/**
-	 * @return Scale factor that is applied to the window height after detection.
-	 */
-	float heightScaleFactorInv() const {
-		return 1.0f / heightScaleFactor;
-	}
-};
-
-/**
- * Parameters of the training example gathering and SVM training.
- */
-struct TrainingParams {
-	bool mirrorTrainingData = true; ///< Flag that indicates whether to horizontally mirror the training data.
-	int maxNegatives = 0; ///< Maximum number of negative training examples (0 if not constrained).
-	int randomNegativesPerImage = 20; ///< Number of initial random negatives per image.
-	int maxHardNegativesPerImage = 100; ///< Maximum number of hard negatives per image and bootstrapping round.
-	int bootstrappingRounds = 3; ///< Number of bootstrapping rounds.
-	float negativeScoreThreshold = -1.0f; ///< SVM score threshold for retrieving strong negative examples.
-	double overlapThreshold = 0.3; ///< Maximum allowed overlap between negative examples and non-negative annotations.
-	double C = 1;
-	bool compensateImbalance = false; ///< Flag that indicates whether to adjust class weights to compensate for unbalanced data.
-	bool probabilistic = false; ///< Flag that indicates whether to compute logistic function parameters for probabilistic output.
-};
 
 /**
  * Management of negative training examples that only keeps the hardest examples.
@@ -100,22 +41,26 @@ public:
 class DetectorTrainer {
 public:
 
-	explicit DetectorTrainer(bool printProgressInformation = false, std::string printPrefix = "");
-
 	/**
-	 * Sets some general training parameters.
+	 * @param[in] featureExtractor Extractor of the aggregated features.
 	 */
-	void setTrainingParameters(TrainingParams params);
+	void setFeatureExtractor(std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor);
 
 	/**
-	 * Defines the features used for detection.
+	 * Sets the trainer of the support vector machine.
 	 *
-	 * @param[in] params Common feature parameters.
-	 * @param[in] filter Image filter that transforms the image into a descriptor image, were each pixel describes a cell.
-	 * @param[in] imageFilter Image filter that is applied to the image before creating the image pyramid. Optional.
+	 * @param[in] trainer Trainer of the detector's support vector machine.
 	 */
-	void setFeatures(FeatureParams params, const std::shared_ptr<imageprocessing::filtering::ImageFilter>& filter,
-			const std::shared_ptr<imageprocessing::filtering::ImageFilter>& imageFilter = std::shared_ptr<imageprocessing::filtering::ImageFilter>());
+	void setSvmTrainer(std::shared_ptr<classification::ClassifierTrainer<classification::SupportVectorMachine>> trainer);
+
+	/**
+	 * Sets trainer of the probabilistic support vector machine. The detector ignores the probabilistic properties,
+	 * but they are stored with the classifier when calling storeClassifier(std::string).
+	 *
+	 * @param[in] trainer Trainer of the detector's support vector machine.
+	 */
+	void setProbabilisticSvmTrainer(
+			std::shared_ptr<classification::ClassifierTrainer<classification::ProbabilisticSupportVectorMachine>> trainer);
 
 	/**
 	 * Trains the classifier that is used by the detector.
@@ -148,15 +93,15 @@ public:
 			std::shared_ptr<detection::NonMaximumSuppression> nms) const;
 
 	/**
-	 * Creates a new detector that uses the trained classifier, but uses a different number of pyramid layers per octave
-	 * than was used for training.
+	 * Creates a new detector that uses the trained classifier, but uses a different feature extractor than was used
+	 * for training.
 	 *
 	 * @param[in] nms Non-maximum suppression algorithm.
-	 * @param[in] octaveLayerCount Number of image pyramid layers per octave.
+	 * @param[in] featureExtractor Feature extractor.
 	 * @param[in] threshold SVM score threshold, defaults to zero.
 	 */
-	std::shared_ptr<detection::AggregatedFeaturesDetector> getDetector(
-			std::shared_ptr<detection::NonMaximumSuppression> nms, int octaveLayerCount, float threshold = 0) const;
+	std::shared_ptr<detection::AggregatedFeaturesDetector> getDetector(std::shared_ptr<detection::NonMaximumSuppression> nms,
+			std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor, float threshold = 0) const;
 
 private:
 
@@ -218,19 +163,29 @@ private:
 
 	void trainSvm();
 
-	bool printProgressInformation;
-	std::string printPrefix;
-	TrainingParams trainingParams;
-	std::shared_ptr<detection::NonMaximumSuppression> noSuppression;
-	FeatureParams featureParams;
-	double aspectRatio;
-	double aspectRatioInv;
-	std::shared_ptr<imageprocessing::filtering::ImageFilter> imageFilter;
-	std::shared_ptr<imageprocessing::filtering::ImageFilter> filter;
+public:
+
+	bool printProgressInformation = false; ///< Flag that indicates whether to print progress information to cout.
+	std::string printPrefix = ""; ///< Prefix that is printed before each line of progress information.
+	bool mirrorTrainingData = true; ///< Flag that indicates whether to horizontally mirror the training data.
+	int maxNegatives = 0; ///< Maximum number of negative training examples (0 if not constrained).
+	int randomNegativesPerImage = 20; ///< Number of initial random negatives per image.
+	int maxHardNegativesPerImage = 100; ///< Maximum number of hard negatives per image and bootstrapping round.
+	int bootstrappingRounds = 3; ///< Number of bootstrapping rounds.
+	float negativeScoreThreshold = -1.0f; ///< SVM score threshold for retrieving strong negative examples.
+	double overlapThreshold = 0.3; ///< Maximum allowed overlap between negative examples and non-negative annotations.
+
+private:
+
+	mutable std::mt19937 generator = std::mt19937(std::random_device()());
+	double aspectRatio = 1;
+	double aspectRatioInv = 1;
+	std::shared_ptr<detection::NonMaximumSuppression> noSuppression = std::make_shared<detection::NonMaximumSuppression>(1.0);
 	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor;
 	std::shared_ptr<classification::SupportVectorMachine> svm;
 	std::shared_ptr<classification::ProbabilisticSupportVectorMachine> probabilisticSvm;
-	std::shared_ptr<libsvm::LibSvmTrainer> trainer;
+	std::shared_ptr<classification::ClassifierTrainer<classification::SupportVectorMachine>> svmTrainer;
+	std::shared_ptr<classification::ClassifierTrainer<classification::ProbabilisticSupportVectorMachine>> probabilisticSvmTrainer;
 	std::shared_ptr<detection::AggregatedFeaturesDetector> hardNegativesDetector;
 	std::unique_ptr<classification::ExampleManagement> positives;
 	std::unique_ptr<classification::ExampleManagement> negatives;
@@ -238,7 +193,6 @@ private:
 	std::vector<cv::Mat> newNegatives;
 	cv::Mat image;
 	cv::Size imageSize;
-	mutable std::mt19937 generator;
 };
 
 #endif /* DETECTORTRAINER_HPP_ */

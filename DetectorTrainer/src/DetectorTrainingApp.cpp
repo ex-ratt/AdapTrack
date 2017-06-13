@@ -6,23 +6,21 @@
  */
 
 #include "stacktrace.hpp"
+#include "DetectorTester.hpp"
+#include "DetectorTrainer.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/property_tree/info_parser.hpp"
 #include "boost/property_tree/ptree.hpp"
 #include "classification/SupportVectorMachine.hpp"
-#include "DetectorTester.hpp"
-#include "DetectorTrainer.hpp"
 #include "imageio/DlibImageSource.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
 #include "imageprocessing/filtering/AggregationFilter.hpp"
 #include "imageprocessing/filtering/ChainedFilter.hpp"
-#include "imageprocessing/filtering/FhogAggregationFilter.hpp"
 #include "imageprocessing/filtering/FhogFilter.hpp"
 #include "imageprocessing/filtering/FpdwFeaturesFilter.hpp"
-#include "imageprocessing/filtering/GradientFilter.hpp"
-#include "imageprocessing/filtering/GradientHistogramFilter.hpp"
 #include "imageprocessing/filtering/GrayscaleFilter.hpp"
+#include "libsvm/LibSvmTrainer.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include <chrono>
 #include <fstream>
@@ -49,13 +47,11 @@ using imageprocessing::ImagePyramid;
 using imageprocessing::extraction::AggregatedFeaturesExtractor;
 using imageprocessing::filtering::AggregationFilter;
 using imageprocessing::filtering::ChainedFilter;
-using imageprocessing::filtering::FhogAggregationFilter;
 using imageprocessing::filtering::FhogFilter;
 using imageprocessing::filtering::FpdwFeaturesFilter;
-using imageprocessing::filtering::GradientFilter;
-using imageprocessing::filtering::GradientHistogramFilter;
 using imageprocessing::filtering::GrayscaleFilter;
 using imageprocessing::filtering::ImageFilter;
+using libsvm::LibSvmTrainer;
 using std::cerr;
 using std::chrono::duration_cast;
 using std::chrono::seconds;
@@ -72,18 +68,38 @@ enum class TaskType { TRAIN, TEST, SHOW };
 
 class Features {
 public:
-	Features(const FeatureParams& featureParams) : params(featureParams), lambdas() {}
 	virtual ~Features() {}
+	shared_ptr<AggregatedFeaturesExtractor> createFeatureExtractor(Size minWindowSizeInPixels = Size(0, 0)) const {
+		int minWidth = std::min(minWindowSizeInPixels.width, minWindowSizeInPixels.height * windowSizeInCells.width / windowSizeInCells.height);
+		if (hasImageFilter())
+			return make_shared<AggregatedFeaturesExtractor>(createImageFilter(), createLayerFilter(),
+					windowSizeInCells, cellSizeInPixels, octaveLayerCount, minWidth);
+		else
+			return make_shared<AggregatedFeaturesExtractor>(createLayerFilter(),
+					windowSizeInCells, cellSizeInPixels, octaveLayerCount, minWidth);
+	}
+	shared_ptr<AggregatedFeaturesExtractor> createApproximatedFeatureExtractor(Size minWindowSizeInPixels = Size(0, 0)) const {
+		auto featurePyramid = ImagePyramid::createApproximated(octaveLayerCount, 0.5, 1.0, lambdas);
+		if (hasImageFilter())
+			featurePyramid->addImageFilter(createImageFilter());
+		featurePyramid->addLayerFilter(createLayerFilter());
+		int minWidth = std::min(minWindowSizeInPixels.width, minWindowSizeInPixels.height * windowSizeInCells.width / windowSizeInCells.height);
+		return make_shared<AggregatedFeaturesExtractor>(featurePyramid, windowSizeInCells, cellSizeInPixels, true, minWidth);
+	}
+	double aspectRatio() const {
+		return static_cast<double>(windowSizeInCells.width) / static_cast<double>(windowSizeInCells.height);
+	}
 	virtual bool hasImageFilter() const = 0;
 	virtual shared_ptr<ImageFilter> createImageFilter() const = 0;
 	virtual shared_ptr<ImageFilter> createLayerFilter() const = 0;
-	FeatureParams params;
+	cv::Size windowSizeInCells = cv::Size(10, 10); ///< Detection window size in cells.
+	int cellSizeInPixels = 4; ///< Cell size in pixels.
+	int octaveLayerCount = 5; ///< Number of image pyramid layers per octave.
 	vector<double> lambdas;
 };
 class Fhog : public Features {
 public:
-	Fhog(const FeatureParams& params, int unsignedBinCount) :
-		Features(params), unsignedBinCount(unsignedBinCount) {}
+	Fhog(int unsignedBinCount = 9) : unsignedBinCount(unsignedBinCount) {}
 	bool hasImageFilter() const override {
 		return true;
 	}
@@ -91,13 +107,12 @@ public:
 		return make_shared<GrayscaleFilter>();
 	}
 	shared_ptr<ImageFilter> createLayerFilter() const override {
-		return make_shared<FhogFilter>(params.cellSizeInPixels, unsignedBinCount, false, true, 0.2f);
+		return make_shared<FhogFilter>(cellSizeInPixels, unsignedBinCount, false, true, 0.2f);
 	}
-	int unsignedBinCount;
+	int unsignedBinCount = 9;
 };
 class Fpdw : public Features {
 public:
-	Fpdw(const FeatureParams& params) : Features(params) {}
 	bool hasImageFilter() const override {
 		return false;
 	}
@@ -105,8 +120,8 @@ public:
 		return shared_ptr<ImageFilter>();
 	}
 	shared_ptr<ImageFilter> createLayerFilter() const override {
-		auto fpdwFeatures = make_shared<FpdwFeaturesFilter>(true, false, params.cellSizeInPixels, 0.01);
-		auto aggregation = make_shared<AggregationFilter>(params.cellSizeInPixels, true, false);
+		auto fpdwFeatures = make_shared<FpdwFeaturesFilter>(true, false, cellSizeInPixels, 0.01);
+		auto aggregation = make_shared<AggregationFilter>(cellSizeInPixels, true, false);
 		return make_shared<ChainedFilter>(fpdwFeatures, aggregation);
 	}
 };
@@ -121,13 +136,11 @@ struct DetectionParams {
 	double nmsOverlapThreshold; ///< Maximum allowed overlap between two detections.
 };
 
-vector<AnnotatedImage> getAnnotatedImages(shared_ptr<AnnotatedImageSource> source, FeatureParams featureParams) {
+vector<AnnotatedImage> getAnnotatedImages(shared_ptr<AnnotatedImageSource> source, const Features& features) {
 	vector<AnnotatedImage> images;
 	while (source->next())
 		images.push_back(source->getAnnotatedImage());
-	double width = featureParams.windowSizeInCells.width / featureParams.widthScaleFactor;
-	double height = featureParams.windowSizeInCells.height / featureParams.heightScaleFactor;
-	double aspectRatio = width / height;
+	double aspectRatio = features.aspectRatio();
 	for (AnnotatedImage& image : images)
 		image.annotations.adjustSizes(aspectRatio);
 	return images;
@@ -150,50 +163,18 @@ vector<AnnotatedImage> getTrainingSet(const vector<vector<AnnotatedImage>>& subs
 	return trainingSet;
 }
 
-shared_ptr<AggregatedFeaturesDetector> createDetector(
-		const shared_ptr<SupportVectorMachine>& svm, const Features& features, DetectionParams detectionParams) {
-	shared_ptr<NonMaximumSuppression> nms = make_shared<NonMaximumSuppression>(
-			detectionParams.nmsOverlapThreshold, NonMaximumSuppression::MaximumType::MAX_SCORE);
-	if (features.hasImageFilter())
-		return make_shared<AggregatedFeaturesDetector>(features.createImageFilter(), features.createLayerFilter(),
-				features.params.cellSizeInPixels, features.params.windowSizeInCells, detectionParams.octaveLayerCount, svm, nms,
-				features.params.widthScaleFactorInv(), features.params.heightScaleFactorInv(), detectionParams.minWindowSizeInPixels.width);
-	else
-		return make_shared<AggregatedFeaturesDetector>(features.createLayerFilter(),
-				features.params.cellSizeInPixels, features.params.windowSizeInCells, detectionParams.octaveLayerCount, svm, nms,
-				features.params.widthScaleFactorInv(), features.params.heightScaleFactorInv(), detectionParams.minWindowSizeInPixels.width);
-}
-
-shared_ptr<AggregatedFeaturesDetector> createApproximateDetector(
-		const shared_ptr<SupportVectorMachine>& svm, const Features& features, DetectionParams detectionParams) {
-	auto featurePyramid = ImagePyramid::createApproximated(detectionParams.octaveLayerCount, 0.5, 1.0, features.lambdas);
-	if (features.hasImageFilter())
-		featurePyramid->addImageFilter(features.createImageFilter());
-	featurePyramid->addLayerFilter(features.createLayerFilter());
-	auto extractor = make_shared<AggregatedFeaturesExtractor>(featurePyramid, features.params.windowSizeInCells,
-			features.params.cellSizeInPixels, true, detectionParams.minWindowSizeInPixels.width);
-	shared_ptr<NonMaximumSuppression> nms = make_shared<NonMaximumSuppression>(
-			detectionParams.nmsOverlapThreshold, NonMaximumSuppression::MaximumType::MAX_SCORE);
-	return make_shared<AggregatedFeaturesDetector>(extractor, svm, nms,
-			features.params.widthScaleFactorInv(), features.params.heightScaleFactorInv());
-}
-
 shared_ptr<AggregatedFeaturesDetector> loadDetector(
 		const string& filename, const Features& features, DetectionParams detectionParams, float threshold = 0) {
 	std::ifstream stream(filename);
 	shared_ptr<SupportVectorMachine> svm = SupportVectorMachine::load(stream);
 	svm->setThreshold(threshold);
 	stream.close();
-	if (detectionParams.approximatePyramid)
-		return createApproximateDetector(svm, features, detectionParams);
-	return createDetector(svm, features, detectionParams);
-}
-
-void setFeatures(DetectorTrainer& detectorTrainer, const Features& features) {
-	if (features.hasImageFilter())
-		detectorTrainer.setFeatures(features.params, features.createLayerFilter(), features.createImageFilter());
-	else
-		detectorTrainer.setFeatures(features.params, features.createLayerFilter());
+	shared_ptr<AggregatedFeaturesExtractor> extractor = detectionParams.approximatePyramid
+			? features.createApproximatedFeatureExtractor(detectionParams.minWindowSizeInPixels)
+			: features.createFeatureExtractor(detectionParams.minWindowSizeInPixels);
+	shared_ptr<NonMaximumSuppression> nms = make_shared<NonMaximumSuppression>(
+			detectionParams.nmsOverlapThreshold, NonMaximumSuppression::MaximumType::MAX_SCORE);
+	return make_shared<AggregatedFeaturesDetector>(extractor, svm, nms);
 }
 
 bool showDetections(const DetectorTester& tester, AggregatedFeaturesDetector& detector, const vector<AnnotatedImage>& images) {
@@ -232,43 +213,37 @@ TaskType getTaskType(const string& type) {
 	throw invalid_argument("expected train/test/show, but was '" + (string)type + "'");
 }
 
-FeatureParams getFeatureParams(const ptree& config) {
-	FeatureParams parameters;
-	parameters.windowSizeInCells.width = config.get<int>("windowWidthInCells");
-	parameters.windowSizeInCells.height = config.get<int>("windowHeightInCells");
-	parameters.cellSizeInPixels = config.get<int>("cellSizeInPixels");
-	parameters.octaveLayerCount = config.get<int>("octaveLayerCount");
-	parameters.widthScaleFactor = config.get<float>("widthScaleFactor");
-	parameters.heightScaleFactor = config.get<float>("heightScaleFactor");
-	return parameters;
-}
-
 shared_ptr<Features> getFeatures(const ptree& config) {
-	FeatureParams featureParams = getFeatureParams(config);
+	shared_ptr<Features> features;
 	string type = config.get<string>("type");
 	if (type.substr(0, 4) == "fhog") {
 		int binCount = (type.size() > 4) ? std::stoi(type.substr(4)) : 9;
-		return make_shared<Fhog>(featureParams, binCount);
+		features = make_shared<Fhog>(binCount);
 	} else if (type == "fpdw") {
-		return make_shared<Fpdw>(featureParams);
+		features = make_shared<Fpdw>();
 	} else {
 		throw invalid_argument("expected fhog/fpdw, but was '" + type + "'");
 	}
+	features->windowSizeInCells.width = config.get<int>("windowWidthInCells");
+	features->windowSizeInCells.height = config.get<int>("windowHeightInCells");
+	features->cellSizeInPixels = config.get<int>("cellSizeInPixels");
+	features->octaveLayerCount = config.get<int>("octaveLayerCount");
+	return features;
 }
 
-TrainingParams getTrainingParams(const ptree& config) {
-	TrainingParams parameters;
-	parameters.mirrorTrainingData = config.get<bool>("mirrorTrainingData");
-	parameters.maxNegatives = config.get<int>("maxNegatives");
-	parameters.randomNegativesPerImage = config.get<int>("randomNegativesPerImage");
-	parameters.maxHardNegativesPerImage = config.get<int>("maxHardNegativesPerImage");
-	parameters.bootstrappingRounds = config.get<int>("bootstrappingRounds");
-	parameters.negativeScoreThreshold = config.get<float>("negativeScoreThreshold");
-	parameters.overlapThreshold = config.get<double>("overlapThreshold");
-	parameters.C = config.get<double>("C");
-	parameters.compensateImbalance = config.get<bool>("compensateImbalance");
-	parameters.probabilistic = config.get<bool>("probabilistic");
-	return parameters;
+void setTrainingParams(DetectorTrainer& trainer, const ptree& config) {
+	auto svmTrainer = make_shared<LibSvmTrainer>(config.get<double>("C"), config.get<bool>("compensateImbalance"));
+	if (config.get<bool>("probabilistic"))
+		trainer.setProbabilisticSvmTrainer(svmTrainer);
+	else
+		trainer.setSvmTrainer(svmTrainer);
+	trainer.mirrorTrainingData = config.get<bool>("mirrorTrainingData");
+	trainer.maxNegatives = config.get<int>("maxNegatives");
+	trainer.randomNegativesPerImage = config.get<int>("randomNegativesPerImage");
+	trainer.maxHardNegativesPerImage = config.get<int>("maxHardNegativesPerImage");
+	trainer.bootstrappingRounds = config.get<int>("bootstrappingRounds");
+	trainer.negativeScoreThreshold = config.get<float>("negativeScoreThreshold");
+	trainer.overlapThreshold = config.get<double>("overlapThreshold");
 }
 
 DetectionParams getDetectionParams(const ptree& config) {
@@ -360,13 +335,14 @@ int main(int argc, char** argv) {
 		read_info(argv[5], detectionConfig);
 	}
 	shared_ptr<Features> features = getFeatures(featureConfig);
-	vector<AnnotatedImage> imageSet = getAnnotatedImages(imageSource, features->params);
+	vector<AnnotatedImage> imageSet = getAnnotatedImages(imageSource, *features);
 
 	if (taskType == TaskType::TRAIN) {
-		TrainingParams trainingParams = getTrainingParams(trainingConfig);
-		DetectorTrainer detectorTrainer(true, "  ");
-		detectorTrainer.setTrainingParameters(trainingParams);
-		setFeatures(detectorTrainer, *features);
+		DetectorTrainer detectorTrainer;
+		detectorTrainer.printProgressInformation = true;
+		detectorTrainer.printPrefix = "  ";
+		detectorTrainer.setFeatureExtractor(features->createFeatureExtractor());
+		setTrainingParams(detectorTrainer, trainingConfig);
 		steady_clock::time_point start = steady_clock::now();
 		cout << "train detector '" << directory.string() << "' on ";
 		if (setCount == 1) { // train on all images

@@ -13,7 +13,6 @@ FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core highgui video)
 # add dependencies
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${Logging_SOURCE_DIR}/include)
 include_directories(${ImageIO_SOURCE_DIR}/include)
 include_directories(${ImageProcessing_SOURCE_DIR}/include)
 include_directories(${Classification_SOURCE_DIR}/include)
@@ -32,7 +31,6 @@ target_link_libraries(${SUBPROJECT_NAME}
 	Classification
 	ImageProcessing
 	ImageIO
-	Logging
 	${Boost_LIBRARIES}
 	${OpenCV_LIBS}
 )
@@ -40,4 +38,3 @@ target_link_libraries(${SUBPROJECT_NAME}
 install(TARGETS ${SUBPROJECT_NAME}
 	RUNTIME DESTINATION bin
 )
-
