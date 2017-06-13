@@ -75,9 +75,9 @@ vector<int> ExactFhogExtractor::createIndexLut(int imageSize, int patchStart, in
 	for (int patchIndex = 0; patchIndex < patchSize; ++patchIndex) {
 		int imageIndex = patchStart + patchIndex;
 		if (imageIndex < 0)
-			imageIndex = -imageIndex - 1;
+			imageIndex = 0;
 		else if (imageIndex >= imageSize)
-			imageIndex = 2 * imageSize - imageIndex - 1;
+			imageIndex = imageSize - 1;
 		indices[patchIndex] = imageIndex;
 	}
 	return indices;
