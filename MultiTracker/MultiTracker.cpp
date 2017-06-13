@@ -6,7 +6,6 @@
  */
 
 #include "stacktrace.hpp"
-#include "boost/filesystem.hpp"
 #include "classification/ProbabilisticSupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
@@ -25,12 +24,10 @@
 #include <iostream>
 #include <string>
 
-using namespace boost::filesystem;
 using namespace classification;
 using namespace cv;
 using namespace detection;
 using namespace imageio;
-using namespace imageprocessing;
 using namespace imageprocessing::extraction;
 using namespace imageprocessing::filtering;
 using namespace std;
@@ -44,7 +41,7 @@ shared_ptr<FhogFilter> createFhogFilter(int binCount, int cellSize);
 shared_ptr<AggregatedFeaturesDetector> createDetector(
 		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SupportVectorMachine> svm, int cellSize, int minWidth, int maxWidth);
 void run(MultiTracker& tracker, ImageSource& images);
-void drawParticles(Mat& output, vector<tracking::filtering::Particle> particles);
+void drawParticles(Mat& output, vector<Particle> particles);
 
 int main(int argc, char **argv) {
 	if (argc != 6) {
@@ -189,7 +186,7 @@ void run(MultiTracker& tracker, ImageSource& images) {
 	}
 }
 
-void drawParticles(Mat& output, vector<tracking::filtering::Particle> particles) {
+void drawParticles(Mat& output, vector<Particle> particles) {
 	if (particles.empty())
 		return;
 	Mat intermediate = output.clone();

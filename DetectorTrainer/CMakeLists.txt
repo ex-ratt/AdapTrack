@@ -1,38 +1,32 @@
-SET( SUBPROJECT_NAME DetectorTrainer )
-PROJECT( ${SUBPROJECT_NAME} )
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-SET( ${SUBPROJECT_NAME}_VERSION_MAJOR 0 )
-SET( ${SUBPROJECT_NAME}_VERSION_MINOR 1 )
+SET(SUBPROJECT_NAME DetectorTrainer)
+PROJECT(${SUBPROJECT_NAME})
 
-message(STATUS "=== Configuring ${SUBPROJECT_NAME} ===")
+MESSAGE(STATUS "Configuring ${SUBPROJECT_NAME}")
 
-# find dependencies
-FIND_PACKAGE(Boost 1.48.0 COMPONENTS system REQUIRED)
-FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core highgui video)
+FIND_PACKAGE(Boost 1.48.0 REQUIRED system)
+FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core highgui)
 
-# add dependencies
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${ImageIO_SOURCE_DIR}/include)
-include_directories(${ImageProcessing_SOURCE_DIR}/include)
-include_directories(${Classification_SOURCE_DIR}/include)
-include_directories(${SVM_SOURCE_DIR}/include)
-include_directories(${Detection_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${Detection_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${SVM_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${Classification_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${ImageProcessing_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${ImageIO_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 
-# make executable
-add_executable(${SUBPROJECT_NAME}
-	src/DetectorTrainingApp.cpp
+ADD_EXECUTABLE(${SUBPROJECT_NAME}
+	DetectorTrainer.cpp
 )
-target_link_libraries(${SUBPROJECT_NAME}
+TARGET_LINK_LIBRARIES(${SUBPROJECT_NAME}
 	Detection
 	SVM
 	Classification
 	ImageProcessing
 	ImageIO
-	${Boost_LIBRARIES}
 	${OpenCV_LIBS}
+	${Boost_LIBRARIES}
 )
 
-install(TARGETS ${SUBPROJECT_NAME}
+INSTALL(TARGETS ${SUBPROJECT_NAME}
 	RUNTIME DESTINATION bin
 )

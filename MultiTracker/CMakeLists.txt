@@ -1,27 +1,22 @@
-SET( SUBPROJECT_NAME MultiTracker )
-PROJECT( ${SUBPROJECT_NAME} )
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-SET( ${SUBPROJECT_NAME}_VERSION_MAJOR 0 )
-SET( ${SUBPROJECT_NAME}_VERSION_MINOR 1 )
+SET(SUBPROJECT_NAME MultiTracker)
+PROJECT(${SUBPROJECT_NAME})
 
-message(STATUS "=== Configuring ${SUBPROJECT_NAME} ===")
+MESSAGE(STATUS "Configuring ${SUBPROJECT_NAME}")
 
-FIND_PACKAGE(Boost 1.48.0 COMPONENTS filesystem REQUIRED)
 FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core highgui)
 
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${ImageIO_SOURCE_DIR}/include)
-include_directories(${ImageProcessing_SOURCE_DIR}/include)
-include_directories(${Classification_SOURCE_DIR}/include)
-include_directories(${SVM_SOURCE_DIR}/include)
-include_directories(${Detection_SOURCE_DIR}/include)
-include_directories(${Tracking_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${Tracking_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${Detection_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${SVM_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${Classification_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${ImageProcessing_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${ImageIO_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 
-add_executable(${SUBPROJECT_NAME}
+ADD_EXECUTABLE(${SUBPROJECT_NAME}
   MultiTracker.cpp
 )
-target_link_libraries(${SUBPROJECT_NAME}
+TARGET_LINK_LIBRARIES(${SUBPROJECT_NAME}
 	Tracking
 	Detection
 	SVM
@@ -29,13 +24,12 @@ target_link_libraries(${SUBPROJECT_NAME}
 	ImageProcessing
 	ImageIO
 	${OpenCV_LIBS}
-	${Boost_LIBRARIES}
 )
 
-add_executable(${SUBPROJECT_NAME}Evaluator
+ADD_EXECUTABLE(${SUBPROJECT_NAME}Evaluator
   MultiTrackerEvaluator.cpp
 )
-target_link_libraries(${SUBPROJECT_NAME}Evaluator
+TARGET_LINK_LIBRARIES(${SUBPROJECT_NAME}Evaluator
 	Tracking
 	Detection
 	SVM
@@ -45,7 +39,6 @@ target_link_libraries(${SUBPROJECT_NAME}Evaluator
 	${OpenCV_LIBS}
 )
 
-install(TARGETS ${SUBPROJECT_NAME} ${SUBPROJECT_NAME}Evaluator
+INSTALL(TARGETS ${SUBPROJECT_NAME} ${SUBPROJECT_NAME}Evaluator
 	RUNTIME DESTINATION bin
 )
-

@@ -1,31 +1,24 @@
-set(SUBPROJECT_NAME Tracking)
-project(${SUBPROJECT_NAME})
-cmake_minimum_required(VERSION 2.8)
-set( ${SUBPROJECT_NAME}_VERSION_MAJOR 0)
-set( ${SUBPROJECT_NAME}_VERSION_MINOR 1)
+SET(SUBPROJECT_NAME Tracking)
+PROJECT(${SUBPROJECT_NAME})
 
-message(STATUS "=== Configuring ${SUBPROJECT_NAME} ===")
+MESSAGE(STATUS "Configuring ${SUBPROJECT_NAME}")
 
-# find dependencies
-find_package(OpenCV 2.4.3 REQUIRED core imgproc video)
+FIND_PACKAGE(OpenCV 2.4.3 REQUIRED core imgproc)
 
-include_directories("include")
+INCLUDE_DIRECTORIES("include")
+INCLUDE_DIRECTORIES(${Detection_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${SVM_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${Classification_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${ImageProcessing_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 
-# add dependencies
-include_directories(${Detection_SOURCE_DIR}/include)
-include_directories(${SVM_SOURCE_DIR}/include)
-include_directories(${Classification_SOURCE_DIR}/include)
-include_directories(${ImageProcessing_SOURCE_DIR}/include)
-include_directories(${OpenCV_INCLUDE_DIRS})
-
-# make library
-add_library(${SUBPROJECT_NAME}
+ADD_LIBRARY(${SUBPROJECT_NAME}
 	src/tracking/MultiTracker.cpp
 	src/tracking/SingleTracker.cpp
 	src/tracking/filtering/ParticleFilter.cpp
 	src/tracking/filtering/TargetState.cpp
 )
-target_link_libraries(${SUBPROJECT_NAME}
+TARGET_LINK_LIBRARIES(${SUBPROJECT_NAME}
 	Detection
 	SVM
 	Classification
@@ -33,7 +26,9 @@ target_link_libraries(${SUBPROJECT_NAME}
 	${OpenCV_LIBS}
 )
 
-install(TARGETS ${SUBPROJECT_NAME}
+INSTALL(TARGETS ${SUBPROJECT_NAME}
 	LIBRARY DESTINATION lib
 )
-install(DIRECTORY include/ DESTINATION include)
+INSTALL(DIRECTORY include/
+	DESTINATION include
+)
