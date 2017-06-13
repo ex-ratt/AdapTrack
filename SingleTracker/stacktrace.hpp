@@ -14,7 +14,6 @@
 #include <signal.h>
 #include <string>
 #include <string.h>
-#include <ucontext.h>
 #include <unistd.h>
 
 // created using the information from:
@@ -23,35 +22,12 @@
 // http://panthema.net/2008/0901-stacktrace-demangled/
 // possible alternative: https://github.com/bombela/backward-cpp
 
-// this structure mirrors the one found in /usr/include/asm/ucontext.h
-typedef struct _sig_ucontext {
-	unsigned long uc_flags;
-	struct ucontext *uc_link;
-	stack_t uc_stack;
-	struct sigcontext uc_mcontext;
-	sigset_t uc_sigmask;
-} sig_ucontext_t;
-
 void error_handler(int sig_num, siginfo_t * info, void * ucontext) {
-//	std::string white = "\033[1;37m";
-//	std::string blue = "\033[1;34m";
-//	std::cout << white << "Error: " << strsignal(sig_num) << " (" << sig_num << ')' << std::endl;
 	std::cout << "Error: " << strsignal(sig_num) << " (" << sig_num << ')' << std::endl;
-
-	// get the address at the time the signal was raised
-	sig_ucontext_t* uc = (sig_ucontext_t *) ucontext;
-#if defined(__i386__) // gcc specific
-	void* caller_address = (void *) uc->uc_mcontext.eip; // EIP: x86 specific
-#elif defined(__x86_64__) // gcc specific
-	void* caller_address = (void *) uc->uc_mcontext.rip; // RIP: x86_64 specific
-#else
-#error Unsupported architecture.
-#endif
 
 	// get callstack and symbols
 	void* callstack[50];
 	int size = backtrace(callstack, 50);
-//	callstack[1] = caller_address; // overwrite sigaction with caller's address
 	char** symbols = backtrace_symbols(callstack, size);
 
 	// print stack frames, skip first (points here) and second (libc)
@@ -64,17 +40,10 @@ void error_handler(int sig_num, siginfo_t * info, void * ucontext) {
 
     int status;
     char* real_name = abi::__cxa_demangle(mangled_name.c_str(), nullptr, nullptr, &status);
-    if (status == 0) {
-//      std::cout
-//        << white << "  in " << filename
-//        << white << " at " << blue << real_name << white << std::endl;
+    if (status == 0)
       std::cout << "  in " << filename << " at " << real_name << std::endl;
-    } else {
-//      std::cout
-//				<< white << "  in " << filename
-//        << white << " at " << blue << mangled_name << white << std::endl;
+    else
     	std::cout << "  in " << filename << " at " << mangled_name << std::endl;
-    }
     free(real_name);
   }
 	free(symbols);

@@ -40,11 +40,10 @@ void error_handler(int sig_num, siginfo_t * info, void * ucontext) {
 
     int status;
     char* real_name = abi::__cxa_demangle(mangled_name.c_str(), nullptr, nullptr, &status);
-    if (status == 0) {
+    if (status == 0)
       std::cout << "  in " << filename << " at " << real_name << std::endl;
-    } else {
+    else
     	std::cout << "  in " << filename << " at " << mangled_name << std::endl;
-    }
     free(real_name);
   }
 	free(symbols);
