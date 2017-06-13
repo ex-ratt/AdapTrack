@@ -5,9 +5,10 @@
  *      Author: poschmann
  */
 
-#ifndef LIBSVMUTILS_HPP_
-#define LIBSVMUTILS_HPP_
+#ifndef LIBSVM_LIBSVMUTILS_HPP_
+#define LIBSVM_LIBSVMUTILS_HPP_
 
+#include "classification/Kernel.hpp"
 #include "opencv2/core/core.hpp"
 #include <unordered_map>
 #include <memory>
@@ -17,10 +18,6 @@ struct svm_node;
 struct svm_parameter;
 struct svm_problem;
 struct svm_model;
-
-namespace classification {
-class Kernel;
-} /* namespace classification */
 
 namespace libsvm {
 
@@ -194,4 +191,4 @@ private:
 } /* namespace libsvm */
 
 
-#endif /* LIBSVMUTILS_HPP_ */
+#endif /* LIBSVM_LIBSVMUTILS_HPP_ */

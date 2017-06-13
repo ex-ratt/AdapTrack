@@ -15,8 +15,8 @@
 #include <stdexcept>
 
 using classification::LinearKernel;
-using classification::ProbabilisticSvmClassifier;
-using classification::SvmClassifier;
+using classification::ProbabilisticSupportVectorMachine;
+using classification::SupportVectorMachine;
 using classification::UnlimitedExampleManagement;
 using cv::Mat;
 using cv::Rect;
@@ -118,8 +118,8 @@ void DetectorTrainer::train(vector<AnnotatedImage> images) {
 }
 
 void DetectorTrainer::createEmptyClassifier() {
-	svm = make_shared<SvmClassifier>(make_shared<LinearKernel>());
-	probabilisticSvm = make_shared<ProbabilisticSvmClassifier>(svm);
+	svm = make_shared<SupportVectorMachine>(make_shared<LinearKernel>());
+	probabilisticSvm = make_shared<ProbabilisticSupportVectorMachine>(svm);
 	positives->clear();
 	negatives->clear();
 }
@@ -293,9 +293,9 @@ void DetectorTrainer::trainSvm() {
 	positives->add(newPositives);
 	negatives->add(newNegatives);
 	if (trainingParams.probabilistic)
-		trainer->train(*probabilisticSvm, positives->getAll(), negatives->getAll());
+		trainer->train(*probabilisticSvm, positives->examples, negatives->examples);
 	else
-		trainer->train(*svm, positives->getAll(), negatives->getAll());
+		trainer->train(*svm, positives->examples, negatives->examples);
 	newPositives.clear();
 	newNegatives.clear();
 }

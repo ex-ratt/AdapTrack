@@ -7,7 +7,7 @@
 
 #include "stacktrace.hpp"
 #include "StopWatch.hpp"
-#include "classification/ProbabilisticSvmClassifier.hpp"
+#include "classification/ProbabilisticSupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
 #include "imageio/DlibImageSource.hpp"
@@ -41,10 +41,10 @@ struct TrackingEvaluation {
 	double iterationFps;
 };
 
-shared_ptr<ProbabilisticSvmClassifier> loadSvm(const string& filename, float threshold = 0);
+shared_ptr<ProbabilisticSupportVectorMachine> loadSvm(const string& filename, float threshold = 0);
 shared_ptr<FhogFilter> createFhogFilter(int binCount, int cellSize);
 shared_ptr<AggregatedFeaturesDetector> createDetector(
-		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SvmClassifier> svm, int cellSize, int minWidth, int maxWidth);
+		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SupportVectorMachine> svm, int cellSize, int minWidth, int maxWidth);
 void evaluate(MultiTracker& tracker, AnnotatedImageSource& images, double aspectRatio, int count);
 TrackingEvaluation evaluate(MultiTracker& tracker, const vector<AnnotatedImage>& images);
 double computeOverlap(Rect a, Rect b);
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 	int repetitions = 25;
 
 	shared_ptr<DlibImageSource> images = make_shared<DlibImageSource>(annotationFile);
-	shared_ptr<ProbabilisticSvmClassifier> svm = loadSvm(svmFile, detectionThreshold);
+	shared_ptr<ProbabilisticSupportVectorMachine> svm = loadSvm(svmFile, detectionThreshold);
 	int binCount = (svm->getSvm()->getSupportVectors()[0].channels() - 4) / 3;
 	int windowWidth = svm->getSvm()->getSupportVectors()[0].cols;
 	int windowHeight = svm->getSvm()->getSupportVectors()[0].rows;
@@ -105,9 +105,9 @@ int main(int argc, char **argv) {
 	return EXIT_SUCCESS;
 }
 
-shared_ptr<ProbabilisticSvmClassifier> loadSvm(const string& filename, float threshold) {
+shared_ptr<ProbabilisticSupportVectorMachine> loadSvm(const string& filename, float threshold) {
 	ifstream stream(filename);
-	shared_ptr<ProbabilisticSvmClassifier> svm = ProbabilisticSvmClassifier::load(stream);
+	shared_ptr<ProbabilisticSupportVectorMachine> svm = ProbabilisticSupportVectorMachine::load(stream);
 	stream.close();
 	svm->getSvm()->setThreshold(threshold);
 	svm->setLogisticA(0.0);
@@ -119,7 +119,7 @@ shared_ptr<FhogFilter> createFhogFilter(int binCount, int cellSize) {
 }
 
 shared_ptr<AggregatedFeaturesDetector> createDetector(
-		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SvmClassifier> svm, int cellSize, int minWidth, int maxWidth) {
+		shared_ptr<FhogFilter> fhogFilter, shared_ptr<SupportVectorMachine> svm, int cellSize, int minWidth, int maxWidth) {
 	int windowWidth = svm->getSupportVectors()[0].cols;
 	int windowHeight = svm->getSupportVectors()[0].rows;
 	shared_ptr<NonMaximumSuppression> nms = make_shared<NonMaximumSuppression>(

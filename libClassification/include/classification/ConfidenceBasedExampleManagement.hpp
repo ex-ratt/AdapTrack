@@ -5,21 +5,20 @@
  *      Author: poschmann
  */
 
-#ifndef CONFIDENCEBASEDEXAMPLEMANAGEMENT_HPP_
-#define CONFIDENCEBASEDEXAMPLEMANAGEMENT_HPP_
+#ifndef CLASSIFICATION_CONFIDENCEBASEDEXAMPLEMANAGEMENT_HPP_
+#define CLASSIFICATION_CONFIDENCEBASEDEXAMPLEMANAGEMENT_HPP_
 
-#include "classification/VectorBasedExampleManagement.hpp"
+#include "classification/BinaryClassifier.hpp"
+#include "classification/ExampleManagement.hpp"
 
 namespace classification {
-
-class BinaryClassifier;
 
 /**
  * Example storage that, when reaching maximum size, replaces training examples that have the highest
  * confidence when evaluated by the classifier. The first training examples will not be replaced
  * (keeps the first example by default).
  */
-class ConfidenceBasedExampleManagement : public VectorBasedExampleManagement {
+class ConfidenceBasedExampleManagement : public ExampleManagement {
 public:
 
 	/**
@@ -28,9 +27,8 @@ public:
 	 * @param[in] classifier Classifier for computing the confidences of the training examples.
 	 * @param[in] positive Flag that indicates whether this set contains positive training examples.
 	 * @param[in] capacity Maximum amount of stored training examples.
-	 * @param[in] requiredSize Minimum amount of training examples required for training.
 	 */
-	ConfidenceBasedExampleManagement(const std::shared_ptr<BinaryClassifier>& classifier, bool positive, size_t capacity, size_t requiredSize = 1);
+	ConfidenceBasedExampleManagement(const std::shared_ptr<BinaryClassifier>& classifier, bool positive, size_t capacity);
 
 	virtual ~ConfidenceBasedExampleManagement() {}
 
@@ -51,4 +49,4 @@ private:
 };
 
 } /* namespace classification */
-#endif /* CONFIDENCEBASEDEXAMPLEMANAGEMENT_HPP_ */
+#endif /* CLASSIFICATION_CONFIDENCEBASEDEXAMPLEMANAGEMENT_HPP_ */

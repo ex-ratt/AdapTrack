@@ -5,10 +5,8 @@
  *      Author: Patrik Huber
  */
 
-#pragma once
-
-#ifndef RBFKERNEL_HPP_
-#define RBFKERNEL_HPP_
+#ifndef CLASSIFICATION_RBFKERNEL_HPP_
+#define CLASSIFICATION_RBFKERNEL_HPP_
 
 #include "classification/Kernel.hpp"
 #include "classification/KernelVisitor.hpp"
@@ -111,4 +109,4 @@ private:
 };
 
 } /* namespace classification */
-#endif /* RBFKERNEL_HPP_ */
+#endif /* CLASSIFICATION_RBFKERNEL_HPP_ */

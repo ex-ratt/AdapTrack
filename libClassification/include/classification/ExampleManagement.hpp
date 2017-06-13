@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef EXAMPLEMANAGEMENT_HPP_
-#define EXAMPLEMANAGEMENT_HPP_
+#ifndef CLASSIFICATION_EXAMPLEMANAGEMENT_HPP_
+#define CLASSIFICATION_EXAMPLEMANAGEMENT_HPP_
 
 #include "opencv2/core/core.hpp"
 #include <vector>
@@ -22,30 +22,18 @@ class ExampleManagement {
 public:
 
 	/**
-	 * Iterator for training examples.
+	 * Constructs a new example management.
+	 *
+	 * @param[in] capacity Maximum amount of stored training examples.
 	 */
-	class ExampleIterator {
-	public:
-
-		virtual ~ExampleIterator() {}
-
-		/**
-		 * @return True if there is another training example to iterate over, false otherwise.
-		 */
-		virtual bool hasNext() const = 0;
-
-		/**
-		 * Retrieves the next training example.
-		 *
-		 * @return Next training example.
-		 */
-		virtual const cv::Mat& next() = 0;
-	};
+	explicit ExampleManagement(size_t capacity) {
+		examples.reserve(capacity);
+	}
 
 	virtual ~ExampleManagement() {}
 
 	/**
-	 * Adds new training examples, which may lead to the deletion of some existing training examples.
+	 * Adds new training examples, which may lead to the removal of some existing training examples.
 	 *
 	 * @param[in] newExamples Training examples to add.
 	 */
@@ -54,30 +42,12 @@ public:
 	/**
 	 * Removes all training examples.
 	 */
-	virtual void clear() = 0;
+	virtual void clear()  {
+		examples.clear();
+	}
 
-	/**
-	 * @return Amount of training examples.
-	 */
-	virtual size_t size() const = 0;
-
-	/**
-	 * Determines whether there are enough examples for training.
-	 *
-	 * @return True if there are enough examples for training, false otherwise.
-	 */
-	virtual bool hasRequiredSize() const = 0;
-
-	/**
-	 * @return Iterator for iterating over the training examples.
-	 */
-	virtual std::unique_ptr<ExampleIterator> iterator() const = 0;
-
-	/**
-	 * @return All training examples.
-	 */
-	virtual const std::vector<cv::Mat>& getAll() const = 0;
+	std::vector<cv::Mat> examples; ///< Stored training examples.
 };
 
 } /* namespace classification */
-#endif /* EXAMPLEMANAGEMENT_HPP_ */
+#endif /* CLASSIFICATION_EXAMPLEMANAGEMENT_HPP_ */

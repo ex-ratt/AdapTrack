@@ -28,7 +28,7 @@ SingleTracker::SingleTracker(shared_ptr<FhogFilter> fhogFilter,
 		int targetSize, int padding, double scaleFactor, double svmC, double adaptationRate) :
 		generator(random_device()()),
 		fhogFilter(fhogFilter),
-		svm(make_shared<SvmClassifier>(make_shared<LinearKernel>())),
+		svm(make_shared<SupportVectorMachine>(make_shared<LinearKernel>())),
 		svmTrainer(make_shared<IncrementalLinearSvmTrainer>(make_shared<LibSvmTrainer>(svmC, true), adaptationRate)),
 		convolutionFilter(make_shared<ConvolutionFilter>(CV_32F)),
 		targetSize(targetSize, targetSize),
@@ -245,7 +245,7 @@ vector<Mat> SingleTracker::getNegativeTrainingExamples(const Mat& window) const 
 	return trainingExamples;
 }
 
-vector<Mat> SingleTracker::getNegativeTrainingExamples(const Mat& window, const SvmClassifier& svm) const {
+vector<Mat> SingleTracker::getNegativeTrainingExamples(const Mat& window, const SupportVectorMachine& svm) const {
 	Rect target((window.cols - targetSize.width) / 2, (window.rows - targetSize.height) / 2, targetSize.width, targetSize.height);
 	vector<pair<double, Mat>> trainingCandidates;
 	trainingCandidates.reserve(3 * negativeExampleCount);

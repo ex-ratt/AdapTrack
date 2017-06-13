@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef HISTOGRAMINTERSECTIONKERNEL_HPP_
-#define HISTOGRAMINTERSECTIONKERNEL_HPP_
+#ifndef CLASSIFICATION_HISTOGRAMINTERSECTIONKERNEL_HPP_
+#define CLASSIFICATION_HISTOGRAMINTERSECTIONKERNEL_HPP_
 
 #include "classification/Kernel.hpp"
 #include "classification/KernelVisitor.hpp"
@@ -94,4 +94,4 @@ private:
 };
 
 } /* namespace classification */
-#endif /* HISTOGRAMINTERSECTIONKERNEL_HPP_ */
+#endif /* CLASSIFICATION_HISTOGRAMINTERSECTIONKERNEL_HPP_ */

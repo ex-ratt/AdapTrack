@@ -5,10 +5,10 @@
  *      Author: poschmann
  */
 
-#ifndef AGEBASEDEXAMPLEMANAGEMENT_HPP_
-#define AGEBASEDEXAMPLEMANAGEMENT_HPP_
+#ifndef CLASSIFICATION_AGEBASEDEXAMPLEMANAGEMENT_HPP_
+#define CLASSIFICATION_AGEBASEDEXAMPLEMANAGEMENT_HPP_
 
-#include "classification/VectorBasedExampleManagement.hpp"
+#include "classification/ExampleManagement.hpp"
 
 namespace classification {
 
@@ -16,16 +16,15 @@ namespace classification {
  * Example storage that, when reaching maximum size, replaces the oldest training examples with
  * new ones.
  */
-class AgeBasedExampleManagement : public VectorBasedExampleManagement {
+class AgeBasedExampleManagement : public ExampleManagement {
 public:
 
 	/**
 	 * Constructs a new age based example management.
 	 *
 	 * @param[in] capacity Maximum amount of stored training examples.
-	 * @param[in] requiredSize Minimum amount of training examples required for training.
 	 */
-	explicit AgeBasedExampleManagement(size_t capacity, size_t requiredSize = 1);
+	explicit AgeBasedExampleManagement(size_t capacity);
 
 	void add(const std::vector<cv::Mat>& newExamples);
 
@@ -35,4 +34,4 @@ private:
 };
 
 } /* namespace classification */
-#endif /* AGEBASEDEXAMPLEMANAGEMENT_HPP_ */
+#endif /* CLASSIFICATION_AGEBASEDEXAMPLEMANAGEMENT_HPP_ */

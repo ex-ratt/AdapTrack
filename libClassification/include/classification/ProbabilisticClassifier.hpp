@@ -5,10 +5,8 @@
  *      Author: Patrik Huber
  */
 
-#pragma once
-
-#ifndef PROBABILISTICCLASSIFIER_HPP_
-#define PROBABILISTICCLASSIFIER_HPP_
+#ifndef CLASSIFICATION_PROBABILISTICCLASSIFIER_HPP_
+#define CLASSIFICATION_PROBABILISTICCLASSIFIER_HPP_
 
 #include "classification/BinaryClassifier.hpp"
 #include "opencv2/core/core.hpp"
@@ -34,4 +32,4 @@ public:
 };
 
 } /* namespace classification */
-#endif /* PROBABILISTICCLASSIFIER_HPP_ */
+#endif /* CLASSIFICATION_PROBABILISTICCLASSIFIER_HPP_ */

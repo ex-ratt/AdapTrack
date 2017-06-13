@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef LINEARKERNEL_HPP_
-#define LINEARKERNEL_HPP_
+#ifndef CLASSIFICATION_LINEARKERNEL_HPP_
+#define CLASSIFICATION_LINEARKERNEL_HPP_
 
 #include "classification/Kernel.hpp"
 #include "classification/KernelVisitor.hpp"
@@ -34,4 +34,4 @@ public:
 };
 
 } /* namespace classification */
-#endif /* LINEARKERNEL_HPP_ */
+#endif /* CLASSIFICATION_LINEARKERNEL_HPP_ */

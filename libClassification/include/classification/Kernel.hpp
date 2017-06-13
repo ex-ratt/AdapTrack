@@ -5,10 +5,8 @@
  *      Author: Patrik Huber
  */
 
-#pragma once
-
-#ifndef KERNEL_HPP_
-#define KERNEL_HPP_
+#ifndef CLASSIFICATION_KERNEL_HPP_
+#define CLASSIFICATION_KERNEL_HPP_
 
 #include "opencv2/core/core.hpp"
 
@@ -42,4 +40,4 @@ public:
 };
 
 } /* namespace classification */
-#endif /* KERNEL_HPP_ */
+#endif /* CLASSIFICATION_KERNEL_HPP_ */

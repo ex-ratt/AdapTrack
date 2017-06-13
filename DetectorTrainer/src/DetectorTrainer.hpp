@@ -10,8 +10,8 @@
 
 #include "classification/ConfidenceBasedExampleManagement.hpp"
 #include "classification/ExampleManagement.hpp"
-#include "classification/ProbabilisticSvmClassifier.hpp"
-#include "classification/SvmClassifier.hpp"
+#include "classification/ProbabilisticSupportVectorMachine.hpp"
+#include "classification/SupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
 #include "libsvm/LibSvmTrainer.hpp"
@@ -228,8 +228,8 @@ private:
 	std::shared_ptr<imageprocessing::filtering::ImageFilter> imageFilter;
 	std::shared_ptr<imageprocessing::filtering::ImageFilter> filter;
 	std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor;
-	std::shared_ptr<classification::SvmClassifier> svm;
-	std::shared_ptr<classification::ProbabilisticSvmClassifier> probabilisticSvm;
+	std::shared_ptr<classification::SupportVectorMachine> svm;
+	std::shared_ptr<classification::ProbabilisticSupportVectorMachine> probabilisticSvm;
 	std::shared_ptr<libsvm::LibSvmTrainer> trainer;
 	std::shared_ptr<detection::AggregatedFeaturesDetector> hardNegativesDetector;
 	std::unique_ptr<classification::ExampleManagement> positives;

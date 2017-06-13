@@ -9,9 +9,9 @@
 #include "boost/filesystem.hpp"
 #include "boost/property_tree/info_parser.hpp"
 #include "boost/property_tree/ptree.hpp"
+#include "classification/SupportVectorMachine.hpp"
 #include "DetectorTester.hpp"
 #include "DetectorTrainer.hpp"
-#include "classification/SvmClassifier.hpp"
 #include "imageio/DlibImageSource.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
 #include "imageprocessing/extraction/AggregatedFeaturesExtractor.hpp"
@@ -39,7 +39,7 @@ using boost::property_tree::write_info;
 using cv::Mat;
 using cv::Rect;
 using cv::Size;
-using classification::SvmClassifier;
+using classification::SupportVectorMachine;
 using detection::AggregatedFeaturesDetector;
 using detection::NonMaximumSuppression;
 using imageio::DlibImageSource;
@@ -151,7 +151,7 @@ vector<AnnotatedImage> getTrainingSet(const vector<vector<AnnotatedImage>>& subs
 }
 
 shared_ptr<AggregatedFeaturesDetector> createDetector(
-		const shared_ptr<SvmClassifier>& svm, const Features& features, DetectionParams detectionParams) {
+		const shared_ptr<SupportVectorMachine>& svm, const Features& features, DetectionParams detectionParams) {
 	shared_ptr<NonMaximumSuppression> nms = make_shared<NonMaximumSuppression>(
 			detectionParams.nmsOverlapThreshold, NonMaximumSuppression::MaximumType::MAX_SCORE);
 	if (features.hasImageFilter())
@@ -165,7 +165,7 @@ shared_ptr<AggregatedFeaturesDetector> createDetector(
 }
 
 shared_ptr<AggregatedFeaturesDetector> createApproximateDetector(
-		const shared_ptr<SvmClassifier>& svm, const Features& features, DetectionParams detectionParams) {
+		const shared_ptr<SupportVectorMachine>& svm, const Features& features, DetectionParams detectionParams) {
 	auto featurePyramid = ImagePyramid::createApproximated(detectionParams.octaveLayerCount, 0.5, 1.0, features.lambdas);
 	if (features.hasImageFilter())
 		featurePyramid->addImageFilter(features.createImageFilter());
@@ -181,7 +181,7 @@ shared_ptr<AggregatedFeaturesDetector> createApproximateDetector(
 shared_ptr<AggregatedFeaturesDetector> loadDetector(
 		const string& filename, const Features& features, DetectionParams detectionParams, float threshold = 0) {
 	std::ifstream stream(filename);
-	shared_ptr<SvmClassifier> svm = SvmClassifier::load(stream);
+	shared_ptr<SupportVectorMachine> svm = SupportVectorMachine::load(stream);
 	svm->setThreshold(threshold);
 	stream.close();
 	if (detectionParams.approximatePyramid)

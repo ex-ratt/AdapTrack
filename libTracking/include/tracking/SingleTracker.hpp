@@ -9,7 +9,7 @@
 #define SINGLETRACKER_HPP_
 
 #include "classification/IncrementalClassifierTrainer.hpp"
-#include "classification/SvmClassifier.hpp"
+#include "classification/SupportVectorMachine.hpp"
 #include "imageprocessing/filtering/ConvolutionFilter.hpp"
 #include "imageprocessing/filtering/FhogFilter.hpp"
 #include "opencv2/core/core.hpp"
@@ -94,7 +94,7 @@ private:
 
 	std::vector<cv::Mat> getNegativeTrainingExamples(const cv::Mat& window) const;
 
-	std::vector<cv::Mat> getNegativeTrainingExamples(const cv::Mat& window, const classification::SvmClassifier& svm) const;
+	std::vector<cv::Mat> getNegativeTrainingExamples(const cv::Mat& window, const classification::SupportVectorMachine& svm) const;
 
 	double computeOverlap(cv::Rect a, cv::Rect b) const;
 
@@ -102,8 +102,8 @@ private:
 
 	mutable std::default_random_engine generator; ///< Random number generator.
 	std::shared_ptr<imageprocessing::filtering::FhogFilter> fhogFilter; ///< Filter that computes the FHOG descriptors of the search window.
-	std::shared_ptr<classification::SvmClassifier> svm; ///< SVM that is adapted to the target.
-	std::shared_ptr<classification::IncrementalClassifierTrainer<classification::SvmClassifier>> svmTrainer; ///< SVM trainer.
+	std::shared_ptr<classification::SupportVectorMachine> svm; ///< SVM that is adapted to the target.
+	std::shared_ptr<classification::IncrementalClassifierTrainer<classification::SupportVectorMachine>> svmTrainer; ///< SVM trainer.
 	std::shared_ptr<imageprocessing::filtering::ConvolutionFilter> convolutionFilter; ///< Filter that convolves the FHOG window with the SVM weight.
 	cv::Size targetSize; ///< Size of the target in FHOG cells.
 	cv::Size windowSize; ///< Size of the search window in FHOG cells.

@@ -16,9 +16,9 @@
 
 using classification::IncrementalLinearSvmTrainer;
 using classification::LinearKernel;
-using classification::ProbabilisticSvmClassifier;
+using classification::ProbabilisticSupportVectorMachine;
 using classification::PseudoProbabilisticSvmTrainer;
-using classification::SvmClassifier;
+using classification::SupportVectorMachine;
 using cv::Mat;
 using cv::Point;
 using cv::Rect;
@@ -45,7 +45,7 @@ namespace tracking {
 
 MultiTracker::MultiTracker(shared_ptr<FeatureExtractor> exactFeatureExtractor,
 		shared_ptr<AggregatedFeaturesDetector> detector,
-		shared_ptr<ProbabilisticSvmClassifier> svm,
+		shared_ptr<ProbabilisticSupportVectorMachine> svm,
 		shared_ptr<MotionModel> motionModel) :
 				generator(std::random_device()()),
 				versionedImage(make_shared<VersionedImage>()),
@@ -101,7 +101,7 @@ void MultiTracker::updateFilters() {
 				track.state.x, track.state.y, track.state.width(), track.state.height());
 		if (patch) {
 			track.features = patch->getData();
-			classification::SvmClassifier& svm = adaptive ? *track.svm->getSvm() : *this->svm->getSvm();
+			SupportVectorMachine& svm = adaptive ? *track.svm->getSvm() : *this->svm->getSvm();
 			track.score = svm.computeHyperplaneDistance(track.features);
 		} else {
 			track.features = Mat();
@@ -200,7 +200,7 @@ void MultiTracker::addNewTracks(const vector<Rect>& unmatchedDetections) {
 }
 
 Track MultiTracker::createTrack(Rect target) {
-	auto probabilisticSvm = make_shared<ProbabilisticSvmClassifier>(make_shared<LinearKernel>());
+	auto probabilisticSvm = make_shared<ProbabilisticSupportVectorMachine>(make_shared<LinearKernel>());
 	auto libSvmTrainer = make_shared<LibSvmTrainer>(targetSvmC, true);
 	auto incrementalSvmTrainer = make_shared<IncrementalLinearSvmTrainer>(libSvmTrainer, learnRate);
 	auto probabilisticSvmTrainer = make_shared<PseudoProbabilisticSvmTrainer>(incrementalSvmTrainer, 0.95, 0.05, 1.0, -1.0);
@@ -261,7 +261,7 @@ vector<Mat> MultiTracker::getNegativeTrainingExamples(Rect target) const {
 	return trainingExamples;
 }
 
-vector<Mat> MultiTracker::getNegativeTrainingExamples(Rect target, const SvmClassifier& svm) const {
+vector<Mat> MultiTracker::getNegativeTrainingExamples(Rect target, const SupportVectorMachine& svm) const {
 	int lowerX = target.x - target.width;
 	int upperX = target.x + target.width;
 	int lowerY = target.y - target.height;

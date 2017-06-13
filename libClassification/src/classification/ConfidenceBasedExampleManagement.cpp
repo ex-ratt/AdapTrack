@@ -18,8 +18,8 @@ using std::shared_ptr;
 namespace classification {
 
 ConfidenceBasedExampleManagement::ConfidenceBasedExampleManagement(
-		const shared_ptr<BinaryClassifier>& classifier, bool positive, size_t capacity, size_t requiredSize) :
-				VectorBasedExampleManagement(capacity, requiredSize), classifier(classifier), positive(positive), keep(1) {}
+		const shared_ptr<BinaryClassifier>& classifier, bool positive, size_t capacity) :
+				ExampleManagement(capacity), classifier(classifier), positive(positive), keep(1) {}
 
 void ConfidenceBasedExampleManagement::setFirstExamplesToKeep(size_t keep) {
 	this->keep = keep;

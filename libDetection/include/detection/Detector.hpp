@@ -1,12 +1,12 @@
 /*
- * SimpleDetector.hpp
+ * Detector.hpp
  *
  *  Created on: 06.10.2015
  *      Author: poschmann
  */
 
-#ifndef SIMPLEDETECTOR_HPP_
-#define SIMPLEDETECTOR_HPP_
+#ifndef DETECTION_DETECTOR_HPP_
+#define DETECTION_DETECTOR_HPP_
 
 #include "imageprocessing/VersionedImage.hpp"
 #include "opencv2/core/core.hpp"
@@ -62,4 +62,4 @@ public:
 
 } /* namespace detection */
 
-#endif /* SIMPLEDETECTOR_HPP_ */
+#endif /* DETECTION_DETECTOR_HPP_ */

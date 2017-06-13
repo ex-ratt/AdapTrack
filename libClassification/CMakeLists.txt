@@ -15,7 +15,6 @@ SET(HEADERS
 	include/classification/BinaryClassifier.hpp
 	include/classification/ClassifierTrainer.hpp
 	include/classification/ConfidenceBasedExampleManagement.hpp
-	include/classification/EmptyExampleManagement.hpp
 	include/classification/ExampleManagement.hpp
 	include/classification/HistogramIntersectionKernel.hpp
 	include/classification/IncrementalClassifierTrainer.hpp
@@ -25,37 +24,30 @@ SET(HEADERS
 	include/classification/LinearKernel.hpp
 	include/classification/PolynomialKernel.hpp
 	include/classification/ProbabilisticClassifier.hpp
-	include/classification/ProbabilisticSvmClassifier.hpp
+	include/classification/ProbabilisticSupportVectorMachine.hpp
 	include/classification/PseudoIncrementalClassifierTrainer.hpp
 	include/classification/PseudoProbabilisticSvmTrainer.hpp
 	include/classification/RbfKernel.hpp
-	include/classification/SvmClassifier.hpp
+	include/classification/SupportVectorMachine.hpp
 	include/classification/UnlimitedExampleManagement.hpp
-	include/classification/VectorBasedExampleManagement.hpp
-	include/classification/VectorMachineClassifier.hpp
 )
 SET(SOURCE
 	src/classification/AgeBasedExampleManagement.cpp
 	src/classification/ConfidenceBasedExampleManagement.cpp
-	src/classification/ProbabilisticSvmClassifier.cpp
-	src/classification/SvmClassifier.cpp
-	src/classification/UnlimitedExampleManagement.cpp
-	src/classification/VectorBasedExampleManagement.cpp
-	src/classification/VectorMachineClassifier.cpp
+	src/classification/ProbabilisticSupportVectorMachine.cpp
+	src/classification/SupportVectorMachine.cpp
 )
 
 include_directories("include")
 
 # add dependencies
-include_directories(${Logging_SOURCE_DIR}/include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # make library
 add_library(${SUBPROJECT_NAME} ${SOURCE} ${HEADERS})
-target_link_libraries(${SUBPROJECT_NAME} Logging ${OpenCV_LIBS})
+target_link_libraries(${SUBPROJECT_NAME} ${OpenCV_LIBS})
 
 install(TARGETS ${SUBPROJECT_NAME}
 	LIBRARY DESTINATION lib
 )
 install(DIRECTORY include/ DESTINATION include)
-

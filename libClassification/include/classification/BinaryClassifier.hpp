@@ -5,10 +5,8 @@
  *      Author: Patrik Huber
  */
 
-#pragma once
-
-#ifndef BINARYCLASSIFIER_HPP_
-#define BINARYCLASSIFIER_HPP_
+#ifndef CLASSIFICATION_BINARYCLASSIFIER_HPP_
+#define CLASSIFICATION_BINARYCLASSIFIER_HPP_
 
 #include "opencv2/core/core.hpp"
 #include <utility>
@@ -43,4 +41,4 @@ public:
 };
 
 } /* namespace classification */
-#endif /* BINARYCLASSIFIER_HPP_ */
+#endif /* CLASSIFICATION_BINARYCLASSIFIER_HPP_ */

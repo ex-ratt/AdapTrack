@@ -5,14 +5,14 @@
  *      Author: poschmann
  */
 
-#include "detection/AggregatedFeaturesDetector.hpp"
 #include "classification/LinearKernel.hpp"
+#include "detection/AggregatedFeaturesDetector.hpp"
 #include "imageprocessing/Patch.hpp"
 #include "imageprocessing/filtering/GrayscaleFilter.hpp"
 #include <stdexcept>
 
 using classification::LinearKernel;
-using classification::SvmClassifier;
+using classification::SupportVectorMachine;
 using cv::Point;
 using cv::Rect;
 using cv::Size;
@@ -33,19 +33,19 @@ using std::vector;
 namespace detection {
 
 AggregatedFeaturesDetector::AggregatedFeaturesDetector(shared_ptr<ImageFilter> imageFilter, shared_ptr<ImageFilter> layerFilter,
-		int cellSize, Size windowSize, int octaveLayerCount, shared_ptr<SvmClassifier> svm, shared_ptr<NonMaximumSuppression> nms,
+		int cellSize, Size windowSize, int octaveLayerCount, shared_ptr<SupportVectorMachine> svm, shared_ptr<NonMaximumSuppression> nms,
 		float widthScale, float heightScale, int minWindowWidth, int maxWindowWidth) : AggregatedFeaturesDetector(
 				make_shared<AggregatedFeaturesExtractor>(imageFilter, layerFilter, windowSize, cellSize, octaveLayerCount,
 						minWindowWidth, maxWindowWidth), svm, nms, widthScale, heightScale) {}
 
 AggregatedFeaturesDetector::AggregatedFeaturesDetector(shared_ptr<ImageFilter> filter, int cellSize, Size windowSize,
-		int octaveLayerCount, shared_ptr<SvmClassifier> svm, shared_ptr<NonMaximumSuppression> nms,
+		int octaveLayerCount, shared_ptr<SupportVectorMachine> svm, shared_ptr<NonMaximumSuppression> nms,
 		float widthScale, float heightScale, int minWindowWidth, int maxWindowWidth) : AggregatedFeaturesDetector(
 				make_shared<AggregatedFeaturesExtractor>(filter, windowSize, cellSize, octaveLayerCount,
 						minWindowWidth, maxWindowWidth), svm, nms, widthScale, heightScale) {}
 
 AggregatedFeaturesDetector::AggregatedFeaturesDetector(shared_ptr<AggregatedFeaturesExtractor> featureExtractor,
-		shared_ptr<SvmClassifier> svm, shared_ptr<NonMaximumSuppression> nms, float widthScale, float heightScale) :
+		shared_ptr<SupportVectorMachine> svm, shared_ptr<NonMaximumSuppression> nms, float widthScale, float heightScale) :
 				featureExtractor(featureExtractor),
 				nonMaximumSuppression(nms),
 				kernelSize(svm->getSupportVectors()[0].size()),

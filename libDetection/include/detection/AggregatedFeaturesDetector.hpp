@@ -5,10 +5,10 @@
  *      Author: poschmann
  */
 
-#ifndef AGGREGATEDFEATURESDETECTOR_HPP_
-#define AGGREGATEDFEATURESDETECTOR_HPP_
+#ifndef DETECTION_AGGREGATEDFEATURESDETECTOR_HPP_
+#define DETECTION_AGGREGATEDFEATURESDETECTOR_HPP_
 
-#include "classification/SvmClassifier.hpp"
+#include "classification/SupportVectorMachine.hpp"
 #include "detection/Detector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
 #include "imageprocessing/ImagePyramid.hpp"
@@ -43,7 +43,7 @@ public:
 	 */
 	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::filtering::ImageFilter> imageFilter,
 			std::shared_ptr<imageprocessing::filtering::ImageFilter> layerFilter, int cellSize, cv::Size windowSize, int octaveLayerCount,
-			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
+			std::shared_ptr<classification::SupportVectorMachine> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
 			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0, int maxWindowWidth = 0);
 
 	/**
@@ -61,7 +61,7 @@ public:
 	 * @param[in] maxWindowWidth Width of the largest detectable window in pixels.
 	 */
 	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::filtering::ImageFilter> filter, int cellSize, cv::Size windowSize, int octaveLayerCount,
-			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
+			std::shared_ptr<classification::SupportVectorMachine> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
 			float widthScale = 1.0f, float heightScale = 1.0f, int minWindowWidth = 0, int maxWindowWidth = 0);
 
 	/**
@@ -74,7 +74,7 @@ public:
 	 * @param[in] heightScale Scaling factor to compute the actual bounding box height from positively classified windows.
 	 */
 	AggregatedFeaturesDetector(std::shared_ptr<imageprocessing::extraction::AggregatedFeaturesExtractor> featureExtractor,
-			std::shared_ptr<classification::SvmClassifier> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
+			std::shared_ptr<classification::SupportVectorMachine> svm, std::shared_ptr<detection::NonMaximumSuppression> nonMaximumSuppression,
 			float widthScale = 1.0f, float heightScale = 1.0f);
 
 	using Detector::detect;
@@ -170,4 +170,4 @@ private:
 
 } /* namespace detection */
 
-#endif /* AGGREGATEDFEATURESDETECTOR_HPP_ */
+#endif /* DETECTION_AGGREGATEDFEATURESDETECTOR_HPP_ */

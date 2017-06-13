@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef KERNELVISITOR_HPP_
-#define KERNELVISITOR_HPP_
+#ifndef CLASSIFICATION_KERNELVISITOR_HPP_
+#define CLASSIFICATION_KERNELVISITOR_HPP_
 
 namespace classification {
 
@@ -53,4 +53,4 @@ public:
 };
 
 } /* namespace classification */
-#endif /* KERNELVISITOR_HPP_ */
+#endif /* CLASSIFICATION_KERNELVISITOR_HPP_ */

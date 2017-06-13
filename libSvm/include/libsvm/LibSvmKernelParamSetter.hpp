@@ -5,8 +5,8 @@
  *      Author: poschmann
  */
 
-#ifndef LIBSVMKERNELPARAMSETTER_HPP_
-#define LIBSVMKERNELPARAMSETTER_HPP_
+#ifndef LIBSVM_LIBSVMKERNELPARAMSETTER_HPP_
+#define LIBSVM_LIBSVMKERNELPARAMSETTER_HPP_
 
 #include "classification/KernelVisitor.hpp"
 #include "classification/LinearKernel.hpp"
@@ -55,4 +55,4 @@ private:
 };
 
 } /* namespace libsvm */
-#endif /* LIBSVMKERNELPARAMSETTER_HPP_ */
+#endif /* LIBSVM_LIBSVMKERNELPARAMSETTER_HPP_ */

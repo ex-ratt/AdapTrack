@@ -11,8 +11,8 @@
 #include "svm.h"
 #include "classification/ClassifierTrainer.hpp"
 #include "classification/Kernel.hpp"
-#include "classification/ProbabilisticSvmClassifier.hpp"
-#include "classification/SvmClassifier.hpp"
+#include "classification/ProbabilisticSupportVectorMachine.hpp"
+#include "classification/SupportVectorMachine.hpp"
 #include "libsvm/LibSvmUtils.hpp"
 #include <memory>
 
@@ -29,8 +29,8 @@ struct LibSvmData {
  * SVM trainer based on libSVM.
  */
 class LibSvmTrainer :
-		public classification::ClassifierTrainer<classification::SvmClassifier>,
-		public classification::ClassifierTrainer<classification::ProbabilisticSvmClassifier> {
+		public classification::ClassifierTrainer<classification::SupportVectorMachine>,
+		public classification::ClassifierTrainer<classification::ProbabilisticSupportVectorMachine> {
 public:
 
 	/**
@@ -41,10 +41,10 @@ public:
 	 */
 	LibSvmTrainer(double c, bool compensateImbalance);
 
-	void train(classification::SvmClassifier& svm,
+	void train(classification::SupportVectorMachine& svm,
 			const std::vector<cv::Mat>& positives, const std::vector<cv::Mat>& negatives) const override;
 
-	void train(classification::ProbabilisticSvmClassifier& svm,
+	void train(classification::ProbabilisticSupportVectorMachine& svm,
 			const std::vector<cv::Mat>& positives, const std::vector<cv::Mat>& negatives) const override;
 
 private:
@@ -86,7 +86,7 @@ private:
 	 * @param[in] svm SVM whose parameters to change.
 	 * @param[in] model SVM model to take the parameter values from.
 	 */
-	void setSvmParameters(classification::SvmClassifier& svm, const struct svm_model* model) const;
+	void setSvmParameters(classification::SupportVectorMachine& svm, const struct svm_model* model) const;
 
 	/**
 	 * Sets parameters of the probabilistic SVM's logistic function according to the model.
@@ -94,7 +94,7 @@ private:
 	 * @param[in] svm Probabilistic SVM whose logistic parameters to change.
 	 * @param[in] model SVM model to take the parameter values from.
 	 */
-	void setLogisticParameters(classification::ProbabilisticSvmClassifier& svm, const struct svm_model* model) const;
+	void setLogisticParameters(classification::ProbabilisticSupportVectorMachine& svm, const struct svm_model* model) const;
 
 	LibSvmUtils utils; ///< Utils for using libSVM.
 	std::unique_ptr<struct svm_parameter, ParameterDeleter> param; ///< Parameters of libSVM.

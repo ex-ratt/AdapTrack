@@ -5,10 +5,8 @@
  *      Author: Patrik Huber
  */
 
-#pragma once
-
-#ifndef POLYNOMIALKERNEL_HPP_
-#define POLYNOMIALKERNEL_HPP_
+#ifndef CLASSIFICATION_POLYNOMIALKERNEL_HPP_
+#define CLASSIFICATION_POLYNOMIALKERNEL_HPP_
 
 #include "classification/Kernel.hpp"
 #include "classification/KernelVisitor.hpp"
@@ -86,4 +84,4 @@ private:
 };
 
 } /* namespace classification */
-#endif /* POLYNOMIALKERNEL_HPP_ */
+#endif /* CLASSIFICATION_POLYNOMIALKERNEL_HPP_ */

@@ -12,8 +12,8 @@ using std::vector;
 
 namespace classification {
 
-AgeBasedExampleManagement::AgeBasedExampleManagement(size_t capacity, size_t requiredSize) :
-		VectorBasedExampleManagement(capacity, requiredSize), insertPosition(0) {}
+AgeBasedExampleManagement::AgeBasedExampleManagement(size_t capacity) :
+		ExampleManagement(capacity), insertPosition(0) {}
 
 void AgeBasedExampleManagement::add(const vector<Mat>& newExamples) {
 	// add new training examples as long as there is space available

@@ -1,34 +1,34 @@
 /*
- * SvmClassifier.hpp
+ * SupportVectorMachine.hpp
  *
  *  Created on: 21.12.2012
  *      Author: poschmann & huber
  */
-#pragma once
 
-#ifndef SVMCLASSIFIER_HPP_
-#define SVMCLASSIFIER_HPP_
+#ifndef CLASSIFICATION_SUPPORTVECTORMACHINE_HPP_
+#define CLASSIFICATION_SUPPORTVECTORMACHINE_HPP_
 
-#include "classification/VectorMachineClassifier.hpp"
+#include "classification/BinaryClassifier.hpp"
+#include "classification/Kernel.hpp"
 #include "opencv2/core/core.hpp"
-#include <string>
-#include <vector>
 #include <fstream>
+#include <memory>
+#include <vector>
 
 namespace classification {
 
 /**
- * Classifier based on a Support Vector Machine.
+ * Support vector machine.
  */
-class SvmClassifier : public VectorMachineClassifier {
+class SupportVectorMachine : public BinaryClassifier {
 public:
 
 	/**
-	 * Constructs a new SVM classifier.
+	 * Constructs a new support vector machine.
 	 *
 	 * @param[in] kernel The kernel function.
 	 */
-	explicit SvmClassifier(std::shared_ptr<Kernel> kernel);
+	explicit SupportVectorMachine(std::shared_ptr<Kernel> kernel);
 
 	bool classify(const cv::Mat& featureVector) const;
 
@@ -60,28 +60,40 @@ public:
 	double computeHyperplaneDistance(const cv::Mat& featureVector) const;
 
 	/**
-	 * Changes the parameters of this SVM.
-	 *
-	 * @param[in] supportVectors The support vectors.
-	 * @param[in] coefficients The coefficients of the support vectors.
-	 * @param[in] bias The bias.
-	 */
-	void setSvmParameters(std::vector<cv::Mat> supportVectors, std::vector<float> coefficients, double bias);
-
-	/**
 	 * Stores the SVM parameters (kernel, bias, coefficients, support vectors) into a text file.
 	 *
 	 * @param[in] file The file output stream to store the parameters into.
 	 */
-	void store(std::ofstream& file);
+	void store(std::ofstream& file) const;
 
 	/**
 	 * Creates a new SVM from parameters (kernel, bias, coefficients, support vectors) given in a text file.
 	 *
 	 * @param[in] file The file input stream to load the parameters from.
-	 * @return The newly created SVM classifier.
+	 * @return The newly created support vector machine.
 	 */
-	static std::shared_ptr<SvmClassifier> load(std::ifstream& file);
+	static std::shared_ptr<SupportVectorMachine> load(std::ifstream& file);
+
+	/**
+	 * @return The kernel function.
+	 */
+	std::shared_ptr<Kernel> getKernel() {
+		return kernel;
+	}
+
+	/**
+	 * @return The kernel function.
+	 */
+	const std::shared_ptr<Kernel> getKernel() const {
+		return kernel;
+	}
+
+	/**
+	 * @return The support vectors.
+	 */
+	std::vector<cv::Mat>& getSupportVectors() {
+		return supportVectors;
+	}
 
 	/**
 	 * @return The support vectors.
@@ -91,10 +103,59 @@ public:
 	}
 
 	/**
+	 * @param[in] The new support vectors.
+	 */
+	void setSupportVectors(std::vector<cv::Mat> supportVectors) {
+		this->supportVectors = std::move(supportVectors);
+	}
+
+	/**
+	 * @return The coefficients of the support vectors.
+	 */
+	std::vector<float>& getCoefficients() {
+		return coefficients;
+	}
+
+	/**
 	 * @return The coefficients of the support vectors.
 	 */
 	const std::vector<float>& getCoefficients() const {
 		return coefficients;
+	}
+
+	/**
+	 * @param[in] coefficients The new coefficients of the support vectors.
+	 */
+	void setCoefficients(std::vector<float> coefficients) {
+		this->coefficients = std::move(coefficients);
+	}
+
+	/**
+	 * @return The bias that is subtracted from the sum over all scaled kernel values.
+	 */
+	float getBias() const {
+		return bias;
+	}
+
+	/**
+	 * @param[in] bias The new bias that is subtracted from the sum over all scaled kernel values.
+	 */
+	void setBias(float bias) {
+		this->bias = bias;
+	}
+
+	/**
+	 * @return The threshold to compare the hyperplane distance against for determining the label.
+	 */
+	float getThreshold() const {
+		return threshold;
+	}
+
+	/**
+	 * @param[in] threshold The new threshold to compare the hyperplane distance against for determining the label.
+	 */
+	void setThreshold(float threshold) {
+		this->threshold = threshold;
 	}
 
 private:
@@ -107,7 +168,7 @@ private:
 	 * @param[in] supportVectors The support vectors.
 	 */
 	template<class T>
-	void storeSupportVectors(std::ofstream& file, const std::vector<cv::Mat>& supportVectors) {
+	void storeSupportVectors(std::ofstream& file, const std::vector<cv::Mat>& supportVectors) const {
 		for (const cv::Mat& vector : supportVectors) {
 			for (size_t row = 0; row < vector.rows; ++row) {
 				const T* values = vector.ptr<T>(row);
@@ -146,9 +207,12 @@ private:
 		}
 	}
 
+	std::shared_ptr<Kernel> kernel; ///< The kernel function.
 	std::vector<cv::Mat> supportVectors; ///< The support vectors.
 	std::vector<float> coefficients; ///< The coefficients of the support vectors.
+	float bias; ///< The bias that is subtracted from the sum over all scaled kernel values.
+	float threshold; ///< The threshold to compare the hyperplane distance against for determining the label.
 };
 
 } /* namespace classification */
-#endif /* SVMCLASSIFIER_HPP_ */
+#endif /* CLASSIFICATION_SUPPORTVECTORMACHINE_HPP_ */

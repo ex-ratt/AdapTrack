@@ -38,7 +38,7 @@ public:
 		if (!positives.empty() || !negatives.empty()) {
 			positiveExamples->add(positives);
 			negativeExamples->add(negatives);
-			batchTrainer->train(classifier, positiveExamples->getAll(), negativeExamples->getAll());
+			batchTrainer->train(classifier, positiveExamples->examples, negativeExamples->examples);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * LibSvmTrainer2.cpp
+ * LibSvmTrainer.cpp
  *
  *  Created on: Jan 13, 2017
  *      Author: poschmann
@@ -10,8 +10,8 @@
 #include <string>
 
 using classification::Kernel;
-using classification::ProbabilisticSvmClassifier;
-using classification::SvmClassifier;
+using classification::ProbabilisticSupportVectorMachine;
+using classification::SupportVectorMachine;
 using cv::Mat;
 using std::invalid_argument;
 using std::shared_ptr;
@@ -45,12 +45,12 @@ LibSvmTrainer::LibSvmTrainer(double c, bool compensateImbalance) : utils(), para
 	param->degree = 0;
 }
 
-void LibSvmTrainer::train(SvmClassifier& svm, const vector<Mat>& positives, const vector<Mat>& negatives) const {
+void LibSvmTrainer::train(SupportVectorMachine& svm, const vector<Mat>& positives, const vector<Mat>& negatives) const {
 	LibSvmData data = train(*svm.getKernel(), false, positives, negatives);
 	setSvmParameters(svm, data.model.get());
 }
 
-void LibSvmTrainer::train(ProbabilisticSvmClassifier& svm, const vector<Mat>& positives, const vector<Mat>& negatives) const {
+void LibSvmTrainer::train(ProbabilisticSupportVectorMachine& svm, const vector<Mat>& positives, const vector<Mat>& negatives) const {
 	LibSvmData data = train(*svm.getSvm()->getKernel(), true, positives, negatives);
 	setSvmParameters(*svm.getSvm(), data.model.get());
 	setLogisticParameters(svm, data.model.get());
@@ -108,11 +108,13 @@ unique_ptr<struct svm_problem, ProblemDeleter> LibSvmTrainer::createProblem(
 	return move(problem);
 }
 
-void LibSvmTrainer::setSvmParameters(SvmClassifier& svm, const struct svm_model* model) const {
-	svm.setSvmParameters(utils.extractSupportVectors(model), utils.extractCoefficients(model), utils.extractBias(model));
+void LibSvmTrainer::setSvmParameters(SupportVectorMachine& svm, const struct svm_model* model) const {
+	svm.setSupportVectors(utils.extractSupportVectors(model));
+	svm.setCoefficients(utils.extractCoefficients(model));
+	svm.setBias(utils.extractBias(model));
 }
 
-void LibSvmTrainer::setLogisticParameters(ProbabilisticSvmClassifier& svm, const struct svm_model* model) const {
+void LibSvmTrainer::setLogisticParameters(ProbabilisticSupportVectorMachine& svm, const struct svm_model* model) const {
 	// order of A and B in libSVM is reverse of order in ProbabilisticSvmClassifier
 	// therefore ProbabilisticSvmClassifier.logisticA = libSVM.logisticB and vice versa
 	svm.setLogisticParameters(utils.extractLogisticParamB(model), utils.extractLogisticParamA(model));

@@ -8,8 +8,8 @@
 #ifndef TRACKING_MULTITRACKER_HPP_
 #define TRACKING_MULTITRACKER_HPP_
 
-#include "classification/ProbabilisticSvmClassifier.hpp"
 #include "classification/IncrementalClassifierTrainer.hpp"
+#include "classification/ProbabilisticSupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "imageprocessing/VersionedImage.hpp"
 #include "imageprocessing/extraction/FeatureExtractor.hpp"
@@ -30,8 +30,8 @@ namespace tracking {
  */
 struct Track {
 	int id; ///< Unique identifier.
-	std::shared_ptr<classification::ProbabilisticSvmClassifier> svm; ///< SVM that is adapted to the target.
-	std::shared_ptr<classification::IncrementalClassifierTrainer<classification::ProbabilisticSvmClassifier>> svmTrainer; ///< SVM trainer.
+	std::shared_ptr<classification::ProbabilisticSupportVectorMachine> svm; ///< SVM that is adapted to the target.
+	std::shared_ptr<classification::IncrementalClassifierTrainer<classification::ProbabilisticSupportVectorMachine>> svmTrainer; ///< SVM trainer.
 	std::unique_ptr<filtering::ParticleFilter> filter; ///< Particle filter.
 	filtering::TargetState state; ///< Current state of the target.
 	bool confirmed; ///< Flag that indicates whether the track was confirmed by a second detection.
@@ -64,7 +64,7 @@ public:
 	 */
 	MultiTracker(std::shared_ptr<imageprocessing::extraction::FeatureExtractor> exactFeatureExtractor,
 			std::shared_ptr<detection::AggregatedFeaturesDetector> detector,
-			std::shared_ptr<classification::ProbabilisticSvmClassifier> svm,
+			std::shared_ptr<classification::ProbabilisticSupportVectorMachine> svm,
 			std::shared_ptr<filtering::MotionModel> motionModel);
 
 	/**
@@ -190,7 +190,7 @@ private:
 	 * @param[in] svm Current support vector machine.
 	 * @return Negative training examples.
 	 */
-	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target, const classification::SvmClassifier& svm) const;
+	std::vector<cv::Mat> getNegativeTrainingExamples(cv::Rect target, const classification::SupportVectorMachine& svm) const;
 
 	/**
 	 * Computes the overlap ratio (intersection over union) of two bounding boxes.
@@ -215,7 +215,7 @@ private:
 	std::shared_ptr<detection::AggregatedFeaturesDetector> detector; ///< Detector that finds new targets to track.
 	std::shared_ptr<imageprocessing::extraction::FeatureExtractor> pyramidFeatureExtractor; ///< Feature extractor that re-uses the feature pyramid of the detector.
 	std::shared_ptr<imageprocessing::extraction::FeatureExtractor> exactFeatureExtractor; ///< Feature extractor that provides patches exactly as requested.
-	std::shared_ptr<classification::ProbabilisticSvmClassifier> svm; ///< SVM that is common to all targets.
+	std::shared_ptr<classification::ProbabilisticSupportVectorMachine> svm; ///< SVM that is common to all targets.
 	std::shared_ptr<filtering::MeasurementModel> commonMeasurementModel; ///< Measurement model that is common to all targets.
 	std::shared_ptr<filtering::MotionModel> motionModel; ///< Motion model of the targets.
 
