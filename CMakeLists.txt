@@ -19,4 +19,3 @@ add_subdirectory(libTracking)        # tracking
 add_subdirectory(DetectorTrainer)    # trains detectors based on aggregated channel features and support vector machines
 add_subdirectory(SingleTracker)      # tracks a single object without prior knowledge
 add_subdirectory(MultiTracker)       # tracks multiple objects using detector and particle filter
-add_subdirectory(VideoPlayer)        # plays videos, shows bounding boxes, and stores resulting videos with bounding boxes
