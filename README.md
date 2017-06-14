@@ -32,7 +32,7 @@ Building the project
 3. Clone the repository (e.g. `$ git clone https://github.com/ex-ratt/AdapTrack.git` or using zip download), results in directory named `AdapTrack`
 4. Create build directory next to `AdapTrack`: `$ mkdir build`
 5. Change to build directory: `$ cd build`
-6. Build Eclipse project: `cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE -D CMAKE_BUILD_TYPE=Release ../AdapTrack/`
+6. Build Eclipse project: `$ cmake -G"Eclipse CDT4 - Unix Makefiles" -D CMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE -D CMAKE_BUILD_TYPE=Release ../AdapTrack/`
 
 
 Libraries
@@ -63,7 +63,7 @@ Trains and tests detectors that are based on the sliding window technique, aggre
 * FEATURECONFIG: configuration file containing the feature parameters, see below for an example (only necessary if detector directory does not exist)
 * TRAININGCONFIG: configuration file containing the training parameters, see below for an example (only necessary if detector directory does not exist)
 
-Example: `./DetectorTrainer train detector-fhog9-4x10 annotations.xml 4 features-fhog9-4x10 training-c10`
+Example: `$ ./DetectorTrainer train detector-fhog9-4x10 annotations.xml 4 features-fhog9-4x10 training-c10`
 
 #### Testing a detector
 
@@ -74,7 +74,7 @@ Example: `./DetectorTrainer train detector-fhog9-4x10 annotations.xml 4 features
 * SETCOUNT: number of subsets to use for cross-validation (if set to 1, all images are used to test a single detector, so there won't be cross-validation)
 * DETECTIONCONFIG: configuration file containing the detection parameters, see below for an example
 
-Example: `./DetectorTrainer test detector-fhog9-4x10 annotations.xml 4 detection-40x40-5`
+Example: `$ ./DetectorTrainer test detector-fhog9-4x10 annotations.xml 4 detection-40x40-5`
 
 #### Showing detections
 
@@ -86,7 +86,7 @@ Example: `./DetectorTrainer test detector-fhog9-4x10 annotations.xml 4 detection
 * DETECTIONCONFIG: configuration file containing the detection parameters, see below for an example
 * THRESHOLD: SVM threshold (optional, defaults to 0.0)
 
-Example: `./DetectorTrainer show detector-fhog9-4x10 annotations.xml 4 detection-40x40-5 0.5`
+Example: `$ ./DetectorTrainer show detector-fhog9-4x10 annotations.xml 4 detection-40x40-5 0.5`
 
 #### Configuration files
 
@@ -95,7 +95,7 @@ Feature configuration
 ```
 type fhog9                    ; feature type
                               ;   fhog# (Felzenszwalb's HOG variation, # = number of unsigned orientation bins)
-                              ;   fpdw (features of the Fasted Pedestrian Detector of the West)
+                              ;   fpdw (features of the Fasted Pedestrian Detector in the West)
 windowWidthInCells 10         ; width of the detection window in cells
 windowHeightInCells 10        ; height of the detection window in cells
 cellSizeInPixels 4            ; width and height of a cell in pixels
@@ -140,7 +140,7 @@ Tracks a single target without prior knowledge after initialization by the groun
 * PADDING: number of cells around the previous target position that is searched for the new position
 * ADAPTATION: weight of the new SVM parameters between zero (no adpatation) and one (no memory)
 
-Example: `./SingleTracker annotations.xml 9 4 10 7 0.1`
+Example: `$ ./SingleTracker annotations.xml 9 4 10 7 0.1`
 
 ### MultiTracker
 
@@ -154,5 +154,5 @@ Tracks multipe targets using a particle filter for each.
 * DETECTIONTHRESHOLD: SVM score threshold for detections to be reported
 * VISIBILITYTHRESHOLD: SVM score threshold for tracks to be regarded visible
 
-Example: `./MultiTracker video.avi svm-fhog9-4x10 4 1.0 -0.25`
+Example: `$ ./MultiTracker video.avi svm-fhog9-4x10 4 1.0 -0.25`
 
