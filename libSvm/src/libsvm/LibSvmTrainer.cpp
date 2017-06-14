@@ -79,8 +79,8 @@ LibSvmData LibSvmTrainer::train(const Kernel& kernel, bool probabilistic,
 	return data;
 }
 
-vector<unique_ptr<struct svm_node[], NodeDeleter>> LibSvmTrainer::createNodes(const vector<Mat>& examples) const {
-	vector<unique_ptr<struct svm_node[], NodeDeleter>> nodes;
+vector<unique_ptr<struct svm_node, NodeDeleter>> LibSvmTrainer::createNodes(const vector<Mat>& examples) const {
+	vector<unique_ptr<struct svm_node, NodeDeleter>> nodes;
 	nodes.reserve(examples.size());
 	for (const Mat& example : examples)
 		nodes.push_back(move(utils.createNode(example)));
@@ -88,21 +88,21 @@ vector<unique_ptr<struct svm_node[], NodeDeleter>> LibSvmTrainer::createNodes(co
 }
 
 unique_ptr<struct svm_problem, ProblemDeleter> LibSvmTrainer::createProblem(
-		const vector<unique_ptr<struct svm_node[], NodeDeleter>>& positiveExamples,
-		const vector<unique_ptr<struct svm_node[], NodeDeleter>>& negativeExamples) const {
+		const vector<unique_ptr<struct svm_node, NodeDeleter>>& positiveExamples,
+		const vector<unique_ptr<struct svm_node, NodeDeleter>>& negativeExamples) const {
 	unique_ptr<struct svm_problem, ProblemDeleter> problem(new struct svm_problem);
 	problem->l = positiveExamples.size() + negativeExamples.size();
 	problem->y = new double[problem->l];
-	problem->x = new struct svm_node *[problem->l];
+	problem->x = new struct svm_node[problem->l];
 	size_t i = 0;
 	for (auto& example : positiveExamples) {
 		problem->y[i] = 1;
-		problem->x[i] = example.get();
+		problem->x[i] = *example;
 		++i;
 	}
 	for (auto& example : negativeExamples) {
 		problem->y[i] = -1;
-		problem->x[i] = example.get();
+		problem->x[i] = *example;
 		++i;
 	}
 	return move(problem);

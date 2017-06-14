@@ -8,12 +8,12 @@
 #ifndef LIBSVM_LIBSVMKERNELPARAMSETTER_HPP_
 #define LIBSVM_LIBSVMKERNELPARAMSETTER_HPP_
 
+#include "svm.h"
 #include "classification/KernelVisitor.hpp"
 #include "classification/LinearKernel.hpp"
 #include "classification/PolynomialKernel.hpp"
 #include "classification/RbfKernel.hpp"
 #include "classification/HistogramIntersectionKernel.hpp"
-#include "svm.h"
 
 namespace libsvm {
 

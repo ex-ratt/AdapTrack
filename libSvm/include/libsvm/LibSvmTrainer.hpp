@@ -8,7 +8,6 @@
 #ifndef LIBSVM_LIBSVMTRAINER_HPP_
 #define LIBSVM_LIBSVMTRAINER_HPP_
 
-#include "svm.h"
 #include "classification/ClassifierTrainer.hpp"
 #include "classification/Kernel.hpp"
 #include "classification/ProbabilisticSupportVectorMachine.hpp"
@@ -19,8 +18,8 @@
 namespace libsvm {
 
 struct LibSvmData {
-	std::vector<std::unique_ptr<struct svm_node[], NodeDeleter>> positiveExamples;
-	std::vector<std::unique_ptr<struct svm_node[], NodeDeleter>> negativeExamples;
+	std::vector<std::unique_ptr<struct svm_node, NodeDeleter>> positiveExamples;
+	std::vector<std::unique_ptr<struct svm_node, NodeDeleter>> negativeExamples;
 	std::unique_ptr<struct svm_problem, ProblemDeleter> problem;
 	std::unique_ptr<struct svm_model, ModelDeleter> model;
 };
@@ -67,7 +66,7 @@ private:
 	 * @param[in] examples Training examples.
 	 * @return Vector of libSVM nodes.
 	 */
-	std::vector<std::unique_ptr<struct svm_node[], NodeDeleter>> createNodes(const std::vector<cv::Mat>& examples) const;
+	std::vector<std::unique_ptr<struct svm_node, NodeDeleter>> createNodes(const std::vector<cv::Mat>& examples) const;
 
 	/**
 	 * Creates the libSVM problem containing the training data.
@@ -77,8 +76,8 @@ private:
 	 * @return The libSVM problem.
 	 */
 	std::unique_ptr<struct svm_problem, ProblemDeleter> createProblem(
-			const std::vector<std::unique_ptr<struct svm_node[], NodeDeleter>>& positiveExamples,
-			const std::vector<std::unique_ptr<struct svm_node[], NodeDeleter>>& negativeExamples) const;
+			const std::vector<std::unique_ptr<struct svm_node, NodeDeleter>>& positiveExamples,
+			const std::vector<std::unique_ptr<struct svm_node, NodeDeleter>>& negativeExamples) const;
 
 	/**
 	 * Sets parameters of the SVM according to the model.
