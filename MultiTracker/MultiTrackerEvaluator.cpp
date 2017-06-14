@@ -5,7 +5,6 @@
  *      Author: poschmann
  */
 
-#include "stacktrace.hpp"
 #include "classification/ProbabilisticSupportVectorMachine.hpp"
 #include "detection/AggregatedFeaturesDetector.hpp"
 #include "detection/NonMaximumSuppression.hpp"
