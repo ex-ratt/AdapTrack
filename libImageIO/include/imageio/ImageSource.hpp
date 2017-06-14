@@ -45,7 +45,7 @@ public:
 	 *
 	 * @return The name of the current image (that may be empty if no data could be retrieved).
 	 */
-	virtual std::string getName() const = 0;// TODO?!
+	virtual std::string getName() const = 0;
 };
 
 } /* namespace imageio */
