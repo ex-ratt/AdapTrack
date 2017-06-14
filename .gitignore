@@ -5,7 +5,8 @@ initial_cache.cmake
 .project
 .cproject
 
-# Debug/Release/build directories
+# Debug/Release/build/install directories
 Debug/
 Release/
 build/
+install/
