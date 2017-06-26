@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 	shared_ptr<ExactFhogExtractor> exactFhogExtractor = make_shared<ExactFhogExtractor>(fhogFilter, windowWidth, windowHeight);
 	shared_ptr<AggregatedFeaturesDetector> detector = createDetector(fhogFilter, svm->getSvm(), cellSize, minWidth, maxWidth);
 	shared_ptr<MotionModel> motionModel = make_shared<RandomWalkModel>(0.2, 0.05);
-	unique_ptr<MultiTracker> tracker = make_unique<MultiTracker>(exactFhogExtractor, detector, svm, motionModel);
+	unique_ptr<MultiTracker> tracker = unique_ptr<MultiTracker>(new MultiTracker(exactFhogExtractor, detector, svm, motionModel));
 	tracker->particleCount = 500;
 	tracker->adaptive = true;
 	tracker->associationThreshold = 0.3;

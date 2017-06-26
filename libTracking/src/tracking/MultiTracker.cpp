@@ -34,7 +34,6 @@ using imageprocessing::Patch;
 using imageprocessing::VersionedImage;
 using imageprocessing::extraction::FeatureExtractor;
 using std::make_shared;
-using std::make_unique;
 using std::pair;
 using std::reference_wrapper;
 using std::shared_ptr;
@@ -209,7 +208,7 @@ Track MultiTracker::createTrack(Rect target) {
 	shared_ptr<MeasurementModel> measurementModel = adaptive
 			? make_shared<CorrelatedCombinationModel>(commonMeasurementModel, targetMeasurementModel)
 					: commonMeasurementModel;
-	unique_ptr<ParticleFilter> filter = make_unique<ParticleFilter>(motionModel, measurementModel, particleCount);
+	unique_ptr<ParticleFilter> filter = unique_ptr<ParticleFilter>(new ParticleFilter(motionModel, measurementModel, particleCount));
 	filter->initialize(versionedImage, target);
 	return {
 		0,
@@ -282,7 +281,7 @@ vector<Mat> MultiTracker::getNegativeTrainingExamples(Rect target, const Support
 		}
 	}
 	std::partial_sort(trainingCandidates.begin(), trainingCandidates.begin() + negativeExampleCount, trainingCandidates.end(),
-			[](const auto& a, const auto& b) { return a.first > b.first; });
+			[](const pair<double, Mat>& a, const pair<double, Mat>& b) { return a.first > b.first; });
 	vector<Mat> trainingExamples;
 	trainingExamples.reserve(negativeExampleCount);
 	for (int i = 0; i < trainingExamples.capacity(); ++i)

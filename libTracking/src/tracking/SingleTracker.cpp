@@ -260,7 +260,7 @@ vector<Mat> SingleTracker::getNegativeTrainingExamples(const Mat& window, const 
 		}
 	}
 	std::partial_sort(trainingCandidates.begin(), trainingCandidates.begin() + negativeExampleCount, trainingCandidates.end(),
-			[](const auto& a, const auto& b) { return a.first > b.first; });
+			[](const pair<double, Mat>& a, const pair<double, Mat>& b) { return a.first > b.first; });
 	vector<Mat> trainingExamples;
 	trainingExamples.reserve(negativeExampleCount);
 	for (int i = 0; i < trainingExamples.capacity(); ++i)

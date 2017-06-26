@@ -29,10 +29,10 @@ using imageio::Annotations;
 using imageprocessing::Patch;
 using imageprocessing::extraction::AggregatedFeaturesExtractor;
 using std::make_shared;
-using std::make_unique;
 using std::runtime_error;
 using std::shared_ptr;
 using std::string;
+using std::unique_ptr;
 using std::vector;
 
 namespace detection {
@@ -99,11 +99,11 @@ void DetectorTrainer::createEmptyClassifier() {
 	svm = make_shared<SupportVectorMachine>(make_shared<LinearKernel>());
 	if (probabilisticSvmTrainer)
 		probabilisticSvm = make_shared<ProbabilisticSupportVectorMachine>(svm);
-	positives = make_unique<UnlimitedExampleManagement>();
+	positives = unique_ptr<UnlimitedExampleManagement>(new UnlimitedExampleManagement());
 	if (maxNegatives > 0)
-		negatives = make_unique<HardNegativeExampleManagement>(svm, maxNegatives);
+		negatives = unique_ptr<HardNegativeExampleManagement>(new HardNegativeExampleManagement(svm, maxNegatives));
 	else
-		negatives = make_unique<UnlimitedExampleManagement>();
+		negatives = unique_ptr<UnlimitedExampleManagement>(new UnlimitedExampleManagement());
 }
 
 void DetectorTrainer::collectInitialTrainingExamples(vector<AnnotatedImage> images) {

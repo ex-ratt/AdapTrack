@@ -54,13 +54,13 @@ struct Annotations {
 	}
 
 	size_t positiveCount() const {
-		return std::count_if(annotations.begin(), annotations.end(), [](auto annotation) {
+		return std::count_if(annotations.begin(), annotations.end(), [](Annotation annotation) {
 			return !annotation.fuzzy;
 		});
 	}
 
 	size_t fuzzyCount() const {
-		return std::count_if(annotations.begin(), annotations.end(), [](auto annotation) {
+		return std::count_if(annotations.begin(), annotations.end(), [](Annotation annotation) {
 			return annotation.fuzzy;
 		});
 	}
