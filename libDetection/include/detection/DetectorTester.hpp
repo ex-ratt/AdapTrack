@@ -174,8 +174,8 @@ private:
 	 * @param[in] annotations Annotated objects.
 	 * @return Overlap ratio and iterator to the best matching annotation.
 	 */
-	std::pair<double, std::vector<imageio::Annotation>::const_iterator> getBestMatch(
-			cv::Rect detection, const std::vector<imageio::Annotation>& annotations) const;
+	std::pair<double, std::vector<imageio::Annotation>::iterator> getBestMatch(
+			cv::Rect detection, std::vector<imageio::Annotation>& annotations) const;
 
 	/**
 	 * Merges additional classified scores into an existing vector of classified scores.

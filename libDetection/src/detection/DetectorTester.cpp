@@ -53,7 +53,7 @@ vector<pair<float, bool>> DetectorTester::classifyScores(const vector<pair<Rect,
 	vector<pair<float, bool>> classifiedScores;
 	classifiedScores.reserve(detections.size());
 	for (pair<Rect, float> detection : detections) {
-		pair<double, vector<Annotation>::const_iterator> bestMatch = getBestMatch(detection.first, annotations.annotations);
+		pair<double, vector<Annotation>::iterator> bestMatch = getBestMatch(detection.first, annotations.annotations);
 		if (bestMatch.first < overlapThreshold) { // detection is false positive
 			classifiedScores.emplace_back(detection.second, false);
 		} else {
@@ -65,7 +65,7 @@ vector<pair<float, bool>> DetectorTester::classifyScores(const vector<pair<Rect,
 	return classifiedScores;
 }
 
-pair<double, vector<Annotation>::const_iterator> DetectorTester::getBestMatch(Rect detection, const vector<Annotation>& annotations) const {
+pair<double, vector<Annotation>::iterator> DetectorTester::getBestMatch(Rect detection, vector<Annotation>& annotations) const {
 	if (annotations.empty())
 		return make_pair(0.0, annotations.end());
 	auto bestAnnotation = annotations.begin();
