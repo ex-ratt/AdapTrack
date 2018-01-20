@@ -58,20 +58,20 @@ int main(int argc, char **argv) {
 				steady_clock::time_point iterationStart = steady_clock::now();
 				target = tracker.init(frame, annotations[0], false);
 				steady_clock::time_point iterationEnd = steady_clock::now();
-				milliseconds iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
+				iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
 				initialized = target.area() > 0;
 				if (initialized) {
-					iterationTimeSum += iterationTime;
 					if (frameCount > 1)
 						cout << "skipped " << (frameCount - 1) << " frames before initialization" << endl;
 					frameCount = 1;
+					iterationTimeSum += iterationTime;
 				}
 			}
 		} else {
 			steady_clock::time_point iterationStart = steady_clock::now();
 			target = tracker.update(frame);
 			steady_clock::time_point iterationEnd = steady_clock::now();
-			milliseconds iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
+			iterationTime = duration_cast<milliseconds>(iterationEnd - iterationStart);
 			iterationTimeSum += iterationTime;
 		}
 		if (initialized) {
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
 			cout << iterationFps << " fps" << endl;
 			rectangle(frame, target, color, thickness);
 			imshow("Frame", frame);
-			char c = (char)waitKey(pause ? 0 : 25);
+			char c = static_cast<char>(waitKey(pause ? 0 : 25));
 			if (c == 'q') {
 				run = false;
 			} else if (c == 'p') {

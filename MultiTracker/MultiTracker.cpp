@@ -173,7 +173,7 @@ void run(MultiTracker& tracker, ImageSource& images) {
 		cout << frameCount << ": ";
 		cout << iterationTime.count() << " ms -> ";
 		cout << iterationFps << " fps" << endl;
-		char c = (char)waitKey(pause ? 0 : 2);
+		char c = static_cast<char>(waitKey(pause ? 0 : 2));
 		if (c == 'q')
 			run = false;
 		else if (c == 'p')
