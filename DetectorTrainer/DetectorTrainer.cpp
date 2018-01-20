@@ -187,6 +187,7 @@ bool showDetections(const DetectorTester& tester, AggregatedFeaturesDetector& de
 	cv::Scalar ignoredDetectionColor(255, 204, 0);
 	cv::Scalar missedDetectionColor(0, 153, 255);
 	int thickness = 2;
+	bool pause = true;
 	for (const AnnotatedImage& image : images) {
 		DetectionResult result = tester.detect(detector, image.image, image.annotations);
 		image.image.copyTo(output);
@@ -199,9 +200,11 @@ bool showDetections(const DetectorTester& tester, AggregatedFeaturesDetector& de
 		for (const Rect& target : result.missedDetections)
 			cv::rectangle(output, target, missedDetectionColor, thickness);
 		cv::imshow("Detections", output);
-		int key = cv::waitKey(0);
-		if (static_cast<char>(key) == 'q')
+		char key = static_cast<char>(cv::waitKey(pause ? 0 : 2));
+		if (key == 'q')
 			return false;
+		else if (key == 'p')
+			pause = !pause;
 	}
 	return true;
 }
