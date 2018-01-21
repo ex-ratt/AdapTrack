@@ -165,7 +165,7 @@ void run(MultiTracker& tracker, ImageSource& images) {
 		}
 		for (const pair<int, Rect>& target : targets)
 			rectangle(output, target.second, colors[target.first % colors.size()], thickness);
-		imshow("Detections", output);
+		imshow("Frame", output);
 
 		iterationTimeSum += iterationTime;
 		double iterationFps = static_cast<double>(frameCount) / iterationTimeSum.count();
