@@ -183,6 +183,10 @@ void run(MultiTracker& tracker, ImageSource& images) {
 		else if (c == 'd')
 			debug = !debug;
 	}
+	if (run) {
+		cout << "press any key to exit" << endl;
+		waitKey(0);
+	}
 }
 
 void drawParticles(Mat& output, vector<Particle> particles) {

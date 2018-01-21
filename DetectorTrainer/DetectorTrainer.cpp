@@ -444,7 +444,10 @@ int main(int argc, char** argv) {
 			path svmFile = directory / "svm";
 			shared_ptr<AggregatedFeaturesDetector> detector = loadDetector(
 					svmFile.string(), *features, detectionParams, threshold);
-			showDetections(tester, *detector, imageSet);
+			if (showDetections(tester, *detector, imageSet)) {
+				cout << "press any key to exit" << endl;
+				cv::waitKey(0);
+			}
 		} else { // cross-validation, show subset-detectors
 			vector<vector<AnnotatedImage>> subsets = getSubsets(imageSet, setCount);
 			for (int testSetIndex = 0; testSetIndex < subsets.size(); ++testSetIndex) {

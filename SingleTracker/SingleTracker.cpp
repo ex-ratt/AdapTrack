@@ -94,6 +94,10 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+	if (run) {
+		cout << "press any key to exit" << endl;
+		waitKey(0);
+	}
 
 	return EXIT_SUCCESS;
 }
