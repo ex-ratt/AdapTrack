@@ -73,6 +73,9 @@ class Features {
 public:
 	virtual ~Features() {}
 	shared_ptr<AggregatedFeaturesExtractor> createFeatureExtractor(Size minWindowSizeInPixels = Size(0, 0)) const {
+		return createFeatureExtractor(minWindowSizeInPixels, octaveLayerCount);
+	}
+	shared_ptr<AggregatedFeaturesExtractor> createFeatureExtractor(Size minWindowSizeInPixels, int octaveLayerCount) const {
 		int minWidth = std::min(minWindowSizeInPixels.width, minWindowSizeInPixels.height * windowSizeInCells.width / windowSizeInCells.height);
 		if (hasImageFilter())
 			return make_shared<AggregatedFeaturesExtractor>(createImageFilter(), createLayerFilter(),
@@ -82,6 +85,9 @@ public:
 					windowSizeInCells, cellSizeInPixels, octaveLayerCount, minWidth);
 	}
 	shared_ptr<AggregatedFeaturesExtractor> createApproximatedFeatureExtractor(Size minWindowSizeInPixels = Size(0, 0)) const {
+		return createApproximatedFeatureExtractor(minWindowSizeInPixels, octaveLayerCount);
+	}
+	shared_ptr<AggregatedFeaturesExtractor> createApproximatedFeatureExtractor(Size minWindowSizeInPixels, int octaveLayerCount) const {
 		auto featurePyramid = ImagePyramid::createApproximated(octaveLayerCount, 0.5, 1.0, lambdas);
 		if (hasImageFilter())
 			featurePyramid->addImageFilter(createImageFilter());
@@ -173,8 +179,8 @@ shared_ptr<AggregatedFeaturesDetector> loadDetector(
 	svm->setThreshold(threshold);
 	stream.close();
 	shared_ptr<AggregatedFeaturesExtractor> extractor = detectionParams.approximatePyramid
-			? features.createApproximatedFeatureExtractor(detectionParams.minWindowSizeInPixels)
-			: features.createFeatureExtractor(detectionParams.minWindowSizeInPixels);
+			? features.createApproximatedFeatureExtractor(detectionParams.minWindowSizeInPixels, detectionParams.octaveLayerCount)
+			: features.createFeatureExtractor(detectionParams.minWindowSizeInPixels, detectionParams.octaveLayerCount);
 	shared_ptr<NonMaximumSuppression> nms = make_shared<NonMaximumSuppression>(
 			detectionParams.nmsOverlapThreshold, NonMaximumSuppression::MaximumType::MAX_SCORE);
 	return make_shared<AggregatedFeaturesDetector>(extractor, svm, nms);
