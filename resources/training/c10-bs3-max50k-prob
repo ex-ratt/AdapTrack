@@ -1,0 +1,10 @@
+mirrorTrainingData true
+maxNegatives 50000
+randomNegativesPerImage 20
+maxHardNegativesPerImage 100
+bootstrappingRounds 3
+negativeScoreThreshold -1.0
+overlapThreshold 0.3
+C 10
+compensateImbalance true
+probabilistic true

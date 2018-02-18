@@ -1,0 +1,1175 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<?xml-stylesheet type='text/xsl' href='image_metadata_stylesheet.xsl'?>
+<dataset>
+<name>imglab dataset</name>
+<comment>Created by imglab tool.</comment>
+<images>
+  <image file='images/2007_000129.jpg'>
+    <box top='14' left='127' width='63' height='83'/>
+    <box top='56' left='302' width='49' height='76' ignore='1'/>
+  </image>
+  <image file='images/2007_000170.jpg'>
+    <box top='27' left='177' width='118' height='195'/>
+  </image>
+  <image file='images/2007_000664.jpg'>
+    <box top='0' left='81' width='183' height='264'/>
+  </image>
+  <image file='images/2007_001340.jpg'>
+    <box top='140' left='179' width='59' height='76'/>
+    <box top='116' left='230' width='75' height='116'/>
+  </image>
+  <image file='images/2007_001430.jpg'>
+    <box top='156' left='292' width='49' height='72'/>
+    <box top='143' left='228' width='46' height='65'/>
+    <box top='158' left='162' width='40' height='63'/>
+  </image>
+  <image file='images/2007_002079.jpg'>
+    <box top='41' left='263' width='43' height='72'/>
+    <box top='82' left='336' width='46' height='68'/>
+  </image>
+  <image file='images/2007_002142.jpg'>
+    <box top='85' left='246' width='48' height='64'/>
+    <box top='71' left='303' width='48' height='70'/>
+    <box top='132' left='26' width='23' height='28' ignore='1'/>
+  </image>
+  <image file='images/2007_002344.jpg'>
+    <box top='70' left='58' width='222' height='308'/>
+  </image>
+  <image file='images/2007_002545.jpg'>
+    <box top='46' left='108' width='80' height='100'/>
+  </image>
+  <image file='images/2007_002824.jpg'>
+    <box top='14' left='198' width='155' height='218'/>
+  </image>
+  <image file='images/2007_003020.jpg'>
+    <box top='120' left='110' width='33' height='47'/>
+    <box top='118' left='219' width='31' height='44'/>
+    <box top='144' left='278' width='28' height='44'/>
+    <box top='130' left='341' width='32' height='45'/>
+  </image>
+  <image file='images/2007_003091.jpg'>
+    <box top='-4' left='217' width='126' height='151' ignore='1'/>
+    <box top='168' left='111' width='69' height='113'/>
+  </image>
+  <image file='images/2007_003431.jpg'>
+    <box top='18' left='119' width='119' height='181'/>
+  </image>
+  <image file='images/2007_003580.jpg'>
+    <box top='17' left='100' width='219' height='347'/>
+  </image>
+  <image file='images/2007_004000.jpg'>
+    <box top='24' left='112' width='39' height='71'/>
+    <box top='50' left='227' width='41' height='57'/>
+  </image>
+  <image file='images/2007_006282.jpg'>
+    <box top='100' left='179' width='49' height='75'/>
+  </image>
+  <image file='images/2007_006409.jpg'>
+    <box top='129' left='23' width='43' height='56'/>
+    <box top='99' left='400' width='76' height='106' ignore='1'/>
+  </image>
+  <image file='images/2007_006809.jpg'>
+    <box top='98' left='182' width='48' height='65'/>
+    <box top='71' left='411' width='11' height='14' ignore='1'/>
+  </image>
+  <image file='images/2007_007154.jpg'>
+    <box top='31' left='129' width='84' height='125'/>
+  </image>
+  <image file='images/2007_008013.jpg'>
+    <box top='83' left='220' width='32' height='45'/>
+  </image>
+  <image file='images/2007_008446.jpg'>
+    <box top='43' left='160' width='58' height='73'/>
+    <box top='219' left='169' width='64' height='81'/>
+  </image>
+  <image file='images/2007_008567.jpg'>
+    <box top='14' left='164' width='79' height='119'/>
+  </image>
+  <image file='images/2007_008708.jpg'>
+    <box top='181' left='188' width='38' height='49'/>
+    <box top='171' left='310' width='39' height='51'/>
+  </image>
+  <image file='images/2008_000036.jpg'>
+    <box top='75' left='321' width='36' height='47'/>
+  </image>
+  <image file='images/2008_000051.jpg'>
+    <box top='140' left='180' width='40' height='59'/>
+    <box top='168' left='225' width='41' height='54'/>
+  </image>
+  <image file='images/2008_000207.jpg'>
+    <box top='66' left='135' width='51' height='66'/>
+  </image>
+  <image file='images/2008_000217.jpg'>
+    <box top='45' left='194' width='61' height='85'/>
+    <box top='57' left='270' width='57' height='79'/>
+  </image>
+  <image file='images/2008_000252.jpg'>
+    <box top='63' left='234' width='40' height='58'/>
+    <box top='123' left='185' width='9' height='11' ignore='1'/>
+    <box top='110' left='450' width='9' height='13' ignore='1'/>
+  </image>
+  <image file='images/2008_000271.jpg'>
+    <box top='108' left='354' width='76' height='113'/>
+  </image>
+  <image file='images/2008_000461.jpg'>
+    <box top='15' left='165' width='172' height='266'/>
+    <box top='87' left='118' width='38' height='54' ignore='1'/>
+    <box top='87' left='138' width='44' height='56' ignore='1'/>
+    <box top='111' left='2' width='34' height='44' ignore='1'/>
+    <box top='90' left='34' width='60' height='71' ignore='1'/>
+  </image>
+  <image file='images/2008_000514.jpg'>
+    <box top='104' left='177' width='65' height='83'/>
+    <box top='110' left='299' width='59' height='88'/>
+    <box top='150' left='332' width='38' height='47' ignore='1'/>
+    <box top='103' left='389' width='65' height='77' ignore='1'/>
+  </image>
+  <image file='images/2008_000629.jpg'>
+    <box top='135' left='136' width='189' height='255'/>
+  </image>
+  <image file='images/2008_000706.jpg'>
+    <box top='117' left='161' width='45' height='61' ignore='1'/>
+  </image>
+  <image file='images/2008_000727.jpg'>
+    <box top='27' left='67' width='78' height='123'/>
+    <box top='135' left='277' width='25' height='31'/>
+    <box top='205' left='242' width='60' height='70' ignore='1'/>
+  </image>
+  <image file='images/2008_000976.jpg'>
+    <box top='108' left='127' width='46' height='59'/>
+    <box top='101' left='205' width='43' height='65'/>
+    <box top='114' left='283' width='45' height='60'/>
+    <box top='224' left='397' width='26' height='31' ignore='1'/>
+    <box top='224' left='482' width='43' height='43' ignore='1'/>
+  </image>
+  <image file='images/2008_001081.jpg'>
+    <box top='74' left='192' width='132' height='202'/>
+  </image>
+  <image file='images/2008_001147.jpg'>
+    <box top='40' left='54' width='59' height='82'/>
+    <box top='105' left='328' width='55' height='76'/>
+    <box top='0' left='318' width='65' height='105' ignore='1'/>
+  </image>
+  <image file='images/2008_001215.jpg'>
+    <box top='90' left='199' width='62' height='84'/>
+  </image>
+  <image file='images/2008_001307.jpg'>
+    <box top='58' left='131' width='120' height='159'/>
+  </image>
+  <image file='images/2008_001322.jpg'>
+    <box top='136' left='102' width='75' height='111'/>
+    <box top='190' left='233' width='67' height='99'/>
+    <box top='128' left='356' width='88' height='129'/>
+  </image>
+  <image file='images/2008_001344.jpg'>
+    <box top='57' left='94' width='124' height='181'/>
+  </image>
+  <image file='images/2008_001401.jpg'>
+    <box top='54' left='166' width='90' height='130'/>
+    <box top='101' left='282' width='86' height='119'/>
+    <box top='135' left='407' width='37' height='51' ignore='1'/>
+  </image>
+  <image file='images/2008_001680.jpg'>
+    <box top='30' left='9' width='109' height='135'/>
+    <box top='78' left='170' width='73' height='110'/>
+    <box top='62' left='264' width='70' height='102'/>
+    <box top='12' left='358' width='65' height='94'/>
+  </image>
+  <image file='images/2008_001692.jpg'>
+    <box top='156' left='157' width='157' height='216'/>
+  </image>
+  <image file='images/2008_002092.jpg'>
+    <box top='81' left='84' width='38' height='48' ignore='1'/>
+    <box top='106' left='135' width='31' height='44'/>
+    <box top='98' left='219' width='35' height='45'/>
+    <box top='100' left='296' width='33' height='44'/>
+    <box top='190' left='333' width='41' height='59'/>
+    <box top='183' left='137' width='39' height='49'/>
+    <box top='18' left='310' width='34' height='43' ignore='1'/>
+    <box top='68' left='385' width='32' height='41'/>
+  </image>
+  <image file='images/2008_002377.jpg'>
+    <box top='135' left='-21' width='43' height='52' ignore='1'/>
+    <box top='168' left='65' width='35' height='43'/>
+    <box top='101' left='367' width='56' height='64' ignore='1'/>
+    <box top='91' left='313' width='72' height='78' ignore='1'/>
+    <box top='40' left='189' width='45' height='64' ignore='1'/>
+    <box top='129' left='233' width='39' height='49'/>
+    <box top='64' left='252' width='49' height='69'/>
+  </image>
+  <image file='images/2008_002422.jpg'>
+    <box top='33' left='101' width='67' height='106'/>
+    <box top='52' left='252' width='50' height='72'/>
+  </image>
+  <image file='images/2008_002428.jpg'>
+    <box top='106' left='61' width='197' height='259'/>
+  </image>
+  <image file='images/2008_003437.jpg'>
+    <box top='22' left='80' width='125' height='180'/>
+    <box top='87' left='317' width='115' height='161'/>
+  </image>
+  <image file='images/2008_003971.jpg'>
+    <box top='102' left='456' width='46' height='58' ignore='1'/>
+    <box top='77' left='237' width='55' height='72'/>
+  </image>
+  <image file='images/2008_004749.jpg'>
+    <box top='12' left='100' width='132' height='172'/>
+  </image>
+  <image file='images/2008_004881.jpg'>
+    <box top='162' left='151' width='40' height='51'/>
+    <box top='26' left='225' width='52' height='74'/>
+  </image>
+  <image file='images/2008_005447.jpg'>
+    <box top='11' left='21' width='178' height='262'/>
+  </image>
+  <image file='images/2008_005549.jpg'>
+    <box top='147' left='315' width='53' height='63' ignore='1'/>
+    <box top='8' left='192' width='59' height='87'/>
+  </image>
+  <image file='images/2008_005957.jpg'>
+    <box top='-31' left='22' width='73' height='76' ignore='1'/>
+    <box top='-36' left='478' width='60' height='83' ignore='1'/>
+    <box top='46' left='199' width='64' height='101'/>
+  </image>
+  <image file='images/2008_007219.jpg'>
+    <box top='0' left='227' width='158' height='233'/>
+  </image>
+  <image file='images/2009_003849.jpg'>
+    <box top='64' left='188' width='83' height='130'/>
+  </image>
+  <image file='images/2010_001828.jpg'>
+    <box top='30' left='209' width='58' height='90'/>
+  </image>
+  <image file='images/2010_002301.jpg'>
+    <box top='159' left='238' width='72' height='103'/>
+  </image>
+  <image file='images/2010_002484.jpg'>
+    <box top='189' left='188' width='36' height='50'/>
+    <box top='152' left='196' width='40' height='46'/>
+    <box top='118' left='344' width='40' height='56'/>
+    <box top='98' left='176' width='15' height='21' ignore='1'/>
+    <box top='97' left='275' width='36' height='50'/>
+    <box top='105' left='423' width='37' height='54'/>
+    <box top='131' left='478' width='14' height='15' ignore='1'/>
+  </image>
+  <image file='images/2010_003062.jpg'>
+    <box top='42' left='212' width='34' height='47'/>
+  </image>
+  <image file='images/2010_004222.jpg'>
+    <box top='88' left='135' width='11' height='13' ignore='1'/>
+    <box top='176' left='166' width='8' height='10' ignore='1'/>
+    <box top='184' left='160' width='6' height='7' ignore='1'/>
+    <box top='181' left='156' width='5' height='7' ignore='1'/>
+    <box top='177' left='150' width='6' height='8' ignore='1'/>
+    <box top='174' left='139' width='5' height='7' ignore='1'/>
+    <box top='172' left='60' width='26' height='27' ignore='1'/>
+    <box top='276' left='166' width='45' height='61'/>
+    <box top='180' left='105' width='40' height='56'/>
+  </image>
+  <image file='images/2010_004432.jpg'>
+    <box top='110' left='158' width='68' height='92'/>
+  </image>
+  <image file='images/2010_004692.jpg'>
+    <box top='100' left='226' width='42' height='59'/>
+  </image>
+  <image file='images/2010_005327.jpg'>
+    <box top='69' left='219' width='57' height='74'/>
+    <box top='56' left='110' width='60' height='85'/>
+    <box top='32' left='316' width='56' height='73'/>
+  </image>
+  <image file='images/2010_006357.jpg'>
+    <box top='66' left='328' width='70' height='87' ignore='1'/>
+    <box top='35' left='36' width='77' height='111'/>
+  </image>
+  <image file='images/2010_006899.jpg'>
+    <box top='33' left='190' width='116' height='174'/>
+  </image>
+  <image file='images/2011_000674.jpg'>
+    <box top='132' left='35' width='15' height='19' ignore='1'/>
+    <box top='128' left='53' width='12' height='14' ignore='1'/>
+    <box top='119' left='1' width='11' height='14' ignore='1'/>
+    <box top='117' left='23' width='12' height='16' ignore='1'/>
+    <box top='116' left='51' width='12' height='14' ignore='1'/>
+    <box top='106' left='39' width='13' height='14' ignore='1'/>
+    <box top='94' left='28' width='9' height='14' ignore='1'/>
+    <box top='86' left='0' width='4' height='9' ignore='1'/>
+    <box top='80' left='17' width='5' height='7' ignore='1'/>
+    <box top='86' left='22' width='5' height='8' ignore='1'/>
+    <box top='90' left='70' width='8' height='11' ignore='1'/>
+    <box top='74' left='55' width='4' height='6' ignore='1'/>
+    <box top='50' left='322' width='11' height='13' ignore='1'/>
+    <box top='74' left='352' width='5' height='7' ignore='1'/>
+    <box top='67' left='359' width='3' height='5' ignore='1'/>
+    <box top='70' left='367' width='7' height='9' ignore='1'/>
+    <box top='57' left='386' width='12' height='12' ignore='1'/>
+    <box top='52' left='413' width='10' height='14' ignore='1'/>
+    <box top='58' left='439' width='12' height='12' ignore='1'/>
+    <box top='31' left='454' width='40' height='48' ignore='1'/>
+    <box top='39' left='226' width='92' height='116'/>
+    <box top='159' left='53' width='21' height='27' ignore='1'/>
+    <box top='62' left='205' width='26' height='30' ignore='1'/>
+  </image>
+  <image file='images/2011_001243.jpg'>
+    <box top='87' left='182' width='97' height='144'/>
+  </image>
+  <image file='images/2011_001641.jpg'>
+    <box top='50' left='136' width='39' height='60'/>
+  </image>
+  <image file='images/2011_001988.jpg'>
+    <box top='68' left='237' width='42' height='56'/>
+    <box top='128' left='21' width='162' height='260'/>
+  </image>
+  <image file='images/2011_002308.jpg'>
+    <box top='74' left='124' width='92' height='146'/>
+  </image>
+  <image file='images/2011_002360.jpg'>
+    <box top='56' left='192' width='174' height='266'/>
+  </image>
+  <image file='images/2011_003432.jpg'>
+    <box top='63' left='132' width='38' height='59'/>
+  </image>
+  <image file='images/2011_003490.jpg'>
+    <box top='0' left='144' width='160' height='212'/>
+  </image>
+  <image file='images/2011_003953.jpg'>
+    <box top='89' left='205' width='49' height='69'/>
+  </image>
+  <image file='images/2011_004589.jpg'>
+    <box top='86' left='81' width='163' height='211'/>
+  </image>
+  <image file='images/2011_004651.jpg'>
+    <box top='99' left='92' width='145' height='198' ignore='1'/>
+  </image>
+  <image file='images/2011_005763.jpg'>
+    <box top='87' left='243' width='54' height='83'/>
+  </image>
+  <image file='images/2011_006063.jpg'>
+    <box top='94' left='76' width='66' height='108'/>
+  </image>
+  <image file='images/2011_006149.jpg'>
+    <box top='53' left='166' width='64' height='101' ignore='1'/>
+    <box top='56' left='314' width='101' height='154'/>
+    <box top='19' left='473' width='24' height='27' ignore='1'/>
+  </image>
+  <image file='images/2012_000145.jpg'>
+    <box top='105' left='140' width='61' height='88'/>
+    <box top='53' left='278' width='90' height='136'/>
+  </image>
+  <image file='images/2012_001224.jpg'>
+    <box top='48' left='154' width='104' height='147'/>
+  </image>
+  <image file='images/2012_002282.jpg'>
+    <box top='41' left='231' width='54' height='89'/>
+  </image>
+  <image file='images/2012_003173.jpg'>
+    <box top='180' left='185' width='8' height='10' ignore='1'/>
+    <box top='37' left='201' width='124' height='189'/>
+    <box top='214' left='473' width='15' height='14' ignore='1'/>
+  </image>
+  <image file='images/2012_003721.jpg'>
+    <box top='15' left='188' width='192' height='280' ignore='1'/>
+  </image>
+  <image file='images/2007_000999.jpg'>
+    <box top='18' left='96' width='168' height='193' ignore='1'/>
+  </image>
+  <image file='images/2007_002055.jpg'>
+    <box top='149' left='90' width='67' height='63' ignore='1'/>
+  </image>
+  <image file='images/2007_002914.jpg'>
+    <box top='19' left='303' width='123' height='148' ignore='1'/>
+  </image>
+  <image file='images/2007_006364.jpg'>
+    <box top='179' left='392' width='15' height='15' ignore='1'/>
+    <box top='193' left='227' width='11' height='11' ignore='1'/>
+    <box top='36' left='295' width='48' height='48' ignore='1'/>
+  </image>
+  <image file='images/2007_007336.jpg'>
+    <box top='200' left='54' width='42' height='34' ignore='1'/>
+    <box top='204' left='274' width='42' height='34' ignore='1'/>
+  </image>
+  <image file='images/2007_007877.jpg'>
+    <box top='11' left='95' width='110' height='143' ignore='1'/>
+    <box top='111' left='220' width='85' height='95' ignore='1'/>
+  </image>
+  <image file='images/2008_000841.jpg'>
+    <box top='25' left='59' width='203' height='202' ignore='1'/>
+    <box top='27' left='265' width='217' height='191' ignore='1'/>
+  </image>
+  <image file='images/2008_001139.jpg'>
+    <box top='36' left='135' width='92' height='113' ignore='1'/>
+  </image>
+  <image file='images/2008_001304.jpg'>
+    <box top='80' left='322' width='59' height='84' ignore='1'/>
+    <box top='168' left='413' width='108' height='137' ignore='1'/>
+  </image>
+  <image file='images/2008_002176.jpg'>
+    <box top='46' left='141' width='60' height='62' ignore='1'/>
+    <box top='66' left='236' width='41' height='55' ignore='1'/>
+    <box top='65' left='305' width='53' height='51' ignore='1'/>
+  </image>
+  <image file='images/2008_003108.jpg'>
+    <box top='74' left='-10' width='19' height='28' ignore='1'/>
+    <box top='78' left='38' width='18' height='22' ignore='1'/>
+    <box top='96' left='16' width='25' height='26' ignore='1'/>
+    <box top='73' left='116' width='65' height='65' ignore='1'/>
+  </image>
+  <image file='images/2008_003335.jpg'>
+    <box top='26' left='119' width='250' height='302' ignore='1'/>
+  </image>
+  <image file='images/2008_004243.jpg'>
+    <box top='72' left='106' width='226' height='280' ignore='1'/>
+  </image>
+  <image file='images/2009_004142.jpg'>
+    <box top='28' left='-18' width='84' height='114' ignore='1'/>
+    <box top='66' left='153' width='87' height='102' ignore='1'/>
+    <box top='-38' left='226' width='283' height='289' ignore='1'/>
+  </image>
+  <image file='images/2009_004285.jpg'>
+    <box top='51' left='12' width='230' height='273' ignore='1'/>
+  </image>
+  <image file='images/2009_004756.jpg'>
+    <box top='16' left='161' width='79' height='96' ignore='1'/>
+  </image>
+  <image file='images/2010_000162.jpg'>
+    <box top='11' left='0' width='233' height='248' ignore='1'/>
+  </image>
+  <image file='images/2010_000993.jpg'>
+    <box top='162' left='40' width='16' height='19' ignore='1'/>
+    <box top='162' left='61' width='14' height='16' ignore='1'/>
+    <box top='45' left='113' width='53' height='61' ignore='1'/>
+    <box top='147' left='207' width='23' height='27' ignore='1'/>
+  </image>
+  <image file='images/2010_001119.jpg'>
+    <box top='69' left='206' width='17' height='20' ignore='1'/>
+    <box top='45' left='131' width='64' height='70' ignore='1'/>
+    <box top='43' left='265' width='62' height='65' ignore='1'/>
+    <box top='71' left='11' width='9' height='10' ignore='1'/>
+  </image>
+  <image file='images/2010_002002.jpg'>
+    <box top='108' left='361' width='63' height='66' ignore='1'/>
+    <box top='112' left='23' width='70' height='58' ignore='1'/>
+  </image>
+  <image file='images/2010_002221.jpg'>
+    <box top='47' left='100' width='67' height='73' ignore='1'/>
+    <box top='187' left='229' width='22' height='27' ignore='1'/>
+    <box top='224' left='386' width='24' height='28' ignore='1'/>
+    <box top='238' left='483' width='12' height='13' ignore='1'/>
+    <box top='246' left='476' width='7' height='9' ignore='1'/>
+    <box top='284' left='465' width='19' height='23' ignore='1'/>
+  </image>
+  <image file='images/2010_002881.jpg'>
+    <box top='6' left='86' width='58' height='64' ignore='1'/>
+  </image>
+  <image file='images/2010_002914.jpg'>
+    <box top='77' left='196' width='50' height='58' ignore='1'/>
+  </image>
+  <image file='images/2010_002915.jpg'>
+    <box top='41' left='163' width='106' height='123' ignore='1'/>
+  </image>
+  <image file='images/2010_004161.jpg'>
+    <box top='51' left='210' width='243' height='265' ignore='1'/>
+    <box top='170' left='113' width='23' height='28' ignore='1'/>
+  </image>
+  <image file='images/2010_004472.jpg'>
+    <box top='54' left='173' width='111' height='115' ignore='1'/>
+  </image>
+  <image file='images/2010_005489.jpg'>
+    <box top='77' left='291' width='74' height='89' ignore='1'/>
+  </image>
+  <image file='images/2010_005906.jpg'>
+    <box top='66' left='120' width='135' height='147' ignore='1'/>
+  </image>
+  <image file='images/2010_006106.jpg'>
+    <box top='40' left='113' width='46' height='50' ignore='1'/>
+    <box top='45' left='279' width='55' height='65' ignore='1'/>
+  </image>
+  <image file='images/2010_006135.jpg'>
+    <box top='87' left='249' width='35' height='39' ignore='1'/>
+    <box top='69' left='350' width='39' height='48' ignore='1'/>
+  </image>
+  <image file='images/2010_006145.jpg'>
+    <box top='84' left='63' width='68' height='80' ignore='1'/>
+  </image>
+  <image file='images/2010_006157.jpg'>
+    <box top='72' left='359' width='83' height='82' ignore='1'/>
+    <box top='-47' left='146' width='248' height='164' ignore='1'/>
+    <box top='2' left='13' width='68' height='82' ignore='1'/>
+  </image>
+  <image file='images/2010_006182.jpg'>
+    <box top='103' left='316' width='57' height='69' ignore='1'/>
+    <box top='112' left='101' width='59' height='76' ignore='1'/>
+  </image>
+  <image file='images/2010_006249.jpg'>
+    <box top='42' left='70' width='69' height='65' ignore='1'/>
+  </image>
+  <image file='images/2010_006253.jpg'>
+    <box top='22' left='19' width='193' height='219' ignore='1'/>
+  </image>
+  <image file='images/2010_006519.jpg'>
+    <box top='221' left='14' width='59' height='74' ignore='1'/>
+    <box top='111' left='106' width='70' height='88' ignore='1'/>
+    <box top='127' left='214' width='68' height='81' ignore='1'/>
+    <box top='23' left='391' width='82' height='105' ignore='1'/>
+  </image>
+  <image file='images/2010_006572.jpg'>
+    <box top='61' left='176' width='65' height='84' ignore='1'/>
+  </image>
+  <image file='images/2010_006573.jpg'>
+    <box top='107' left='27' width='64' height='68' ignore='1'/>
+    <box top='76' left='157' width='46' height='58' ignore='1'/>
+    <box top='138' left='277' width='34' height='41' ignore='1'/>
+  </image>
+  <image file='images/2010_006714.jpg'>
+    <box top='29' left='149' width='139' height='163' ignore='1'/>
+  </image>
+  <image file='images/2010_006738.jpg'>
+    <box top='149' left='228' width='73' height='83' ignore='1'/>
+    <box top='141' left='155' width='54' height='74' ignore='1'/>
+  </image>
+  <image file='images/2010_006758.jpg'>
+    <box top='61' left='255' width='88' height='92' ignore='1'/>
+  </image>
+  <image file='images/2010_006897.jpg'>
+    <box top='65' left='303' width='137' height='135' ignore='1'/>
+  </image>
+  <image file='images/2010_006917.jpg'>
+    <box top='40' left='78' width='148' height='173' ignore='1'/>
+    <box top='-3' left='371' width='137' height='180' ignore='1'/>
+  </image>
+  <image file='images/2011_000859.jpg'>
+    <box top='85' left='107' width='126' height='160' ignore='1'/>
+    <box top='67' left='229' width='95' height='127' ignore='1'/>
+    <box top='50' left='108' width='74' height='88' ignore='1'/>
+  </image>
+  <image file='images/2011_000943.jpg'>
+    <box top='163' left='154' width='36' height='48' ignore='1'/>
+    <box top='156' left='297' width='11' height='15' ignore='1'/>
+  </image>
+  <image file='images/2011_001327.jpg'>
+    <box top='130' left='215' width='62' height='82' ignore='1'/>
+    <box top='242' left='22' width='31' height='39'/>
+  </image>
+  <image file='images/2011_001732.jpg'>
+    <box top='24' left='169' width='95' height='112' ignore='1'/>
+  </image>
+  <image file='images/2011_002273.jpg'>
+    <box top='102' left='149' width='63' height='69' ignore='1'/>
+  </image>
+  <image file='images/2011_002551.jpg'>
+    <box top='3' left='219' width='56' height='68' ignore='1'/>
+  </image>
+  <image file='images/2011_002598.jpg'>
+    <box top='32' left='97' width='42' height='47' ignore='1'/>
+    <box top='79' left='201' width='44' height='48' ignore='1'/>
+    <box top='53' left='275' width='43' height='49' ignore='1'/>
+  </image>
+  <image file='images/2011_002614.jpg'>
+    <box top='72' left='45' width='98' height='95' ignore='1'/>
+    <box top='51' left='380' width='84' height='92' ignore='1'/>
+  </image>
+  <image file='images/2011_003136.jpg'>
+    <box top='165' left='103' width='72' height='79' ignore='1'/>
+  </image>
+  <image file='images/2011_003362.jpg'>
+    <box top='32' left='153' width='78' height='98' ignore='1'/>
+    <box top='239' left='8' width='51' height='55' ignore='1'/>
+    <box top='247' left='295' width='42' height='45' ignore='1'/>
+  </image>
+  <image file='images/2011_003447.jpg'>
+    <box top='225' left='278' width='42' height='58' ignore='1'/>
+  </image>
+  <image file='images/2011_003613.jpg'>
+    <box top='68' left='114' width='123' height='162' ignore='1'/>
+  </image>
+  <image file='images/2011_003677.jpg'>
+    <box top='51' left='207' width='139' height='158' ignore='1'/>
+  </image>
+  <image file='images/2011_003780.jpg'>
+    <box top='5' left='28' width='36' height='51'/>
+    <box top='99' left='39' width='49' height='71'/>
+    <box top='105' left='138' width='53' height='61' ignore='1'/>
+    <box top='147' left='170' width='60' height='67' ignore='1'/>
+    <box top='11' left='315' width='34' height='41' ignore='1'/>
+  </image>
+  <image file='images/2011_003806.jpg'>
+    <box top='96' left='194' width='42' height='54' ignore='1'/>
+    <box top='88' left='243' width='57' height='74' ignore='1'/>
+  </image>
+  <image file='images/2011_003836.jpg'>
+    <box top='26' left='272' width='136' height='159' ignore='1'/>
+  </image>
+  <image file='images/2011_004226.jpg'>
+    <box top='5' left='209' width='48' height='73' ignore='1'/>
+    <box top='80' left='343' width='29' height='30' ignore='1'/>
+  </image>
+  <image file='images/2011_004332.jpg'>
+    <box top='195' left='183' width='55' height='61' ignore='1'/>
+    <box top='16' left='349' width='99' height='122' ignore='1'/>
+  </image>
+  <image file='images/2011_004711.jpg'>
+    <box top='55' left='201' width='96' height='123' ignore='1'/>
+    <box top='132' left='394' width='125' height='185' ignore='1'/>
+  </image>
+  <image file='images/2011_004725.jpg'>
+    <box top='57' left='112' width='41' height='48' ignore='1'/>
+    <box top='378' left='206' width='9' height='13' ignore='1'/>
+  </image>
+  <image file='images/2011_004804.jpg'>
+    <box top='54' left='49' width='38' height='52' ignore='1'/>
+    <box top='54' left='128' width='84' height='122' ignore='1'/>
+    <box top='53' left='314' width='109' height='134' ignore='1'/>
+  </image>
+  <image file='images/2011_004809.jpg'>
+    <box top='79' left='206' width='91' height='126' ignore='1'/>
+    <box top='103' left='157' width='12' height='14' ignore='1'/>
+    <box top='130' left='128' width='12' height='12' ignore='1'/>
+    <box top='100' left='185' width='13' height='12' ignore='1'/>
+    <box top='124' left='395' width='19' height='21' ignore='1'/>
+    <box top='138' left='434' width='8' height='4' ignore='1'/>
+    <box top='108' left='440' width='21' height='20' ignore='1'/>
+    <box top='90' left='405' width='20' height='21' ignore='1'/>
+    <box top='48' left='398' width='15' height='15' ignore='1'/>
+    <box top='46' left='422' width='14' height='16' ignore='1'/>
+    <box top='99' left='473' width='16' height='19' ignore='1'/>
+    <box top='160' left='313' width='48' height='54' ignore='1'/>
+    <box top='160' left='411' width='31' height='38' ignore='1'/>
+    <box top='148' left='462' width='31' height='41' ignore='1'/>
+    <box top='107' left='143' width='12' height='13' ignore='1'/>
+  </image>
+  <image file='images/2011_004991.jpg'>
+    <box top='140' left='-21' width='50' height='71' ignore='1'/>
+    <box top='228' left='131' width='50' height='62' ignore='1'/>
+    <box top='258' left='279' width='6' height='12' ignore='1'/>
+    <box top='272' left='272' width='7' height='8' ignore='1'/>
+    <box top='280' left='287' width='4' height='4' ignore='1'/>
+    <box top='261' left='289' width='5' height='9' ignore='1'/>
+  </image>
+  <image file='images/2011_005343.jpg'>
+    <box top='22' left='183' width='109' height='128' ignore='1'/>
+  </image>
+  <image file='images/2011_005556.jpg'>
+    <box top='140' left='203' width='52' height='64' ignore='1'/>
+  </image>
+  <image file='images/2011_005574.jpg'>
+    <box top='94' left='203' width='112' height='123' ignore='1'/>
+  </image>
+  <image file='images/2011_005779.jpg'>
+    <box top='26' left='120' width='112' height='147' ignore='1'/>
+  </image>
+  <image file='images/2011_005951.jpg'>
+    <box top='82' left='25' width='118' height='141' ignore='1'/>
+    <box top='189' left='253' width='6' height='8' ignore='1'/>
+    <box top='185' left='242' width='4' height='7' ignore='1'/>
+    <box top='190' left='228' width='5' height='6' ignore='1'/>
+    <box top='206' left='159' width='17' height='19' ignore='1'/>
+    <box top='184' left='207' width='6' height='7' ignore='1'/>
+    <box top='186' left='425' width='6' height='8' ignore='1'/>
+  </image>
+  <image file='images/2011_006118.jpg'>
+    <box top='135' left='212' width='87' height='101' ignore='1'/>
+    <box top='204' left='363' width='6' height='8' ignore='1'/>
+  </image>
+  <image file='images/2011_006169.jpg'>
+    <box top='40' left='136' width='108' height='129' ignore='1'/>
+  </image>
+  <image file='images/2011_006235.jpg'>
+    <box top='-14' left='313' width='185' height='221' ignore='1'/>
+  </image>
+  <image file='images/2011_006251.jpg'>
+    <box top='174' left='82' width='16' height='21' ignore='1'/>
+    <box top='190' left='47' width='14' height='15' ignore='1'/>
+    <box top='111' left='158' width='45' height='45' ignore='1'/>
+    <box top='178' left='249' width='11' height='14' ignore='1'/>
+    <box top='187' left='345' width='9' height='11' ignore='1'/>
+  </image>
+  <image file='images/2011_006533.jpg'>
+    <box top='91' left='102' width='60' height='85' ignore='1'/>
+    <box top='34' left='323' width='71' height='79' ignore='1'/>
+  </image>
+  <image file='images/2011_006654.jpg'>
+    <box top='180' left='190' width='63' height='74'/>
+    <box top='41' left='213' width='108' height='147' ignore='1'/>
+  </image>
+  <image file='images/2012_000105.jpg'>
+    <box top='108' left='159' width='153' height='165' ignore='1'/>
+  </image>
+  <image file='images/2012_000212.jpg'>
+    <box top='1' left='3' width='225' height='224' ignore='1'/>
+  </image>
+  <image file='images/2012_000267.jpg'>
+    <box top='126' left='180' width='51' height='70' ignore='1'/>
+    <box top='188' left='345' width='49' height='57' ignore='1'/>
+    <box top='20' left='358' width='56' height='75' ignore='1'/>
+  </image>
+  <image file='images/2012_000724.jpg'>
+    <box top='45' left='109' width='79' height='90' ignore='1'/>
+  </image>
+  <image file='images/2012_000745.jpg'>
+    <box top='83' left='89' width='100' height='132' ignore='1'/>
+  </image>
+  <image file='images/2012_000750.jpg'>
+    <box top='31' left='140' width='121' height='146' ignore='1'/>
+    <box top='157' left='267' width='71' height='82' ignore='1'/>
+  </image>
+  <image file='images/2012_001552.jpg'>
+    <box top='53' left='326' width='57' height='71' ignore='1'/>
+    <box top='298' left='17' width='20' height='28' ignore='1'/>
+    <box top='313' left='44' width='27' height='32' ignore='1'/>
+    <box top='304' left='65' width='20' height='23' ignore='1'/>
+    <box top='303' left='88' width='16' height='19' ignore='1'/>
+    <box top='316' left='100' width='16' height='19' ignore='1'/>
+  </image>
+  <image file='images/2012_001582.jpg'>
+    <box top='75' left='180' width='44' height='45' ignore='1'/>
+  </image>
+  <image file='images/2012_001861.jpg'>
+    <box top='13' left='32' width='186' height='219' ignore='1'/>
+  </image>
+  <image file='images/2012_002163.jpg'>
+    <box top='124' left='193' width='52' height='73' ignore='1'/>
+  </image>
+  <image file='images/2012_002289.jpg'>
+    <box top='50' left='17' width='123' height='141' ignore='1'/>
+  </image>
+  <image file='images/2012_002936.jpg'>
+    <box top='49' left='118' width='111' height='153' ignore='1'/>
+  </image>
+  <image file='images/2012_002937.jpg'>
+    <box top='100' left='162' width='165' height='208' ignore='1'/>
+  </image>
+  <image file='images/2012_004254.jpg'>
+    <box top='59' left='114' width='88' height='101' ignore='1'/>
+  </image>
+  <image file='images/2012_004262.jpg'>
+    <box top='197' left='108' width='62' height='66' ignore='1'/>
+  </image>
+  <image file='images/2007_000480.jpg'>
+    <box top='171' left='35' width='50' height='50' ignore='1'/>
+    <box top='162' left='149' width='61' height='60' ignore='1'/>
+    <box top='160' left='314' width='57' height='62' ignore='1'/>
+    <box top='85' left='255' width='9' height='14' ignore='1'/>
+    <box top='93' left='328' width='14' height='19' ignore='1'/>
+  </image>
+  <image file='images/2007_001558.jpg'>
+    <box top='62' left='69' width='125' height='131' ignore='1'/>
+    <box top='25' left='349' width='135' height='156' ignore='1'/>
+  </image>
+  <image file='images/2007_001583.jpg'>
+    <box top='46' left='334' width='21' height='30'/>
+    <box top='175' left='429' width='13' height='22' ignore='1'/>
+    <box top='35' left='96' width='46' height='47' ignore='1'/>
+  </image>
+  <image file='images/2007_001627.jpg'>
+    <box top='8' left='177' width='55' height='77' ignore='1'/>
+  </image>
+  <image file='images/2007_001678.jpg'>
+    <box top='62' left='126' width='15' height='14' ignore='1'/>
+    <box top='191' left='130' width='93' height='83' ignore='1'/>
+  </image>
+  <image file='images/2007_001686.jpg'>
+    <box top='172' left='140' width='35' height='49' ignore='1'/>
+  </image>
+  <image file='images/2007_002119.jpg'>
+    <box top='117' left='7' width='20' height='23' ignore='1'/>
+    <box top='138' left='2' width='14' height='16' ignore='1'/>
+    <box top='2' left='50' width='53' height='67' ignore='1'/>
+    <box top='36' left='85' width='43' height='38' ignore='1'/>
+    <box top='65' left='182' width='35' height='48' ignore='1'/>
+  </image>
+  <image file='images/2007_002262.jpg'>
+    <box top='44' left='190' width='160' height='153' ignore='1'/>
+  </image>
+  <image file='images/2007_003088.jpg'>
+    <box top='95' left='123' width='83' height='91' ignore='1'/>
+    <box top='99' left='207' width='42' height='56' ignore='1'/>
+  </image>
+  <image file='images/2007_003373.jpg'>
+    <box top='0' left='185' width='141' height='176' ignore='1'/>
+  </image>
+  <image file='images/2007_003541.jpg'>
+    <box top='75' left='68' width='76' height='92' ignore='1'/>
+    <box top='23' left='221' width='61' height='110'/>
+  </image>
+  <image file='images/2007_003831.jpg'>
+    <box top='28' left='92' width='54' height='70' ignore='1'/>
+    <box top='91' left='220' width='65' height='55' ignore='1'/>
+  </image>
+  <image file='images/2007_004112.jpg'>
+    <box top='35' left='221' width='231' height='211' ignore='1'/>
+  </image>
+  <image file='images/2007_004121.jpg'>
+    <box top='147' left='179' width='26' height='29' ignore='1'/>
+    <box top='93' left='258' width='38' height='51' ignore='1'/>
+  </image>
+  <image file='images/2007_005086.jpg'>
+    <box top='143' left='51' width='55' height='66' ignore='1'/>
+    <box top='44' left='272' width='84' height='93' ignore='1'/>
+  </image>
+  <image file='images/2007_005144.jpg'>
+    <box top='20' left='71' width='191' height='238'/>
+  </image>
+  <image file='images/2007_005310.jpg'>
+    <box top='178' left='91' width='100' height='115' ignore='1'/>
+    <box top='36' left='140' width='69' height='63' ignore='1'/>
+  </image>
+  <image file='images/2007_005691.jpg'>
+    <box top='0' left='60' width='67' height='106'/>
+    <box top='53' left='-19' width='46' height='61' ignore='1'/>
+  </image>
+  <image file='images/2007_005748.jpg'>
+    <box top='71' left='250' width='101' height='130' ignore='1'/>
+    <box top='-5' left='399' width='31' height='25' ignore='1'/>
+  </image>
+  <image file='images/2007_005896.jpg'>
+    <box top='107' left='110' width='96' height='118' ignore='1'/>
+  </image>
+  <image file='images/2007_006240.jpg'>
+    <box top='22' left='127' width='199' height='226' ignore='1'/>
+  </image>
+  <image file='images/2007_006559.jpg'>
+    <box top='100' left='100' width='76' height='123' ignore='1'/>
+  </image>
+  <image file='images/2007_006615.jpg'>
+    <box top='54' left='49' width='167' height='169' ignore='1'/>
+  </image>
+  <image file='images/2007_006856.jpg'>
+    <box top='121' left='153' width='89' height='117' ignore='1'/>
+  </image>
+  <image file='images/2007_007083.jpg'>
+    <box top='120' left='130' width='61' height='82' ignore='1'/>
+  </image>
+  <image file='images/2007_007161.jpg'>
+    <box top='58' left='85' width='153' height='183' ignore='1'/>
+  </image>
+  <image file='images/2007_007493.jpg'>
+    <box top='0' left='97' width='142' height='165' ignore='1'/>
+    <box top='150' left='324' width='132' height='118' ignore='1'/>
+  </image>
+  <image file='images/2007_007763.jpg'>
+    <box top='180' left='99' width='38' height='50'/>
+    <box top='198' left='184' width='40' height='52' ignore='1'/>
+    <box top='105' left='164' width='35' height='47'/>
+    <box top='82' left='201' width='37' height='47' ignore='1'/>
+    <box top='70' left='299' width='46' height='57' ignore='1'/>
+    <box top='218' left='319' width='58' height='61' ignore='1'/>
+    <box top='72' left='393' width='58' height='65' ignore='1'/>
+  </image>
+  <image file='images/2007_008218.jpg'>
+    <box top='92' left='260' width='129' height='182'/>
+    <box top='208' left='474' width='56' height='93' ignore='1'/>
+    <box top='338' left='123' width='33' height='31' ignore='1'/>
+    <box top='352' left='154' width='28' height='26' ignore='1'/>
+    <box top='275' left='108' width='23' height='26' ignore='1'/>
+  </image>
+  <image file='images/2007_008559.jpg'>
+    <box top='147' left='16' width='39' height='46' ignore='1'/>
+    <box top='80' left='140' width='66' height='79' ignore='1'/>
+  </image>
+  <image file='images/2007_008944.jpg'>
+    <box top='9' left='72' width='298' height='366' ignore='1'/>
+  </image>
+  <image file='images/2007_009612.jpg'>
+    <box top='115' left='117' width='70' height='93'/>
+  </image>
+  <image file='images/2008_000034.jpg'>
+    <box top='159' left='28' width='41' height='57' ignore='1'/>
+    <box top='125' left='84' width='68' height='82' ignore='1'/>
+    <box top='67' left='205' width='85' height='119'/>
+    <box top='91' left='321' width='84' height='126' ignore='1'/>
+  </image>
+  <image file='images/2008_000354.jpg'>
+    <box top='45' left='130' width='143' height='161' ignore='1'/>
+    <box top='86' left='411' width='100' height='126' ignore='1'/>
+  </image>
+  <image file='images/2008_000473.jpg'>
+    <box top='169' left='107' width='37' height='47' ignore='1'/>
+    <box top='261' left='257' width='62' height='50' ignore='1'/>
+  </image>
+  <image file='images/2008_001223.jpg'>
+    <box top='46' left='0' width='32' height='39' ignore='1'/>
+    <box top='112' left='57' width='76' height='77' ignore='1'/>
+    <box top='33' left='231' width='84' height='95' ignore='1'/>
+    <box top='85' left='275' width='104' height='123' ignore='1'/>
+    <box top='91' left='377' width='28' height='34' ignore='1'/>
+  </image>
+  <image file='images/2008_002579.jpg'>
+    <box top='101' left='142' width='82' height='96' ignore='1'/>
+    <box top='93' left='272' width='76' height='101' ignore='1'/>
+    <box top='98' left='467' width='65' height='87' ignore='1'/>
+    <box top='-12' left='431' width='42' height='39' ignore='1'/>
+  </image>
+  <image file='images/2008_002864.jpg'>
+    <box top='63' left='34' width='104' height='126' ignore='1'/>
+    <box top='68' left='320' width='85' height='114' ignore='1'/>
+  </image>
+  <image file='images/2008_003013.jpg'>
+    <box top='46' left='169' width='117' height='160' ignore='1'/>
+  </image>
+  <image file='images/2008_005939.jpg'>
+    <box top='8' left='211' width='75' height='94' ignore='1'/>
+  </image>
+  <image file='images/2008_006039.jpg'>
+    <box top='139' left='2' width='69' height='70' ignore='1'/>
+    <box top='83' left='52' width='51' height='58' ignore='1'/>
+    <box top='80' left='139' width='37' height='52' ignore='1'/>
+    <box top='76' left='183' width='41' height='44' ignore='1'/>
+    <box top='65' left='270' width='30' height='49' ignore='1'/>
+    <box top='72' left='361' width='37' height='41' ignore='1'/>
+    <box top='85' left='394' width='52' height='62' ignore='1'/>
+    <box top='136' left='436' width='64' height='63' ignore='1'/>
+    <box top='127' left='274' width='89' height='103' ignore='1'/>
+    <box top='301' left='54' width='152' height='128' ignore='1'/>
+  </image>
+  <image file='images/2008_007923.jpg'>
+    <box top='39' left='170' width='139' height='188' ignore='1'/>
+  </image>
+  <image file='images/2009_002406.jpg'>
+    <box top='87' left='176' width='40' height='50'/>
+  </image>
+  <image file='images/2009_003035.jpg'>
+    <box top='152' left='160' width='126' height='171'/>
+    <box top='1' left='215' width='151' height='197' ignore='1'/>
+    <box top='0' left='63' width='73' height='111' ignore='1'/>
+    <box top='263' left='89' width='39' height='55' ignore='1'/>
+  </image>
+  <image file='images/2010_000912.jpg'>
+    <box top='27' left='82' width='116' height='136' ignore='1'/>
+    <box top='168' left='125' width='122' height='128' ignore='1'/>
+  </image>
+  <image file='images/2010_000944.jpg'>
+    <box top='90' left='243' width='79' height='97' ignore='1'/>
+  </image>
+  <image file='images/2010_001486.jpg'>
+    <box top='19' left='47' width='132' height='180'/>
+  </image>
+  <image file='images/2010_001533.jpg'>
+    <box top='18' left='303' width='82' height='113' ignore='1'/>
+  </image>
+  <image file='images/2010_001543.jpg'>
+    <box top='46' left='293' width='155' height='235'/>
+  </image>
+  <image file='images/2010_001785.jpg'>
+    <box top='62' left='98' width='46' height='55' ignore='1'/>
+    <box top='109' left='67' width='60' height='81'/>
+    <box top='109' left='403' width='63' height='84'/>
+  </image>
+  <image file='images/2010_002096.jpg'>
+    <box top='111' left='46' width='75' height='85' ignore='1'/>
+    <box top='119' left='145' width='45' height='57' ignore='1'/>
+    <box top='133' left='282' width='42' height='48' ignore='1'/>
+    <box top='137' left='426' width='45' height='46' ignore='1'/>
+    <box top='88' left='483' width='60' height='82' ignore='1'/>
+  </image>
+  <image file='images/2010_002312.jpg'>
+    <box top='139' left='249' width='79' height='78' ignore='1'/>
+  </image>
+  <image file='images/2010_002504.jpg'>
+    <box top='82' left='368' width='95' height='106' ignore='1'/>
+  </image>
+  <image file='images/2010_002509.jpg'>
+    <box top='124' left='143' width='97' height='116' ignore='1'/>
+    <box top='114' left='237' width='130' height='139' ignore='1'/>
+  </image>
+  <image file='images/2010_002520.jpg'>
+    <box top='84' left='132' width='67' height='94' ignore='1'/>
+  </image>
+  <image file='images/2010_002618.jpg'>
+    <box top='56' left='367' width='101' height='100' ignore='1'/>
+  </image>
+  <image file='images/2010_002704.jpg'>
+    <box top='71' left='175' width='248' height='224' ignore='1'/>
+  </image>
+  <image file='images/2010_002725.jpg'>
+    <box top='118' left='16' width='23' height='24' ignore='1'/>
+    <box top='118' left='362' width='27' height='30' ignore='1'/>
+    <box top='107' left='128' width='31' height='45' ignore='1'/>
+    <box top='123' left='470' width='27' height='41' ignore='1'/>
+    <box top='119' left='0' width='3' height='33' ignore='1'/>
+    <box top='86' left='154' width='85' height='110' ignore='1'/>
+    <box top='61' left='276' width='87' height='115' ignore='1'/>
+  </image>
+  <image file='images/2010_002737.jpg'>
+    <box top='24' left='277' width='59' height='67' ignore='1'/>
+  </image>
+  <image file='images/2010_002807.jpg'>
+    <box top='10' left='247' width='26' height='29' ignore='1'/>
+  </image>
+  <image file='images/2010_002821.jpg'>
+    <box top='43' left='23' width='89' height='102' ignore='1'/>
+  </image>
+  <image file='images/2010_003054.jpg'>
+    <box top='200' left='177' width='63' height='73' ignore='1'/>
+    <box top='211' left='342' width='66' height='77' ignore='1'/>
+  </image>
+  <image file='images/2010_003219.jpg'>
+    <box top='60' left='228' width='46' height='64' ignore='1'/>
+  </image>
+  <image file='images/2010_003257.jpg'>
+    <box top='30' left='63' width='48' height='64' ignore='1'/>
+    <box top='28' left='290' width='58' height='76' ignore='1'/>
+  </image>
+  <image file='images/2010_003304.jpg'>
+    <box top='130' left='56' width='59' height='75' ignore='1'/>
+    <box top='174' left='64' width='26' height='35' ignore='1'/>
+    <box top='151' left='116' width='38' height='41' ignore='1'/>
+    <box top='75' left='238' width='93' height='104' ignore='1'/>
+    <box top='-2' left='401' width='122' height='168' ignore='1'/>
+  </image>
+  <image file='images/2010_003401.jpg'>
+    <box top='115' left='218' width='45' height='55' ignore='1'/>
+  </image>
+  <image file='images/2010_003538.jpg'>
+    <box top='59' left='87' width='54' height='80'/>
+    <box top='54' left='210' width='50' height='79'/>
+  </image>
+  <image file='images/2010_003618.jpg'>
+    <box top='6' left='160' width='48' height='68' ignore='1'/>
+  </image>
+  <image file='images/2010_003625.jpg'>
+    <box top='165' left='183' width='85' height='123' ignore='1'/>
+  </image>
+  <image file='images/2010_003719.jpg'>
+    <box top='34' left='29' width='56' height='65' ignore='1'/>
+    <box top='16' left='226' width='51' height='62' ignore='1'/>
+    <box top='32' left='440' width='54' height='55' ignore='1'/>
+  </image>
+  <image file='images/2010_004067.jpg'>
+    <box top='91' left='125' width='75' height='82' ignore='1'/>
+    <box top='51' left='335' width='66' height='81' ignore='1'/>
+  </image>
+  <image file='images/2010_004192.jpg'>
+    <box top='107' left='113' width='55' height='57' ignore='1'/>
+    <box top='7' left='368' width='85' height='95' ignore='1'/>
+  </image>
+  <image file='images/2010_004198.jpg'>
+    <box top='47' left='244' width='69' height='73' ignore='1'/>
+    <box top='4' left='316' width='101' height='160'/>
+  </image>
+  <image file='images/2010_004223.jpg'>
+    <box top='69' left='298' width='183' height='128' ignore='1'/>
+  </image>
+  <image file='images/2010_004297.jpg'>
+    <box top='68' left='180' width='286' height='236' ignore='1'/>
+  </image>
+  <image file='images/2010_004318.jpg'>
+    <box top='61' left='199' width='115' height='174' ignore='1'/>
+  </image>
+  <image file='images/2010_004469.jpg'>
+    <box top='119' left='0' width='73' height='83' ignore='1'/>
+    <box top='91' left='183' width='83' height='93' ignore='1'/>
+    <box top='79' left='316' width='57' height='77'/>
+  </image>
+  <image file='images/2010_004479.jpg'>
+    <box top='21' left='309' width='167' height='192' ignore='1'/>
+  </image>
+  <image file='images/2010_004523.jpg'>
+    <box top='83' left='36' width='97' height='121' ignore='1'/>
+  </image>
+  <image file='images/2010_004665.jpg'>
+    <box top='50' left='247' width='46' height='53' ignore='1'/>
+  </image>
+  <image file='images/2010_004666.jpg'>
+    <box top='171' left='81' width='70' height='77' ignore='1'/>
+  </image>
+  <image file='images/2010_004698.jpg'>
+    <box top='43' left='142' width='52' height='80'/>
+    <box top='40' left='400' width='47' height='66' ignore='1'/>
+    <box top='141' left='229' width='118' height='108' ignore='1'/>
+    <box top='118' left='348' width='101' height='142'/>
+  </image>
+  <image file='images/2010_004708.jpg'>
+    <box top='10' left='146' width='36' height='51' ignore='1'/>
+    <box top='96' left='329' width='50' height='67' ignore='1'/>
+  </image>
+  <image file='images/2010_004877.jpg'>
+    <box top='83' left='122' width='36' height='44' ignore='1'/>
+  </image>
+  <image file='images/2010_004910.jpg'>
+    <box top='69' left='234' width='92' height='124' ignore='1'/>
+  </image>
+  <image file='images/2010_005019.jpg'>
+    <box top='39' left='222' width='29' height='31' ignore='1'/>
+  </image>
+  <image file='images/2010_005049.jpg'>
+    <box top='17' left='141' width='84' height='92' ignore='1'/>
+    <box top='66' left='483' width='28' height='38' ignore='1'/>
+  </image>
+  <image file='images/2010_005111.jpg'>
+    <box top='57' left='312' width='34' height='35' ignore='1'/>
+  </image>
+  <image file='images/2010_005127.jpg'>
+    <box top='26' left='221' width='81' height='100' ignore='1'/>
+  </image>
+  <image file='images/2010_005349.jpg'>
+    <box top='120' left='52' width='88' height='92' ignore='1'/>
+    <box top='78' left='162' width='37' height='54'/>
+    <box top='94' left='263' width='36' height='51'/>
+    <box top='130' left='317' width='77' height='88' ignore='1'/>
+  </image>
+  <image file='images/2010_005403.jpg'>
+    <box top='104' left='137' width='32' height='38' ignore='1'/>
+    <box top='79' left='206' width='43' height='51' ignore='1'/>
+    <box top='81' left='306' width='38' height='46' ignore='1'/>
+  </image>
+  <image file='images/2010_005681.jpg'>
+    <box top='0' left='59' width='95' height='126' ignore='1'/>
+  </image>
+  <image file='images/2010_005838.jpg'>
+    <box top='51' left='197' width='103' height='138' ignore='1'/>
+  </image>
+  <image file='images/2010_006088.jpg'>
+    <box top='27' left='109' width='144' height='177' ignore='1'/>
+  </image>
+  <image file='images/2010_006092.jpg'>
+    <box top='16' left='142' width='153' height='215' ignore='1'/>
+  </image>
+  <image file='images/2010_006176.jpg'>
+    <box top='84' left='330' width='103' height='91' ignore='1'/>
+  </image>
+  <image file='images/2010_006192.jpg'>
+    <box top='78' left='167' width='87' height='90' ignore='1'/>
+    <box top='72' left='330' width='75' height='77' ignore='1'/>
+  </image>
+  <image file='images/2010_006200.jpg'>
+    <box top='58' left='87' width='105' height='116' ignore='1'/>
+  </image>
+  <image file='images/2010_006204.jpg'>
+    <box top='29' left='75' width='74' height='85' ignore='1'/>
+  </image>
+  <image file='images/2010_006262.jpg'>
+    <box top='118' left='163' width='61' height='70' ignore='1'/>
+  </image>
+  <image file='images/2007_000504.jpg'>
+    <box top='34' left='50' width='14' height='24' ignore='1'/>
+    <box top='40' left='27' width='14' height='20' ignore='1'/>
+    <box top='42' left='5' width='14' height='22' ignore='1'/>
+  </image>
+  <image file='images/2007_001175.jpg'>
+    <box top='3' left='11' width='25' height='29' ignore='1'/>
+    <box top='154' left='117' width='44' height='49' ignore='1'/>
+    <box top='169' left='147' width='32' height='37' ignore='1'/>
+  </image>
+  <image file='images/2007_004537.jpg'>
+    <box top='37' left='215' width='26' height='34' ignore='1'/>
+  </image>
+  <image file='images/2008_001501.jpg'>
+    <box top='136' left='53' width='17' height='20'/>
+    <box top='154' left='104' width='17' height='22'/>
+    <box top='161' left='156' width='16' height='22'/>
+    <box top='159' left='196' width='21' height='25'/>
+    <box top='168' left='251' width='19' height='18' ignore='1'/>
+    <box top='172' left='320' width='17' height='20' ignore='1'/>
+  </image>
+  <image file='images/2008_002181.jpg'>
+    <box top='98' left='4' width='50' height='63'/>
+    <box top='125' left='137' width='45' height='61'/>
+    <box top='77' left='132' width='49' height='56' ignore='1'/>
+    <box top='102' left='215' width='44' height='56'/>
+    <box top='69' left='250' width='43' height='54'/>
+    <box top='108' left='290' width='44' height='64'/>
+    <box top='94' left='341' width='36' height='54'/>
+    <box top='99' left='401' width='36' height='44'/>
+    <box top='59' left='431' width='53' height='71'/>
+  </image>
+</images>
+</dataset>

@@ -1,0 +1,7 @@
+type fhog9
+windowWidthInCells 10
+windowHeightInCells 10
+cellSizeInPixels 4
+octaveLayerCount 10
+widthScaleFactor 1.0
+heightScaleFactor 1.0

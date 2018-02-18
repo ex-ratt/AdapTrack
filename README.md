@@ -49,6 +49,8 @@ Libraries
 Applications
 ------------
 
+Some of the applications need annotations and configuration files. You can find examples of these files in the `resources` directory and in the description below.
+
 ### DetectorTrainer
 
 Trains and tests detectors that are based on the sliding window technique, aggregated features, and a linear support vector machines.
@@ -155,4 +157,16 @@ Tracks multipe targets using a particle filter for each.
 * VISIBILITYTHRESHOLD: SVM score threshold for tracks to be regarded visible
 
 Example: `$ ./MultiTracker video.avi svm-fhog9-4x10 4 1.0 -0.25`
+
+
+Resources
+---------
+
+There are some additional useful resource files in the directory `resources`:
+
+* **svm:** Few SVMs trained by the DetectorTrainer on frontal heads
+* **annotation:** Annotations of heads that can be used to train and test head detectors
+* **features:** Exemplary feature parameter files
+* **training:** Exemplary training parameter files
+* **detection:** Exemplary detection parameter files
 

@@ -1,0 +1,6 @@
+minWindowWidthInPixels 40
+minWindowHeightInPixels 40
+octaveLayerCount 10
+approximatePyramid false
+nmsOverlapThreshold 0.3
+
