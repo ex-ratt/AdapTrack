@@ -90,6 +90,11 @@ Example: `$ ./DetectorTrainer test detector-fhog9-4x10 annotations.xml 4 detecti
 
 Example: `$ ./DetectorTrainer show detector-fhog9-4x10 annotations.xml 4 detection-40x40-5 0.5`
 
+The app can be controlled by the following keys:
+
+* q: quit
+* other keys: progress to the next image
+
 #### Configuration files
 
 Feature configuration
@@ -144,6 +149,13 @@ Tracks a single target without prior knowledge after initialization by the groun
 
 Example: `$ ./SingleTracker annotations.xml 9 4 10 7 0.1`
 
+The app can be controlled by the following keys:
+
+* q: quit
+* p: pause/unpause
+* r: re-initialize from ground truth at next image
+* other keys: progress to the next image
+
 ### MultiTracker
 
 Tracks multipe targets using a particle filter for each.
@@ -157,6 +169,14 @@ Tracks multipe targets using a particle filter for each.
 * VISIBILITYTHRESHOLD: SVM score threshold for tracks to be regarded visible
 
 Example: `$ ./MultiTracker video.avi svm-fhog9-4x10 4 1.0 -0.25`
+
+The app can be controlled by the following keys:
+
+* q: exit
+* p: pause/unpause
+* r: reset the tracker
+* d: show debug-output (particles and unconfirmed tracks)
+* other keys: progress to the next image
 
 
 Resources
