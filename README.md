@@ -154,7 +154,7 @@ The app can be controlled by the following keys:
 * q: quit
 * p: pause/unpause
 * r: re-initialize from ground truth at next image
-* other keys: progress to the next image
+* other keys: progress to the next image if paused
 
 ### MultiTracker
 
@@ -176,7 +176,7 @@ The app can be controlled by the following keys:
 * p: pause/unpause
 * r: reset the tracker
 * d: show debug-output (particles and unconfirmed tracks)
-* other keys: progress to the next image
+* other keys: progress to the next image if paused
 
 
 Resources
