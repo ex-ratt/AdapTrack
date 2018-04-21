@@ -184,6 +184,7 @@ Resources
 
 There are some additional useful resource files in the directory `resources`:
 
+* **thesis.pdf:** Thesis that describes the detection and tracking approaches in chapters 4 to 6.
 * **svm:** Few SVMs trained by the DetectorTrainer on frontal heads
 * **annotation:** Annotations of heads that can be used to train and test head detectors
 * **features:** Exemplary feature parameter files
